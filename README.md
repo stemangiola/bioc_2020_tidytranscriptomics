@@ -6,7 +6,7 @@ Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@
 
 This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions. 
 
-This can be achieved for RNA sequencing data with the (tidybulk)[github.com/stemangiola/tidybulk], (tidyHeatmap)[github.com/stemangiola/tidyHeatmap] and tidyverse packages. The package (tidybulk)[github.com/stemangiola/tidybulk] provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data.
+This can be achieved for RNA sequencing data with the [tidybulk](github.com/stemangiola/tidybulk), [tidyHeatmap](github.com/stemangiola/tidyHeatmap) and tidyverse packages. The package [tidybulk](github.com/stemangiola/tidybulk) provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data.
 
 The topics presented in this workshop will be
 
