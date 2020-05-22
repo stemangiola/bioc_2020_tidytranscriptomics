@@ -1,0 +1,500 @@
+---
+title: "Introduction to R for RNA-Seq"
+subtitle: "TidyTranscriptomics"
+author: "Maria Doyle, Stefano Mangiola"
+output:
+  html_notebook:
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+date: "`r format(Sys.time(), '%d %B %Y')`"
+---
+
+## Acknowledgements
+This material is adapted from an R for RNA-Seq workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
+
+## Prerequisites
+This course assumes some basic familiarity with RStudio and tidyverse, for example, the content covered [here](https://mblue9.github.io/r-intro-biologists/intro_r_biologists.html).
+  
+# R for RNA-Seq course
+  
+This course has been designed to introduce biologists to R for RNA-Seq analysis. The focus here is on using tidyverse to analyse RNA-Seq data, as we believe this is a productive and engaging way to learn R for RNA-Seq analysis. In this course we will use some new packages, [**tidybulk**]([https://github.com/stemangiola/tidybulk) and [**tidyHeatmap**](https://github.com/stemangiola/tidyHeatmap). These packages provide a friendly tidyverse-style way to perform analysis of RNA-Seq data.
+
+![](images/tidybulk_logo.png){width=25% }
+
+# Setup
+
+## Data files
+
+Data files are available from the data folder in GitHub [here](https://github.com/mblue9/r-intro-biologists-rnaseq). You should download the files listed below and place them into a folder called `data` in your working directory.
+
+Data files:
+
+* GSE60450_GeneLevel_Raw_data.csv
+* GSE60450_filtered_metadata.csv
+
+## R Packages
+
+Packages used:
+
+* tidyverse
+* tidybulk
+* tidyHeatmap
+* edgeR
+* devtools
+
+Here we will use packages from the 3 main repositories of R packages: Bioconductor, CRAN and GitHub. To install the packages you can follow the steps below.
+
+### R version
+* [Install R >= 3.6](https://bioconductor.org/install/#install-R). **You must have R >= 3.6 to use tidybulk and tidyHeatmap.**
+
+### Bioconductor packages
+* Get the latest version of Bioconductor and edgeR package by starting R and entering the commands:
+```{r, eval=FALSE}
+if (!requireNamespace("BiocManager"))
+    install.packages("BiocManager")
+BiocManager::install("edgeR")
+```
+
+### CRAN packages
+Install the CRAN packages with the command below.
+```{r, eval=FALSE}
+install.packages(c("tidyverse", "tidyHeatmap", "devtools"))
+```
+
+### GitHub packages
+tidybulk will be added to Bioconductor and when it is added there you can install it using the usual Bioconductor commands. In the meantime you can install tidybulk from its development site in GitHub with the commands below.
+
+```{r, eval=FALSE}
+devtools::install_github("stemangiola/tidybulk@dev")
+```
+
+
+# Overview
+ 
+* Reading in tables of counts and metadata
+* Formatting the data
+* Filtering lowly expressed genes
+* Scaling of counts
+* Quality control plots
+* Differential expression analysis
+* Visualisation (Heatmaps, MA plot, Volcano plot)
+
+
+# Introduction and data import
+Measuring gene expression on a genome-wide scale has become common practice over the last two decades or so, with microarrays predominantly used pre-2008. With the advent of next generation sequencing technology in 2008, an increasing number of scientists use this technology to measure and understand changes in gene expression in often complex systems. As sequencing costs have decreased, using RNA-Seq to simultaneously measure the expression of tens of thousands of genes for multiple samples has never been easier. The cost of these experiments has now moved from generating the data to storing and analysing it.
+
+There are many steps involved in analysing an RNA-Seq experiment. Analysing an RNAseq experiment begins with sequencing reads. These are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and getting stuck into analysis.
+
+First, let’s load all the packages we will need to analyse the data.
+
+```{r , message=FALSE, warning=FALSE}
+# load libraries
+library(tidyverse)
+library(tidybulk)
+library(tidyHeatmap)
+```
+
+## GREIN repository of RNA-Seq datasets
+In this tutorial, we will learn some R through creating plots to visualise data from an RNA-Seq experiment. RNA-Seq counts file can be obtained from the [GREIN platform](https://www.nature.com/articles/s41598-019-43935-8). GREIN stands for GEO RNA-Seq Experiments Interactive Navigator and provides >6,500 published datasets from GEO that have been uniformly processed. It is available at http://www.ilincs.org/apps/grein/. You can search for a dataset of interest using the GEO code. We obtained the dataset used here using the code GSE60450. GREIN provide QC metrics for the RNA-Seq datasets and both raw and normalised counts. We will use the raw counts here. Generally, the higher the number of counts the more the gene is expressed.
+
+## Mouse mammary gland dataset
+Here we will perform RNA-Seq analysis using data from a breast cancer research study, from the paper by [Fu et al. 2015](https://www.ncbi.nlm.nih.gov/pubmed/25730472), GEO code GSE60450. This study examined gene expression in basal and luminal cells from mice at different stages of mammary gland development (virgin, pregnant and lactating). There are 2 samples per group and 6 groups, 12 samples in total.
+
+![](images/mouse_exp.png)
+
+## Reading in the data
+
+*Set up an RStudio project specifying the directory where you have saved the `/data` directory*.
+Open a new script for this workshop File > New File > R Script. Save it as e.g. intro-rnaseq.R.
+
+
+```{r}
+# read in counts file
+counts <- read_csv("data/GSE60450_GeneLevel_Raw_data.csv")
+
+# read in metadata
+sampleinfo <- read_csv("data/GSE60450_filtered_metadata.csv")
+```
+
+Let's take a look at the data. You can type the name of the object to view the first few lines and to see how many rows and columns it has.
+
+```{r}
+counts
+```
+The `counts` object contains information about genes (one gene per row), the first column has the Ensembl gene id, the second has the gene symbol and the remaining columns contain information about the number of reads aligning to the gene in each experimental sample. Note the gene counts here are not integers as they're estimated counts from salmon (see here: https://support.bioconductor.org/p/101156/). There are two replicates for each cell type and time point (detailed sample info can be found in file "GSE60450_series_matrix.txt" from the [GEO website](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE60450)). The `sampleinfo` metadata file contains basic information about the samples that we will need for the analysis today.
+
+First we will convert the counts into long format (tidy format), similar to what we did in the Intro to R session.
+```{r}
+# convert to tidy format
+counts <- pivot_longer(counts, cols = starts_with("GSM"), names_to = "sample", values_to = "count") 
+
+# take a look
+counts
+```
+
+We will next extract just the columns we need, sample, gene_symbol, count. To do this we will use the tidyverse pipe `%>%`. This 'pipes' the output from the command on the left into the command on the right/below. Using the pipe is not essential but it reduces the amount of code we need to write when we have multiple steps (as we'll see later). It also can make the steps clearer and easier to see.  For more details on the pipe see [here](https://r4ds.had.co.nz/pipes.html).
+
+```{r}
+# using pipe
+counts <- counts %>% 
+  select(sample, gene_symbol, count, X1)
+
+# take a look 
+counts
+```
+
+Take a look at the sampleinfo file. The first column "X1" contains the sample ids, the second "characteristics" contains the specific group the sample belongs to (e.g. mammary gland, luminal cells, virgin), the third column "immunophenotype" contains just the cell type (luminal or basal) and the fourth column "developmental stage" contains just the stage (virgin, pregnant or lactating).
+
+```{r}
+sampleinfo
+```
+
+We want to compare the groups in the "characteristics" column however the names are quite long so, similar to what we did in the Intro to R session, we'll make a column containing shorter group names.
+
+
+```{r}
+# make column called condition with shorter group names
+sampleinfo <- mutate(sampleinfo, condition = case_when(                     str_detect(characteristics, "basal.*virgin") ~  "bvirg",
+        str_detect(characteristics, "basal.*preg")  ~  "bpreg",
+        str_detect(characteristics, "basal.*lact")  ~  "blact",
+        str_detect(characteristics, "luminal.*virgin")  ~  "lvirg",
+        str_detect(characteristics, "luminal.*preg")  ~  "lpreg",
+        str_detect(characteristics, "luminal.*lact")  ~  "llact"
+       ))
+
+sampleinfo
+```
+
+Now we have our counts matrix in the long format we will join it to our sampleinfo so we have information on the samples, what groups they belong to. This is similar to what we did in the Intro to R session.
+
+```{r}
+counts <- full_join(counts, sampleinfo, by = c("sample" = "X1"))
+
+# take a look
+counts
+```
+We can shorten the sample names. We can remove the GSM1480 prefix that's present in all of them as shorter names can fit better in some of the plots we will create. We can use `mutate()` together with `str_replace()` to remove the GSM1480 string from the sample column.
+
+```{r}
+counts <- counts %>% 
+  mutate(sample=str_remove(sample, "GSM1480"))
+```
+
+Now that we have our data in the format we want we will create a tidybulk object, that we can use to perform differential expression analysis with the tidybulk package. For this we need to specify our counts object and the names of the columns that contain our sample ids, our gene identifiers and our counts. Any other columns in the counts object e.g. our Ensembl gene id "X1" column will remain at the end.
+```{r}
+#create a 'tt' object
+counts <- tidybulk(counts, sample, gene_symbol, count)
+
+# take a look
+counts
+```
+Some gene symbols are not unique, they map to more than one gene id. We need to remove this redundancy and we can do that with tidybulk function `aggregate_duplicates()`. By default it will aggregate duplicate gene symbols summing their counts. 
+
+```{r}
+# get rid of duplicated gene symbols
+counts <- aggregate_duplicates(counts)
+```
+
+We can check how many counts we have for each sample by making a bar plot. This helps us see whether there are any major discrepancies between the samples more easily.
+
+```{r}
+# make barplot of counts
+ggplot(counts, aes(x=sample, weight=count, fill=condition)) + 
+  geom_bar()
+```
+
+The bar plots show us there are ~20 million counts per sample.
+
+# Filtering lowly expressed genes  
+Genes with very low counts across all libraries provide little evidence for differential expression and they interfere with some of the statistical approximations that are used later in the pipeline. They also add to the multiple testing burden when estimating false discovery rates, reducing power to detect differentially expressed genes. These genes should be filtered out prior to further analysis.
+
+tidybulk can automatically filter out lowly expressed genes. It uses the edgeR filterByExpr function described [here](https://f1000research.com/articles/5-1408). This will keep genes with ~10 counts in a minimum number of samples, the number of the samples in the smallest group. In this dataset the smallest group size is 2 samples. tidybulk performs this filtering in the functions we will use `scale_abundance()` and `test_differential_abundance()` and we can take a look at it with `keep_abundant()`.
+
+```{r}
+# Filtering out lowly abundant genes 
+counts.filt <- counts %>% 
+  keep_abundant(factor_of_interest = condition)
+
+# take a look
+counts.filt
+```
+
+We can create density plots to view the distributions of the counts for the samples. This is also a quality check to see if the samples look similar and that none look majorly different. Note we need to log the counts which we can do by using `scale_x_log10()` We need to add a small offset (1) to the counts to avoid taking log of zero.
+
+```{r}
+# density plot after filtering 
+counts.filt %>% 
+  ggplot(aes(x=count + 1, group=sample, color=condition)) +
+  geom_density() +
+  scale_x_log10()
+```
+These samples all look pretty similar, none are majorly different.
+
+We can count how many genes there are after filtering.
+```{r}
+counts.filt %>% 
+  select(gene_symbol) %>% 
+  n_distinct()
+```
+
+#### Exercise
+Adapt the code above to create a density plot of the counts before filtering lowly expressed genes. How does it compare it to the density plot above?
+Count how many genes there were before filtering.
+
+# Normalisation for sequencing depth and composition
+
+TMM normalisation is performed to eliminate composition biases between libraries [@robinson2010tmm]. This generates a set of normalisation factors, where the product of these factors and the library sizes defines the effective library size. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. In the tidybulk package the function `scale_abundance()` generates scaled counts, it will also perform the filtering.
+
+```{r}
+# Scaling counts for library size and composition bias
+counts.norm <- counts %>% scale_abundance(factor_of_interest = condition)
+
+# take a look
+counts.norm
+```
+
+After we run `scale_abundance()` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene wasn’t filtered, TRUE means it was. The `count_scaled` column contains the scaled counts.
+
+We can also create box plots to check the distributions of the counts in the samples. We can add a line through the median with to help us see how similar (or not) the distributions are.
+
+```{r}
+# box plot after scaling
+counts.norm %>% 
+  filter(lowly_abundant == FALSE) %>%
+  ggplot(aes(x=sample, y=count_scaled + 1, fill=condition)) +
+  geom_boxplot() +
+  geom_hline(aes(yintercept = median(count_scaled + 1), colour = 'red')) +
+  scale_y_log10()
+```
+These samples all look pretty similar, none are majorly different.
+
+#### Exercise
+Adapt the code above to create box plots of the counts before scaling. How do they compare to the box plots above?
+
+# Quality control
+
+## Multidimensional scaling plots
+
+By far, one of the most important plots we make when we analyse RNA-Seq data are MDS plots. An MDS plot is a visualisation of a principal components analysis, which determines the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions()` function to calculate the dimensions.
+
+
+```{r}
+# get MDS dimensions
+counts.norm.MDS <-
+  counts.norm %>%
+  reduce_dimensions(method="MDS", .dims = 2)
+
+# take a look
+counts.norm.MDS
+```
+
+Then we can select just the dimensions for the samples.
+
+```{r}
+# get the dimensions with all metadata
+MDSdims <- counts.norm.MDS %>%
+select(contains("Dim"), sample, immunophenotype, `developmental stage`, condition) %>%
+distinct()
+
+# take a look
+MDSdims
+```
+
+Next we can plot the MDS dimensions as a scatterplot. We'll colour by the conditions to see if the replicates group together.
+
+```{r}
+# MDS plot
+ggplot(MDSdims, aes(x=Dim1, y=Dim2, colour=condition)) + 
+  geom_point()
+```
+
+
+#### Exercise 
+Colour the MDS plot with different metadata variables e.g. immunophenotype. 
+Try using `shape=` inside the aes(). You can use ?geom_point to check the help page.
+Discuss what is the greatest source of variation in the data (i.e. what does dimension 1 represent)? What is the second greatest source of variation in the data?
+
+
+Demo more MDS plots (sample swap, batch effects)
+
+## Hierarchical clustering with heatmaps
+
+An alternative to MDS for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use to extract the 500 most variable genes which we can then plot with tidyHeatmap.
+
+```{r fig.height=5, fig.width=8}
+# extract 500 most variable genes
+counts.norm.variable <- counts.norm %>% 
+  keep_variable()
+
+# create heatmap
+counts.norm.variable %>%
+  heatmap(
+        .horizontal = sample,
+        .vertical = gene_symbol,
+        .abundance = count_scaled,
+        annotation = c(immunophenotype, `developmental stage`),
+        log_transform = TRUE
+    )
+```
+
+# Differential expression
+
+Now that we are happy that the data looks good, we can continue to testing for differentially expressed genes. We will use the `test_differential_abundance()` from tidybulk which uses edgeR to perform the differential expression analysis. We give `test_differential_abundance()` our tidybulk counts object and a formula, 
+specifying the column that contains our groups to be compared e.g. `0 + condition`. We can also provide the names of the groups we want to compare/contrast to .contrasts (e.g. .contrasts = c("conditionbpreg - conditionblact")). `test_differential_abundance()` will also perform the filtering of lowly expressed genes as described before. We will use `action="get"` rather than the default tidybulk of `action="add"`, as we don't want to join the result to our counts for every sample. We just want a table of differentially expressed genes for the specified contrast. 
+```{r}
+counts.de <- counts %>%
+    test_differential_abundance(
+      .formula = ~ 0 + condition,
+      .contrasts = c("conditionbpreg - conditionblact"),
+      action="get")
+
+# take a look
+counts.de
+```
+Now we have columns with our logFC and FDR P values. There is also a column called significant that indicates if the gene has FDR < 0.05.
+
+#### Exercise
+Perform differential expression for lpreg vs llact. Don't save over `counts.de`, save as `counts.de2`.
+
+Perform for 2 contrasts, bpreg vs blact and lpreg vs llact at the same time. Don't save over `counts.de`, save as `counts.de3`.
+
+### Table of differentially expressed genes
+
+We can write out our differentialy expressed genes to a file that can be loaded into e.g. Excel. `write_tsv()` will create a tab-separated file.
+
+```{r eval=FALSE}
+# save results
+write_tsv(counts.de, "de_results_bpreg_vs_blact.tsv")
+```
+
+We only have one contrast here so we can remove the suffix `_conditionbpreg - conditionblact` from the column headers, to make the names shorter to use in the rest of the commands here.
+
+```{r}
+counts.de <- counts.de %>%
+  rename_at(vars(contains("condition")),
+            ~str_replace(., "_conditionbpreg - conditionblact", ""))
+```
+
+### Counting differentially expressed genes
+
+We can count how many differentially expressed genes there are using the significant column.
+
+```{r}
+counts.de %>% 
+  filter(significant == TRUE) %>% 
+  n_distinct()
+```
+
+#### Exercise
+Count how many upregulated DE genes there are.  
+Count how many downregulated DE genes there are.
+
+### Extracting top differentially expressed genes
+
+We can get the top genes by P value with
+```{r}
+counts.de %>%
+	filter(significant == TRUE) %>%
+	arrange(PValue) %>%
+	head(6)
+```	
+
+We can extract the symbols for these top genes with
+```{r}
+topgenes <- counts.de %>%
+	filter(significant == TRUE) %>%
+	arrange(PValue) %>%
+	head(6) %>%
+  pull(gene_symbol)
+```
+	
+# Plots after testing for DE
+
+Let's make a few plots to make sure everything looks good and that we haven't made a mistake in the analysis. Genome-wide plots that are useful for checking are MA plots and volcano plots. We can also use stripcharts and heatmaps to visualise groups of genes.
+
+### MA plots
+
+MA plots enable us to visualise **amount** of expression (logCPM) versus logFC. Highly expressed genes are towards the right of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
+
+```{r}
+# maplot, minimal
+counts.de %>%
+  filter(lowly_abundant == FALSE) %>%
+  ggplot(aes(x=logCPM, y=-logFC, colour=significant)) +
+  geom_point()
+```
+### Volcano plots
+
+Volcano plots enable us to visualise **significance** of expression (logCPM) versus logFC. Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
+
+```{r}
+# volcanoplot, minimal
+counts.de %>%
+  filter(lowly_abundant == FALSE) %>%
+  ggplot(aes(x=logFC, y=-log10(PValue), colour=significant)) +
+  geom_point()
+```
+To see how to make more complicated volcano plots, including how to label genes in the plot, see the volcano plot tutorial [here](https://pmacdasci.github.io/r-intro-tidyverse/volcanoplot.html). More complicated MA plots could also be made in a similar way.
+
+### Stripcharts
+
+In addition to the genome-wide plots already discussed, it is recommended to have a look at the expression levels of the individual samples for the genes of interest, before following up on the DE genes with further lab work. We can use stripcharts and heatmaps to do this. These will help show if expression is consistent amongst replicates in the groups.
+
+With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. 
+
+
+```{r}
+# extract counts for top DE genes
+topgenes_counts <- counts.norm %>%
+  filter(gene_symbol %in% topgenes)
+
+# make stripchart
+topgenes_counts %>%
+  ggplot(aes(x = condition, y = count_scaled + 1, colour = condition)) +
+	geom_jitter() +
+	facet_wrap(~gene_symbol) +
+  scale_y_log10()
+```
+
+### Heatmaps
+
+We can create heatmaps for the most differentially expressed genes. For example we could select the genes with FDR < 0.05 and a logFC change of 4 and make a heatmap of those.
+
+We will first join the scaled counts to the de results.
+```{r}
+counts.de <- full_join(counts.de, counts.norm, by = "gene_symbol")
+```
+
+Then we can create the heatmap selecting genes by applying filters for e.g. FDR and logFC.
+
+```{r fig.height=5, fig.width=8}
+counts.de %>%
+  filter(FDR < 0.05 & abs(logFC) > 4) %>%
+  heatmap(
+        .horizontal = sample,
+        .vertical = gene_symbol,
+        .abundance = count_scaled,
+        annotation = c(immunophenotype, `developmental stage`),
+        log_transform = TRUE
+    )
+```
+
+# Reproducibility 
+Record package and version information with `sessionInfo()`
+
+```{r}
+sessionInfo()
+```
+
+# Key Points
+- RNA-Seq data can be analysed in a 'tidy' way using the packages tidyverse, tidybulk and tidyHeatmap
+- Key steps in an RNA-Seq analysis are filtering lowly expressed genes, normalisation for sequencing depth and composition, and testing for differential expression
+- MDS plots are very important for examining the quality of the data
+- Other useful plots for assessing RNA-Seq data are bar plots, density plots, box plots, MA plots, volcano plots, stripcharts and heatmaps. These can all be made in a 'tidy' way.
+
+
+# Further Reading
+[RNA-Seq analysis is easy as 1-2-3 with limma, Glimma and edgeR](https://f1000research.com/articles/5-1408)  
+[RNA-Seq analysis in R](http://combine-australia.github.io/RNAseq-R/06-rnaseq-day1.html)
+
