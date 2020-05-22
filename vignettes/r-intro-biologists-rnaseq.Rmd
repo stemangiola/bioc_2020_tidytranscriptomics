@@ -3,11 +3,15 @@ title: "Introduction to R for RNA-Seq"
 subtitle: "TidyTranscriptomics"
 author: "Maria Doyle, Stefano Mangiola"
 output:
-  html_notebook:
+  html_document:
     toc: yes
     toc_depth: 4
     toc_float: yes
 date: "`r format(Sys.time(), '%d %B %Y')`"
+vignette: >
+  %\VignetteIndexEntry{TidyTranscriptomics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding[utf8]{inputenc}
 ---
 
 ## Acknowledgements
