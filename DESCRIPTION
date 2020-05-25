@@ -14,4 +14,19 @@ LazyData: true
 VignetteBuilder:
 	knitr,
 	rmarkdown
+Imports: 
+    stats,
+    utils, 
+    tibble,
+		stringr,
+		ggplot2,
+    dplyr,
+    tidyr,
+    tidybulk,
+    tidyHeatmap,
+    edgeR,
+		ggrepel
 Suggests: knitr, rmarkdown
+Biarch: true
+biocViews: AssayDomain, Infrastructure
+RoxygenNote: 7.1.0
