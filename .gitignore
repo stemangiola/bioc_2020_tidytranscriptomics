@@ -3,3 +3,5 @@
 vignettes/data/*
 doc
 Meta
+.RData
+.Rhistory
