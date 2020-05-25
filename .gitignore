@@ -1,0 +1,5 @@
+.Rproj.user
+.Rbuildignore
+vignettes/data/*
+doc
+Meta
