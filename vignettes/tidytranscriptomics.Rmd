@@ -102,7 +102,14 @@ First, let’s load all the packages we will need to analyse the data.
 
 ```{r , message=FALSE, warning=FALSE}
 # load libraries
-library(tidyverse)
+library(utils)
+library(stats)
+library(tibble)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(stringr)
+library(ggplot2)
 library(ggrepel)
 library(tidyHeatmap)
 library(tidybulk)
