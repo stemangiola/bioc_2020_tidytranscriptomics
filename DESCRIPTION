@@ -21,11 +21,13 @@ Imports:
 		stringr,
 		ggplot2,
     dplyr,
+    readr,
     tidyr,
     tidybulk,
     tidyHeatmap,
     edgeR,
-		ggrepel
+		ggrepel,
+		airway
 Suggests: knitr, rmarkdown
 Biarch: true
 biocViews: AssayDomain, Infrastructure
