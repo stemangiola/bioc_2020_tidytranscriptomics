@@ -1,33 +1,29 @@
-Package: tidytranscriptomics
-Title: What the Package Does (One Line, Title Case)
+Package: TidyTranscriptomics
+Title: A Tidy Transcriptomics introduction to RNA-Seq analyses
 Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: What license it uses
+Author: Maria Doyle, Stefano Mangiola
+Maintainer: Maria Doyle <maria.doyle@petermac.org>
+Description: This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm, using      the tidybulk, tidyHeatmap and tidyverse packages.
+License: CC BY 4.0
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder:
-	knitr,
-	rmarkdown
+    knitr,
+    rmarkdown
 Imports: 
     stats,
     utils, 
     tibble,
-		stringr,
-		ggplot2,
+    stringr,
+    ggplot2,
     dplyr,
     readr,
     tidyr,
     tidybulk,
     tidyHeatmap,
     edgeR,
-		ggrepel,
-		airway
+    ggrepel,
+    airway
 Suggests: knitr, rmarkdown
 Biarch: true
 biocViews: AssayDomain, Infrastructure
