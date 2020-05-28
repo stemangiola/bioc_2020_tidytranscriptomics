@@ -1,4 +1,5 @@
 ---
+title: A Tidy Transcriptomics introduction to RNA-Seq analyses
 output:
   rmarkdown::html_document:
     highlight: pygments
@@ -12,7 +13,6 @@ vignette: >
   %\VignetteEncoding[utf8]{inputenc}
 ---
   
-# A Tidy Transcriptomics introduction to RNA-Seq analyses
 
 Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
 
