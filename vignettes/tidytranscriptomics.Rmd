@@ -48,6 +48,7 @@ Students will be expected to participate in the workshop in a hands-on way, foll
 * tidyHeatmap
 * edgeR
 * ggrepel
+* airway
 
 ## Time outline
 
@@ -121,7 +122,7 @@ Here we will perform RNA-Seq analysis using the data from airway package. It has
 
 ## Setting up the tables
 
-The ariway RNA-Seq data is stored as a SummarizedExperiment object. We'll extract the counts into a table and do the same for the metadata information. Tables are often the format of the data at the start of an RNA-seq analysis. 
+The airway RNA-Seq data is stored as a SummarizedExperiment object. We'll extract the counts into a table and do the same for the metadata information. Tables are often the format of the data at the start of an RNA-seq analysis. 
 
 ```{r}
 data(airway)
@@ -193,7 +194,7 @@ counts_annot_pretty <- counts_annot %>%
   mutate(sample=str_remove(sample, "SRR1039"))
 ```
 
-All above operations can be linked, so no temporary variable have to be created
+All above operations can be linked, so no temporary variable have to be created.
 
 ```{r}
 counts_annot_pretty <- counts %>%
@@ -201,7 +202,7 @@ counts_annot_pretty <- counts %>%
   ensembl_to_symbol(GeneID) %>%
   select(sample, transcript, count) %>%
   full_join(sampleinfo) %>%
-  mutate(sample=str_remove(sample, "GSM1480"))
+  mutate(sample=str_remove(sample, "SRR1039"))
 ```
 
 
@@ -221,11 +222,19 @@ counts_aggr <- aggregate_duplicates(counts_tt)
 counts_aggr <- drop_na(counts_aggr, transcript)
 ```
 
-We can check how many counts we have for each sample by making a bar plot. This helps us see whether there are any major discrepancies between the samples more easily.
+We can check how many counts we have for each sample by making a bar plot. This helps us see whether there are any major discrepancies between the samples more easily. We use weight= to sum up the counts for each sample.
 
 ```{r}
 # make barplot of counts
 ggplot(counts_aggr, aes(x=sample, weight=count, fill=dex)) + 
+  geom_bar()+
+	theme_bw()
+```
+We can also easily view by cell line (or any other variable that's a column in our dataset) simply by changing fill=.
+
+```{r}
+# make barplot of counts
+ggplot(counts_aggr, aes(x=sample, weight=count, fill=cell)) + 
   geom_bar()+
 	theme_bw()
 ```
@@ -291,7 +300,7 @@ counts_scaled %>%
   filter(lowly_abundant == FALSE) %>%
   ggplot(aes(x=sample, y=count_scaled + 1, fill=dex)) +
   geom_boxplot() +
-  geom_hline(aes(yintercept = median(count_scaled + 1), colour = 'red')) +
+  geom_hline(aes(yintercept = median(count_scaled + 1)), colour = 'red', show.legend = FALSE) +
   scale_y_log10()+
 	theme_bw()
 ```
@@ -335,14 +344,14 @@ Next we can plot the MDS dimensions as a scatterplot. We'll colour by the condit
 # MDS plot
 MDSdims %>%
 ggplot(aes(x=Dim1, y=Dim2, colour=dex)) + 
-  geom_point()+
+  geom_point() +
 	theme_bw()
 ```
 
 
 #### Exercise 
-Colour the MDS plot with different metadata variables e.g. immunophenotype. 
-Try using `shape=` inside the aes(). You can use ?geom_point to check the help page.
+Colour the MDS plot i) by sample, ii) by cell line.
+Try using `shape=` inside the aes() with the dex and/or cell variables.
 Discuss what is the greatest source of variation in the data (i.e. what does dimension 1 represent)? What is the second greatest source of variation in the data?
 
 
@@ -369,18 +378,19 @@ counts_scal_MDS %>%
 # Differential expression
 
 Now that we are happy that the data looks good, we can continue to testing for differentially expressed genes. We will use the `test_differential_abundance()` from tidybulk which uses edgeR to perform the differential expression analysis. We give `test_differential_abundance()` our tidybulk counts object and a formula, 
-specifying the column that contains our groups to be compared e.g. `0 + dex`. We can also provide the names of the groups we want to compare/contrast to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance()` will also perform the filtering of lowly expressed genes as described before. We will use `action="get"` rather than the default tidybulk of `action="add"`, as we don't want to join the result to our counts for every sample. We just want a table of differentially expressed genes for the specified contrast. 
+specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different celline so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare/contrast to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance()` will perform the filtering of lowly expressed genes as described before. The results will be joined to our counts for every sample. If we just want a table of differentially expressed genes we can use pivot_transcript.
 ```{r}
 counts_de <- counts_scal_MDS %>%
     test_differential_abundance(
       .formula = ~ 0 + dex + cell,
-      significance_threshold = 0)
+      .contrasts = c("dextrt - dexuntrt"))
 
 # take a look
 counts_de %>%
 	pivot_transcript()
 ```
 Now we have columns with our logFC and FDR P values. There is also a column called significant that indicates if the gene has FDR < 0.05.
+
 
 ### Table of differentially expressed genes
 
@@ -393,13 +403,22 @@ counts_de %>%
 	write_tsv( "de_results.tsv")
 ```
 
+We only have one contrast here so we can remove the suffix `_conditionbpreg - conditionblact` from the column headers, to make the names shorter to use in the rest of the commands here.
+
+```{r}
+counts_de_pretty <- 
+	counts_de %>%
+  rename_at(vars(contains("dex")),
+            ~str_replace(., "_dextrt - dexuntrt", ""))
+```
+
 
 ### Counting differentially expressed genes
 
 We can count how many differentially expressed genes there are using the significant column.
 
 ```{r}
-counts_de %>% 
+counts_de_pretty %>% 
   filter(significant == TRUE) %>% 
   select(transcript) %>%
   n_distinct()
@@ -413,7 +432,7 @@ Count how many downregulated DE genes there are.
 
 We can get the top genes by P value with
 ```{r}
-counts_de %>%
+counts_de_pretty %>%
 	pivot_transcript() %>%
 	filter(significant == TRUE) %>%
 	arrange(PValue) %>%
@@ -423,7 +442,7 @@ counts_de %>%
 We can extract the symbols for these top genes with
 ```{r}
 topgenes <- 
-	counts_de %>%
+	counts_de_pretty %>%
 	pivot_transcript() %>%
 	filter(significant == TRUE) %>%
 	arrange(PValue) %>%
@@ -441,7 +460,7 @@ MA plots enable us to visualise **amount** of expression (logCPM) versus logFC. 
 
 ```{r}
 # maplot, minimal
-counts_de %>%
+counts_de_pretty %>%
   filter(lowly_abundant == FALSE) %>%
   ggplot(aes(x=logCPM, y=-logFC, colour=significant)) +
   geom_point()+
@@ -451,7 +470,7 @@ counts_de %>%
 A more informative plot, integrating some of the packages in tidyverse
 
 ```{r}
-counts_de %>%
+counts_de_pretty %>%
     pivot_transcript() %>%
 
     # Subset data
@@ -465,8 +484,6 @@ counts_de %>%
     scale_color_manual(values=c("black", "#e11f28")) +
     scale_size_discrete(range = c(0, 2)) +
 		theme_bw()
-
-
 ```
 
 ### Volcano plots
@@ -475,7 +492,7 @@ Volcano plots enable us to visualise **significance** of expression (logCPM) ver
 
 ```{r}
 # volcanoplot, minimal
-counts_de %>%
+counts_de_pretty %>%
   filter(lowly_abundant == FALSE) %>%
   ggplot(aes(x=logFC, y=-log10(PValue), colour=significant)) +
   geom_point() +
@@ -491,7 +508,7 @@ With stripcharts we can see if replicates tend to group together and how the exp
 
 
 ```{r}
-counts_de %>%
+counts_de_pretty %>%
 	
 	# extract counts for top DE genes
 	filter(transcript %in% topgenes) %>%
@@ -511,7 +528,7 @@ We can create heatmaps for the most differentially expressed genes. For example 
 Then we can create the heatmap selecting genes by applying filters for e.g. FDR and logFC.
 
 ```{r fig.height=5, fig.width=8}
-counts_de %>%
+counts_de_pretty %>%
   filter(FDR < 0.05 & abs(logFC) > 4) %>%
   heatmap(
         .column = sample,
