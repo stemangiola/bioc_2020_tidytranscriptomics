@@ -1,20 +1,16 @@
 ---
 title: A Tidy Transcriptomics introduction to RNA-Seq analyses
-output:
-  rmarkdown::html_document:
-    highlight: pygments
-    toc: true
-    toc_depth: 4
-    toc_float: yes
-    fig_width: 5
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{TidyTranscriptomics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding[utf8]{inputenc}
 ---
-  
+# A Tidy Transcriptomics introduction to RNA-Seq analyses
 
-Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
+Authors:
+    Dr. Maria Doyle (maria.doyle@petermac.org),
+    Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
 
 ## Workshop Description
 
@@ -350,6 +346,7 @@ ggplot(aes(x=Dim1, y=Dim2, colour=dex)) +
 
 
 #### Exercise 
+
 Colour the MDS plot i) by sample, ii) by cell line.
 Try using `shape=` inside the aes() with the dex and/or cell variables.
 Discuss what is the greatest source of variation in the data (i.e. what does dimension 1 represent)? What is the second greatest source of variation in the data?
@@ -377,8 +374,7 @@ counts_scal_MDS %>%
 
 # Differential expression
 
-Now that we are happy that the data looks good, we can continue to testing for differentially expressed genes. We will use the `test_differential_abundance()` from tidybulk which uses edgeR to perform the differential expression analysis. We give `test_differential_abundance()` our tidybulk counts object and a formula, 
-specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different celline so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare/contrast to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance()` will perform the filtering of lowly expressed genes as described before. The results will be joined to our counts for every sample. If we just want a table of differentially expressed genes we can use pivot_transcript.
+Now that we are happy that the data looks good, we can continue to testing for differentially expressed genes. We will use the `test_differential_abundance()` from tidybulk which uses edgeR to perform the differential expression analysis. We give `test_differential_abundance()` our tidybulk counts object and a formula, specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different celline so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare/contrast to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance()` will perform the filtering of lowly expressed genes as described before. The results will be joined to our counts for every sample. If we just want a table of differentially expressed genes we can use pivot_transcript.
 ```{r}
 counts_de <- counts_scal_MDS %>%
     test_differential_abundance(
