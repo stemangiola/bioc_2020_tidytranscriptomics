@@ -7,6 +7,8 @@ Description: This workshop will present how to perform analysis of RNA sequencin
 License: CC BY 4.0
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
 VignetteBuilder:
     knitr,
     rmarkdown
@@ -30,7 +32,7 @@ Suggests:
     pkgdown
 Biarch: true
 biocViews: AssayDomain, Infrastructure
-RoxygenNote: 7.1.0
 URL: https://stemangiola.github.io/bioc_2020_tidytranscriptomics/
 BugReports: https://github.com/stemangiola/bioc_2020_tidytranscriptomics/issues/new/choose
+VignetteBuilder: knitr
 DockerImage: stemangiola/bioc_2020_tidytranscriptomics:latest

@@ -4,7 +4,7 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{TidyTranscriptomics}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 # A Tidy Transcriptomics introduction to RNA-Seq analyses
 
