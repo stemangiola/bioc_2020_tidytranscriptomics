@@ -1,11 +1,20 @@
 ---
-title: A Tidy Transcriptomics introduction to RNA-Seq analyses
+title: "A Tidy Transcriptomics introduction to RNA-Seq analyses"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{TidyTranscriptomics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
 # A Tidy Transcriptomics introduction to RNA-Seq analyses
 
 Authors:
