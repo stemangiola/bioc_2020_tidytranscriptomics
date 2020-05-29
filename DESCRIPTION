@@ -24,7 +24,13 @@ Imports:
     edgeR,
     ggrepel,
     airway
-Suggests: knitr, rmarkdown
+Suggests: 
+    knitr, 
+    rmarkdown,
+    pkgdown
 Biarch: true
 biocViews: AssayDomain, Infrastructure
 RoxygenNote: 7.1.0
+URL: https://stemangiola.github.io/bioc_2020_tidytranscriptomics/
+BugReports: https://github.com/stemangiola/bioc_2020_tidytranscriptomics/issues/new/choose
+DockerImage: stemangiola/bioc_2020_tidytranscriptomics:latest
