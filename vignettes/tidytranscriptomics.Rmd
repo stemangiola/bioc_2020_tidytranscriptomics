@@ -1,5 +1,4 @@
 ---
-title: "A Tidy Transcriptomics introduction to RNA-Seq analyses"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{TidyTranscriptomics}
@@ -18,8 +17,8 @@ knitr::opts_chunk$set(
 # A Tidy Transcriptomics introduction to RNA-Seq analyses
 
 Authors:
-    Dr. Maria Doyle (maria.doyle@petermac.org),
-    Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
+    Dr. Maria Doyle^[maria.doyle@petermac.org],
+    Dr. Stefano Mangiola^[mangiola.s@wehi.edu.au]
 
 ## Workshop Description
 
