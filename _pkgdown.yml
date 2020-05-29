@@ -1,0 +1,16 @@
+url: https://stemangiola.github.io/bioc_2020_tidytranscriptomics
+
+template:
+  params:
+    bootswatch: flatly
+    ganalytics: UA-93043521-1
+
+home:
+  title: "TidyTranscriptomics"
+  type: inverse
+
+
+navbar:
+  right:
+   - icon: fa-github
+     href: https://github.com/stemangiola/bioc_2020_tidytranscriptomics
