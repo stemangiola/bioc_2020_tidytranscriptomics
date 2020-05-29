@@ -1,4 +1,5 @@
 ---
+title: "Tidy Transcriptomics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{TidyTranscriptomics}
@@ -118,6 +119,7 @@ library(ggplot2)
 library(ggrepel)
 library(tidyHeatmap)
 library(tidybulk)
+library(plotly)
 library(airway)
 ```
 
@@ -525,22 +527,28 @@ counts_de_pretty %>%
 	theme_bw()
 ```
 
-### Heatmaps
+### Interactive Plots
 
-We can create heatmaps for the most differentially expressed genes. For example we could select the genes with FDR < 0.05 and a logFC change of 4 and make a heatmap of those.
+A really nice feature of using tidyverse and ggplot2 is that we can make interactive plots quite easily using the plotly package. This can be very useful for exploring what genes or samples are in the plots. To make interactive plots we first save our ggplot2 object, for example as "p". We can add label= into the aes() if we want other variables, such as the sample name to be visible when we hover over the plot.
 
-Then we can create the heatmap selecting genes by applying filters for e.g. FDR and logFC.
+```{r}
+p <- counts_de_pretty %>%
+	
+	# extract counts for top DE genes
+	filter(transcript %in% topgenes) %>%
+	
+	# make stripchart
+	ggplot(aes(x = dex, y = count_scaled + 1, colour = dex, label = sample)) +
+	geom_jitter() +
+	facet_wrap(~transcript) +
+	scale_y_log10()+
+	theme_bw()
+```
 
-```{r fig.height=5, fig.width=8}
-counts_de_pretty %>%
-  filter(FDR < 0.05 & abs(logFC) > 4) %>%
-  heatmap(
-        .column = sample,
-        .row = transcript,
-        .value = count_scaled,
-        annotation = c(dex, cell),
-        transform = log1p
-    )
+Then we simply give our plot, p, to the ggplotly function. We can also specify which parameters from the aes() we want to show up when we hover over the plot with tooltip=.
+
+```{r}
+ggplotly(p, tooltip = c("label", "y"))
 ```
 
 # Reproducibility 
