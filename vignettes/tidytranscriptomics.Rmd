@@ -90,7 +90,7 @@ This material is adapted from an R for RNA-Seq workshop first run [here](http://
 
 # Overview
  
-* Setting up tables of counts and metadata
+* Setting up tables of counts and sample information
 * Formatting the data
 * Filtering lowly expressed genes
 * Scaling of counts
@@ -106,10 +106,8 @@ There are many steps involved in analysing an RNA-Seq experiment. Analysing an R
 
 First, let’s load all the packages we will need to analyse the data.
 
-```{r , message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 # load libraries
-library(utils)
-library(stats)
 library(tibble)
 library(dplyr)
 library(tidyr)
@@ -128,12 +126,15 @@ Here we will perform RNA-Seq analysis using the data from airway package. It has
 
 ## Setting up the tables
 
-The airway RNA-Seq data is stored as a SummarizedExperiment object. We'll extract the counts into a table and do the same for the metadata information. Tables are often the format of the data at the start of an RNA-seq analysis. 
+The airway RNA-Seq data is stored as a RangedSummarizedExperiment object. We'll extract the counts into a table and do the same for the sample information. Tables are often the format of the data at the start of an RNA-seq analysis. We'll use the tidyverse table format, which is called a tibble.
+
+In this workshop we will be using the tidyverse pipe `%>%`. This 'pipes' the output from the command on the left into the command on the right/below. Using the pipe is not essential but it reduces the amount of code we need to write when we have multiple steps (as we'll see later). It also can make the steps clearer and easier to see.  For more details on the pipe see [here](https://r4ds.had.co.nz/pipes.html).
 
 ```{r}
+# load airay
 data(airway)
 
-# extract counts 
+# extract counts, convert the rownames into a column called GeneID 
 counts <- assay(airway) %>%
   as_tibble(rownames = "GeneID")
 ```
@@ -156,7 +157,8 @@ sampleinfo
 ```
 The dex column tells us whether the samples are treated or untreated and the cell column tells us what cell line they are from.
 
-First we will convert the counts into long format (tidy format), similar to what we did in the Intro to R session.
+First we will convert the counts into long format (tidy format).
+
 ```{r}
 # convert to tidy format
 counts_long <- 
@@ -173,7 +175,7 @@ counts_long
 ```
 
 
-We will next extract just the columns we need, sample, transcript, count. To do this we will use the tidyverse pipe `%>%`. This 'pipes' the output from the command on the left into the command on the right/below. Using the pipe is not essential but it reduces the amount of code we need to write when we have multiple steps (as we'll see later). It also can make the steps clearer and easier to see.  For more details on the pipe see [here](https://r4ds.had.co.nz/pipes.html).
+We will next extract just the columns we need, sample, transcript, count.
 
 ```{r}
 # using pipe
@@ -184,7 +186,7 @@ counts_long_sel <- counts_long %>%
 counts_long_sel
 ```
 
-Now we have our counts matrix in the long format we will join it to our sampleinfo so we have information on the samples, what groups they belong to. The join will use all columns with the same name to join. Here we have a column called "sample" in both tables so that will be used to join the two tables.
+Now we have our counts matrix in the long format, we will join it to our sampleinfo so we have information on the samples, what groups they belong to. The join will use all columns with the same name to join. Here we have a column called "sample" in both tables so that will be used to join the two tables.
 
 ```{r}
 counts_annot <- left_join(counts_long_sel, sampleinfo)
@@ -207,7 +209,7 @@ counts_annot_pretty <- counts %>%
   pivot_longer(cols = starts_with("SRR"), names_to = "sample", values_to = "count") %>%
   ensembl_to_symbol(GeneID) %>%
   select(sample, transcript, count) %>%
-  full_join(sampleinfo) %>%
+  left_join(sampleinfo) %>%
   mutate(sample=str_remove(sample, "SRR1039"))
 ```
 
@@ -220,11 +222,13 @@ counts_tt <- tidybulk(counts_annot_pretty, sample, transcript, count)
 # take a look
 counts_tt
 ```
-Some gene symbols are not unique, they map to more than one gene id. We need to remove this redundancy and we can do that with tidybulk function `aggregate_duplicates()`. By default it will aggregate duplicate gene symbols summing their counts. 
+Some gene symbols are not unique, they map to more than one gene id. We need to remove this redundancy and we can do that with tidybulk function `aggregate_duplicates()`. By default it will aggregate duplicate gene symbols summing their counts.  
 
 ```{r}
-# get rid of duplicated gene symbols and drop any NAs
+# get rid of duplicated gene symbols
 counts_aggr <- aggregate_duplicates(counts_tt) 
+
+# remove genes with NA for symbol
 counts_aggr <- drop_na(counts_aggr, transcript)
 ```
 
@@ -271,13 +275,13 @@ counts_filt %>%
   scale_x_log10()+
 	theme_bw()
 ```
+
 These samples all look pretty similar, none are majorly different.
 
 We can count how many genes there are after filtering.
 ```{r}
 counts_filt %>% 
-  select(transcript) %>% 
-  n_distinct()
+  summarise(num_genes = n_distinct(transcript))
 ```
 
 #### Exercise
@@ -310,6 +314,7 @@ counts_scaled %>%
   scale_y_log10()+
 	theme_bw()
 ```
+
 These samples all look pretty similar, none are majorly different.
 
 #### Exercise
@@ -344,7 +349,7 @@ MDSdims <-
 MDSdims
 ```
 
-Next we can plot the MDS dimensions as a scatterplot. We'll colour by the conditions to see if the replicates group together.
+Next we can plot the MDS dimensions as a scatterplot.
 
 ```{r}
 # MDS plot
@@ -359,7 +364,7 @@ ggplot(aes(x=Dim1, y=Dim2, colour=dex)) +
 
 Colour the MDS plot i) by sample, ii) by cell line.
 Try using `shape=` inside the aes() with the dex and/or cell variables.
-Discuss what is the greatest source of variation in the data (i.e. what does dimension 1 represent)? What is the second greatest source of variation in the data?
+Discuss what is the greatest source of variation in the data (i.e. what does dimension 1 represent)?
 
 
 ## Hierarchical clustering with heatmaps
@@ -370,7 +375,11 @@ An alternative to MDS for examining relationships between samples is using hiera
 counts_scal_MDS %>% 
 	
 	# extract 500 most variable genes
-	keep_variable(.sample = sample, .transcript = transcript, .abundance = count_scaled, top = 500) %>%
+	keep_variable(
+	              .sample = sample, 
+	              .transcript = transcript, 
+	              .abundance = count_scaled, 
+	              top = 500) %>%
 		
 	# create heatmap
 	heatmap(
@@ -385,7 +394,7 @@ counts_scal_MDS %>%
 # Differential expression
 
 Now that we are happy that the data looks good, we can continue to testing for differentially expressed genes. We will use the `test_differential_abundance()` from tidybulk which uses edgeR to perform the differential expression analysis. We give `test_differential_abundance()` our tidybulk counts object and a formula, specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different celline so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare/contrast to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance()` will perform the filtering of lowly expressed genes as described before. The results will be joined to our counts for every sample. If we just want a table of differentially expressed genes we can use pivot_transcript.
-```{r}
+```{r warning=FALSE}
 counts_de <- counts_scal_MDS %>%
     test_differential_abundance(
       .formula = ~ 0 + dex + cell,
@@ -409,6 +418,9 @@ counts_de %>%
 	write_tsv( "de_results.tsv")
 ```
 
+
+### Counting differentially expressed genes
+
 We only have one contrast here so we can remove the suffix `_conditionbpreg - conditionblact` from the column headers, to make the names shorter to use in the rest of the commands here.
 
 ```{r}
@@ -419,15 +431,12 @@ counts_de_pretty <-
 ```
 
 
-### Counting differentially expressed genes
-
 We can count how many differentially expressed genes there are using the significant column.
 
 ```{r}
 counts_de_pretty %>% 
   filter(significant == TRUE) %>% 
-  select(transcript) %>%
-  n_distinct()
+  summarise(num_de = n_distinct(transcript))
 ```
 
 #### Exercise
@@ -436,24 +445,22 @@ Count how many downregulated DE genes there are.
 
 ### Extracting top differentially expressed genes
 
-We can get the top genes by P value with
+We can see the top genes by smallest P value. We'll take a look at the top 6.
 ```{r}
-counts_de_pretty %>%
+topgenes <- counts_de_pretty %>%
 	pivot_transcript() %>%
-	filter(significant == TRUE) %>%
-	arrange(PValue) %>%
-	head(6)
+  arrange(PValue) %>%
+  head(6)
+
+topgenes
 ```	
 
 We can extract the symbols for these top genes with
 ```{r}
-topgenes <- 
-	counts_de_pretty %>%
-	pivot_transcript() %>%
-	filter(significant == TRUE) %>%
-	arrange(PValue) %>%
-	head(6) %>%
-  pull(transcript)
+topgenes_symbols <- topgenes %>% pull(transcript)
+
+# take a look
+topgenes_symbols
 ```
 	
 # Plots after testing for DE
@@ -467,21 +474,22 @@ MA plots enable us to visualise **amount** of expression (logCPM) versus logFC. 
 ```{r}
 # maplot, minimal
 counts_de_pretty %>%
+  pivot_transcript() %>%
   filter(lowly_abundant == FALSE) %>%
   ggplot(aes(x=logCPM, y=-logFC, colour=significant)) +
   geom_point()+
 	theme_bw()
 ```
 
-A more informative plot, integrating some of the packages in tidyverse
+A more informative plot, integrating some of the packages in tidyverse.
 
-```{r}
+```{r warning=FALSE}
 counts_de_pretty %>%
     pivot_transcript() %>%
 
     # Subset data
     mutate(significant = FDR<0.05 & abs(logFC) >=2) %>%
-    mutate(transcript = ifelse(abs(logFC) >=7, as.character(transcript), NA)) %>%
+    mutate(transcript = ifelse(abs(logFC) >=5, as.character(transcript), "")) %>%
 
     # Plot
     ggplot(aes(x = logCPM, y = logFC, label=transcript)) +
@@ -494,7 +502,7 @@ counts_de_pretty %>%
 
 ### Volcano plots
 
-Volcano plots enable us to visualise **significance** of expression (logCPM) versus logFC. Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
+Volcano plots enable us to visualise **significance** of expression (P value) versus logFC. Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
 
 ```{r}
 # volcanoplot, minimal
@@ -504,11 +512,30 @@ counts_de_pretty %>%
   geom_point() +
 	theme_bw()
 ```
-To see how to make more complicated volcano plots, including how to label genes in the plot, see the volcano plot tutorial [here](https://pmacdasci.github.io/r-intro-tidyverse/volcanoplot.html). More complicated MA plots could also be made in a similar way.
+
+A more informative plot, integrating some of the packages in tidyverse.
+
+```{r warning=FALSE}
+counts_de_pretty %>%
+    pivot_transcript() %>%
+
+    # Subset data
+    mutate(significant = FDR<0.05 & abs(logFC) >=2) %>%
+    mutate(transcript = ifelse(transcript %in% topgenes_symbols, as.character(transcript), "")) %>%
+
+    # Plot
+    ggplot(aes(x = logFC, y = -log10(PValue), label=transcript)) +
+    geom_point(aes(color = significant, size = significant, alpha=significant)) +
+    geom_text_repel() +
+    scale_color_manual(values=c("black", "#e11f28")) +
+    scale_size_discrete(range = c(0, 2)) +
+    xlim(c(-10,10)) +
+		theme_bw()
+```
 
 ### Stripcharts
 
-In addition to the genome-wide plots already discussed, it is recommended to have a look at the expression levels of the individual samples for the genes of interest, before following up on the DE genes with further lab work. We can use stripcharts and heatmaps to do this. These will help show if expression is consistent amongst replicates in the groups.
+In addition to the genome-wide plots already discussed, it is recommended to have a look at the expression levels of the individual samples for the genes of interest, before following up on the DE genes with further lab work. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups.
 
 With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. 
 
@@ -517,7 +544,7 @@ With stripcharts we can see if replicates tend to group together and how the exp
 counts_de_pretty %>%
 	
 	# extract counts for top DE genes
-	filter(transcript %in% topgenes) %>%
+	filter(transcript %in% topgenes_symbols) %>%
 	
 	# make stripchart
 	ggplot(aes(x = dex, y = count_scaled + 1, colour = dex)) +
@@ -535,7 +562,7 @@ A really nice feature of using tidyverse and ggplot2 is that we can make interac
 p <- counts_de_pretty %>%
 	
 	# extract counts for top DE genes
-	filter(transcript %in% topgenes) %>%
+	filter(transcript %in% topgenes_symbols) %>%
 	
 	# make stripchart
 	ggplot(aes(x = dex, y = count_scaled + 1, colour = dex, label = sample)) +
@@ -567,4 +594,3 @@ sessionInfo()
 
 # Further Reading
 [RNA-Seq analysis is easy as 1-2-3 with limma, Glimma and edgeR](https://f1000research.com/articles/5-1408)  
-[RNA-Seq analysis in R](http://combine-australia.github.io/RNAseq-R/06-rnaseq-day1.html)
