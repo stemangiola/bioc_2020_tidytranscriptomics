@@ -119,6 +119,7 @@ library(tidyHeatmap)
 library(tidybulk)
 library(plotly)
 library(airway)
+library(ggpubr)
 ```
 
 ## Airway RNA-seq dataset
@@ -229,7 +230,7 @@ Some gene symbols are not unique, they map to more than one gene id. We need to 
 counts_aggr <- aggregate_duplicates(counts_tt) 
 
 # remove genes with NA for symbol
-counts_aggr <- drop_na(counts_aggr, transcript)
+counts_aggr <- filter(counts_aggr, !is.na(transcript))
 ```
 
 We can check how many counts we have for each sample by making a bar plot. This helps us see whether there are any major discrepancies between the samples more easily. We use weight= to sum up the counts for each sample.
@@ -240,6 +241,7 @@ ggplot(counts_aggr, aes(x=sample, weight=count, fill=dex)) +
   geom_bar()+
 	theme_bw()
 ```
+
 We can also easily view by cell line (or any other variable that's a column in our dataset) simply by changing fill=.
 
 ```{r}
@@ -272,7 +274,7 @@ We can create density plots to view the distributions of the counts for the samp
 counts_filt %>% 
   ggplot(aes(x=count + 1, group=sample, color=dex)) +
   geom_density() +
-  scale_x_log10()+
+  scale_x_log10() +
 	theme_bw()
 ```
 
@@ -301,6 +303,19 @@ counts_scaled
 ```
 
 After we run `scale_abundance()` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene wasn’t filtered, TRUE means it was. The `count_scaled` column contains the scaled counts.
+
+We can now see the difference of abundance densities before and adfter scaling
+
+```{r}
+counts_scaled %>%
+	pivot_longer(cols = contains("count"), names_to = "source", values_to = "abundance") %>%
+  ggplot(aes(x=abundance + 1, group=sample, color=dex)) +
+	geom_density() +
+	facet_wrap(~source) +
+	scale_x_log10() +
+	theme_bw()
+	
+```
 
 We can also create box plots to check the distributions of the counts in the samples. We can add a line through the median with to help us see how similar (or not) the distributions are.
 
@@ -337,7 +352,7 @@ counts_scal_MDS <-
 counts_scal_MDS
 ```
 
-Then we can select just the dimensions for the samples.
+For plotting, we can select just the dimensions for the samples.
 
 ```{r}
 # get the dimensions with all metadata
@@ -375,11 +390,7 @@ An alternative to MDS for examining relationships between samples is using hiera
 counts_scal_MDS %>% 
 	
 	# extract 500 most variable genes
-	keep_variable(
-	              .sample = sample, 
-	              .transcript = transcript, 
-	              .abundance = count_scaled, 
-	              top = 500) %>%
+	keep_variable( .abundance = count_scaled, top = 500) %>%
 		
 	# create heatmap
 	heatmap(
@@ -387,7 +398,7 @@ counts_scal_MDS %>%
 	      .row = transcript,
 	      .value = count_scaled,
 	      annotation = c(dex, cell),
-	      transform = log1p
+	      transform = function(x) x %>% log1p %>% tidyHeatmap:::scale_robust()
 	  )
 ```
 
@@ -547,8 +558,10 @@ counts_de_pretty %>%
 	filter(transcript %in% topgenes_symbols) %>%
 	
 	# make stripchart
-	ggplot(aes(x = dex, y = count_scaled + 1, colour = dex)) +
+	ggplot(aes(x = dex, y = count_scaled + 1, fill = dex)) +
+	geom_boxplot() +
 	geom_jitter() +
+	stat_compare_means(comparisons = list(c("trt", "untrt"))) +
 	facet_wrap(~transcript) +
 	scale_y_log10()+
 	theme_bw()
@@ -565,8 +578,10 @@ p <- counts_de_pretty %>%
 	filter(transcript %in% topgenes_symbols) %>%
 	
 	# make stripchart
-	ggplot(aes(x = dex, y = count_scaled + 1, colour = dex, label = sample)) +
+	ggplot(aes(x = dex, y = count_scaled + 1, fill = dex, label = sample)) +
+	geom_boxplot() +
 	geom_jitter() +
+	stat_compare_means(comparisons = list(c("trt", "untrt"))) +
 	facet_wrap(~transcript) +
 	scale_y_log10()+
 	theme_bw()
