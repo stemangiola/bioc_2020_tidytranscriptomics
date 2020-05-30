@@ -398,7 +398,7 @@ counts_scal_MDS %>%
 	      .row = transcript,
 	      .value = count_scaled,
 	      annotation = c(dex, cell),
-	      transform = function(x) x %>% log1p %>% tidyHeatmap:::scale_robust()
+	      transform = log1p
 	  )
 ```
 
