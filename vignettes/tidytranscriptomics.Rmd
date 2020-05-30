@@ -304,7 +304,7 @@ counts_scaled
 
 After we run `scale_abundance()` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene wasn’t filtered, TRUE means it was. The `count_scaled` column contains the scaled counts.
 
-We can now see the difference of abundance densities before and adfter scaling
+We can now see the difference of abundance densities before and after scaling
 
 ```{r}
 counts_scaled %>%
