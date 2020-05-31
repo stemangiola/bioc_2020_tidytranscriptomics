@@ -245,7 +245,7 @@ The bar plots show us there are 15-30 million counts per sample.
 # Filtering lowly expressed genes  
 Genes with very low counts across all libraries provide little evidence for differential expression and they interfere with some of the statistical approximations that are used later in the pipeline. They also add to the multiple testing burden when estimating false discovery rates, reducing power to detect differentially expressed genes. These genes should be filtered out prior to further analysis.
 
-With tidybulk, it is not really needed to explicitly filter lowly transcribed genes as all calulations (e.g., scaling, removal unwanted variation, differential expression testing) are done on abundantly transcribed genes; although in case of scaling, it is apllied back on all transcripts.
+With tidybulk, it is not really necessary to explicitly filter lowly transcribed genes, as all calculations (e.g., scaling, removal of unwanted variation, differential expression testing) are performed on abundantly transcribed genes; although in case of scaling, the scaling is applied back to all genes in the dataset.
 
 However, to explicitly and/or temporarly drop them from the data set is useful for data visualisation. Tidybulk, uses the edgeR filterByExpr function described [here](https://f1000research.com/articles/5-1408). By default, this will keep genes with ~10 counts in a minimum number of samples, the number of the samples in the smallest group. In this dataset the smallest group size is 2 samples. tidybulk performs this filtering in the functions we will use `scale_abundance()` and `test_differential_abundance()` and we can explicitely apply it with `keep_abundant()`.
 
