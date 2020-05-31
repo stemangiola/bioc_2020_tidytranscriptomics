@@ -176,21 +176,10 @@ counts_long
 ```
 
 
-We will next extract just the columns we need, sample, transcript, count.
-
-```{r}
-# using pipe
-counts_long_sel <- counts_long %>% 
-  select(sample, transcript, count)
-
-# take a look 
-counts_long_sel
-```
-
 Now we have our counts matrix in the long format, we will join it to our sampleinfo so we have information on the samples, what groups they belong to. The join will use all columns with the same name to join. Here we have a column called "sample" in both tables so that will be used to join the two tables.
 
 ```{r}
-counts_annot <- left_join(counts_long_sel, sampleinfo)
+counts_annot <- left_join(counts_long, sampleinfo)
 
 # take a look
 counts_annot
