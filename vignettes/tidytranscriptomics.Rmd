@@ -119,7 +119,6 @@ library(tidyHeatmap)
 library(tidybulk)
 library(plotly)
 library(airway)
-library(ggpubr)
 ```
 
 ## Airway RNA-seq dataset
