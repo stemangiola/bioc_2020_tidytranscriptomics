@@ -250,7 +250,7 @@ With tidybulk, it is not really necessary to explicitly filter lowly transcribed
 However, to explicitly and/or temporarly drop them from the data set is useful for data visualisation. Tidybulk, uses the edgeR filterByExpr function described [here](https://f1000research.com/articles/5-1408). By default, this will keep genes with ~10 counts in a minimum number of samples, the number of the samples in the smallest group. In this dataset the smallest group size is 2 samples. tidybulk performs this filtering in the functions we will use `scale_abundance()` and `test_differential_abundance()` and we can explicitely apply it with `keep_abundant()`.
 
 ```{r}
-# Take a look to only highly abundant genes 
+# Take a look at the abundant genes
 counts_aggr %>% 
   keep_abundant(factor_of_interest = dex)
 ```
