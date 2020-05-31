@@ -307,7 +307,7 @@ counts_scaled %>%
 	
 ```
 
-We can also create box plots to check the distributions of the counts in the samples. We can add a line through the median with to help us see how similar (or not) the distributions are.
+Another way to check the distributions of the counts in the samples is with box plots. We can add a line through the median with to help us see how similar (or not) the distributions are.
 
 ```{r}
 # box plot after scaling
@@ -540,7 +540,7 @@ counts_de_pretty %>%
 
 In addition to the genome-wide plots already discussed, it is recommended to have a look at the expression levels of the individual samples for the genes of interest, before following up on the DE genes with further lab work. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups.
 
-With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. 
+With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. We'll also add a box plot to show the distribution.
 
 
 ```{r}
@@ -553,7 +553,6 @@ counts_de_pretty %>%
 	ggplot(aes(x = dex, y = count_scaled + 1, fill = dex)) +
 	geom_boxplot() +
 	geom_jitter() +
-	stat_compare_means(comparisons = list(c("trt", "untrt"))) +
 	facet_wrap(~transcript) +
 	scale_y_log10()+
 	theme_bw()
@@ -569,11 +568,10 @@ p <- counts_de_pretty %>%
 	# extract counts for top DE genes
 	filter(transcript %in% topgenes_symbols) %>%
 	
-	# make stripchart
+  # make stripchart
 	ggplot(aes(x = dex, y = count_scaled + 1, fill = dex, label = sample)) +
 	geom_boxplot() +
 	geom_jitter() +
-	stat_compare_means(comparisons = list(c("trt", "untrt"))) +
 	facet_wrap(~transcript) +
 	scale_y_log10()+
 	theme_bw()
