@@ -23,7 +23,8 @@ Imports:
     edgeR,
     ggrepel,
     plotly,
-    airway
+    airway,
+    ggpubr
 Suggests: 
     knitr, 
     rmarkdown,
