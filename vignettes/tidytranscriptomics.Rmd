@@ -1,8 +1,5 @@
 ---
-title: "A Tidy Transcriptomics introduction to RNA-Seq analyses"
-author:
-  - Maria Doyle^[Peter Mac, maria.doyle@petermac.org]
-  - Stefano Mangiola^[WEHI, mangiola.s@wehi.edu.au]
+title: "Tidy Transcriptomics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{TidyTranscriptomics}
@@ -17,6 +14,12 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+
+# A Tidy Transcriptomics introduction to RNA-Seq analyses
+
+Authors:
+    Dr. Maria Doyle^[maria.doyle@petermac.org],
+    Dr. Stefano Mangiola^[mangiola.s@wehi.edu.au]
 
 ## Workshop Description
 
@@ -45,17 +48,11 @@ Students will be expected to participate in the workshop in a hands-on way, foll
 
 ## _R_ / _Bioconductor_ packages used
 
-* readr
-* tibble
-* tidyr
-* dplyr
-* stringr
-* ggplot2
+* tidyverse
 * tidybulk
 * tidyHeatmap
 * edgeR
 * ggrepel
-* plotly
 * airway
 
 ## Time outline
@@ -111,36 +108,27 @@ First, let’s load all the packages we will need to analyse the data.
 
 ```{r message=FALSE, warning=FALSE}
 # load libraries
-
-# tidyverse core packages
 library(tibble)
 library(dplyr)
 library(tidyr)
+library(readr)
 library(stringr)
 library(ggplot2)
-library(readr)
-
-# tidyverse-friendly packages
-library(tidybulk)
-library(tidyHeatmap)
 library(ggrepel)
+library(tidyHeatmap)
+library(tidybulk)
 library(plotly)
-
-# RNA-seq analysis package
-library(edgeR)
-
-# dataset
 library(airway)
 ```
 
 ## Airway RNA-seq dataset
-Here we will perform RNA-Seq analysis using the data from the *airway* package. It has 8 samples, a sample treated with dex and an untreated control sample for 4 cell lines.
+Here we will perform RNA-Seq analysis using the data from airway package. It has 8 samples, a sample treated with dex and an untreated control sample for 4 cell lines.
 
 ## Setting up the tables
 
-The airway RNA-Seq data is stored in the airway package as a *RangedSummarizedExperiment* object. We'll extract the counts into a table and do the same for the sample information. Tables are often the format of the data at the start of an RNA-seq analysis. We'll use the tidyverse table format, which is called a tibble, which we can create using the tidyverse *tibble* package.
+The airway RNA-Seq data is stored as a RangedSummarizedExperiment object. We'll extract the counts into a table and do the same for the sample information. Tables are often the format of the data at the start of an RNA-seq analysis. We'll use the tidyverse table format, which is called a tibble.
 
-In this workshop we will be using the tidyverse pipe `%>%`. This 'pipes' the output from the command on the left into the command on the right/below. Using the pipe is not essential but it reduces the amount of code we need to write when we have multiple steps (as we'll see later). It also can make the steps clearer and easier to see.  For more details on the pipe see [here](https://r4ds.had.co.nz/pipes.html). We can use the pipe `%>%` when we load the *dplyr* tidyverse library.
+In this workshop we will be using the tidyverse pipe `%>%`. This 'pipes' the output from the command on the left into the command on the right/below. Using the pipe is not essential but it reduces the amount of code we need to write when we have multiple steps (as we'll see later). It also can make the steps clearer and easier to see.  For more details on the pipe see [here](https://r4ds.had.co.nz/pipes.html).
 
 ```{r}
 # load airay
@@ -169,7 +157,7 @@ sampleinfo
 ```
 The dex column tells us whether the samples are treated or untreated and the cell column tells us what cell line they are from.
 
-First we will convert the counts into long format (tidy format) using `pivot_longer` from the *tidyr* tidyverse package. *This format is key for working according to the tidy data paradigm and using ggplot2.*
+First we will convert the counts into long format (tidy format).
 
 ```{r}
 # convert to tidy format
@@ -179,14 +167,15 @@ counts_long <-
 # take a look
 counts_long
 ```
-We can get the gene symbols for these Ensembl gene ids with tidybulk's `ensembl_to_symbol`. This works for human and mouse.
+We can get the gene symbols for these Ensembl gene ids with tidybulk's ensembl_to_symbol. This works for human and mouse.
 
 ```{r}
 counts_long <- ensembl_to_symbol(counts_long, GeneID)
 counts_long
 ```
 
-Now we have our counts matrix in the long format, we will join it to our sampleinfo so we have information on the samples, what groups they belong to. The join will use all columns with the same name to join. Here we have a column called "sample" in both tables so that will be used to join the two tables. We use `left_join` from the *dplyr* tidyverse package.
+
+Now we have our counts matrix in the long format, we will join it to our sampleinfo so we have information on the samples, what groups they belong to. The join will use all columns with the same name to join. Here we have a column called "sample" in both tables so that will be used to join the two tables.
 
 ```{r}
 counts_annot <- left_join(counts_long, sampleinfo)
@@ -195,24 +184,26 @@ counts_annot <- left_join(counts_long, sampleinfo)
 counts_annot
 ```
 
-We can shorten the sample names. We can remove the SRR1039 prefix that's present in all of them, as shorter names can fit better in some of the plots we will create. We can use `mutate` from the tidyverse *dplyr* package together with `str_replace` from the tidyverse *stringr* package to remove the SRR1039 string from the sample column.
+We can shorten the sample names. We can remove the SRR1039 prefix that's present in all of them, as shorter names can fit better in some of the plots we will create. We can use `mutate()` together with `str_replace()` to remove the SRR1039 string from the sample column.
 
 ```{r}
 counts_annot_pretty <- counts_annot %>% 
   mutate(sample=str_remove(sample, "SRR1039"))
 ```
 
-Note that all the above operations could be linked with the `%>%`, so no temporary variables have to be created.
+All above operations can be linked, so no temporary variable have to be created.
 
 ```{r}
 counts_annot_pretty <- counts %>%
   pivot_longer(cols = starts_with("SRR"), names_to = "sample", values_to = "count") %>%
   ensembl_to_symbol(GeneID) %>%
+  select(sample, transcript, count) %>%
   left_join(sampleinfo) %>%
   mutate(sample=str_remove(sample, "SRR1039"))
 ```
 
-Now that we have our data in the format we want we will create a tidybulk object. This is what we need to perform differential expression analysis with the tidybulk package. To do this we need to specify our counts object and the names of the columns that contain our sample ids, our gene identifiers and our counts. Any other columns in the counts object e.g. our Ensembl gene id column will remain at the end.
+
+Now that we have our data in the format we want we will create a tidybulk object, that we can use to perform differential expression analysis with the tidybulk package. For this we need to specify our counts object and the names of the columns that contain our sample ids, our gene identifiers and our counts. Any other columns in the counts object e.g. our Ensembl gene id column will remain at the end.
 ```{r}
 #create a 'tt' object
 counts_tt <- tidybulk(counts_annot_pretty, sample, transcript, count)
@@ -220,7 +211,7 @@ counts_tt <- tidybulk(counts_annot_pretty, sample, transcript, count)
 # take a look
 counts_tt
 ```
-Some gene symbols are not unique, they map to more than one gene id. We need to remove this redundancy and we can do that with tidybulk function `aggregate_duplicates`. By default it will aggregate duplicate gene symbols summing their counts.  
+Some gene symbols are not unique, they map to more than one gene id. We need to remove this redundancy and we can do that with tidybulk function `aggregate_duplicates()`. By default it will aggregate duplicate gene symbols summing their counts.  
 
 ```{r}
 # get rid of duplicated gene symbols
@@ -230,7 +221,7 @@ counts_aggr <- aggregate_duplicates(counts_tt)
 counts_aggr <- filter(counts_aggr, !is.na(transcript))
 ```
 
-We can check how many counts we have for each sample by making a bar plot. This helps us see whether there are any major discrepancies between the samples more easily. We use `weight` to sum up the counts for each sample.
+We can check how many counts we have for each sample by making a bar plot. This helps us see whether there are any major discrepancies between the samples more easily. We use weight= to sum up the counts for each sample.
 
 ```{r}
 # make barplot of counts
@@ -239,7 +230,7 @@ ggplot(counts_aggr, aes(x=sample, weight=count, fill=dex)) +
 	theme_bw()
 ```
 
-We can also easily view by cell line (or any other variable that's a column in our dataset) simply by changing `fill`.
+We can also easily view by cell line (or any other variable that's a column in our dataset) simply by changing fill=.
 
 ```{r}
 # make barplot of counts
@@ -255,7 +246,7 @@ Genes with very low counts across all libraries provide little evidence for diff
 
 With tidybulk, it is not really necessary to explicitly filter lowly transcribed genes, as all calculations (e.g., scaling, removal of unwanted variation, differential expression testing) are performed on abundantly transcribed genes; although in case of scaling, the scaling is applied back to all genes in the dataset.
 
-However, to explicitly and/or temporarly drop them from the data set is useful for data visualisation. You can specify criteria to filter and tidybulk can also use the *edgeR* `filterByExpr` function described [here](https://f1000research.com/articles/5-1408). By default, this will keep genes with ~10 counts in a minimum number of samples, the number of the samples in the smallest group. In this dataset the smallest group size is 4 samples. tidybulk performs this filtering in the functions we will use `scale_abundance` and `test_differential_abundance` and we can explicitly apply it with `keep_abundant`.
+However, to explicitly and/or temporarly drop them from the data set is useful for data visualisation. Tidybulk, uses the edgeR filterByExpr function described [here](https://f1000research.com/articles/5-1408). By default, this will keep genes with ~10 counts in a minimum number of samples, the number of the samples in the smallest group. In this dataset the smallest group size is 2 samples. tidybulk performs this filtering in the functions we will use `scale_abundance()` and `test_differential_abundance()` and we can explicitely apply it with `keep_abundant()`.
 
 ```{r}
 # Take a look at the abundant genes
@@ -263,7 +254,7 @@ counts_aggr %>%
   keep_abundant(factor_of_interest = dex)
 ```
 
-We can create density plots to view the distributions of the counts for the samples. This is also a quality check to see if the samples look similar and that none look majorly different. Note we need to log the counts which we can do by using `scale_x_log10` We need to add a small offset (1) to the counts to avoid taking log of zero.
+We can create density plots to view the distributions of the counts for the samples. This is also a quality check to see if the samples look similar and that none look majorly different. Note we need to log the counts which we can do by using `scale_x_log10()` We need to add a small offset (1) to the counts to avoid taking log of zero.
 
 ```{r}
 # density plot after filtering 
@@ -288,21 +279,21 @@ counts_aggr %>%
 Adapt the code above to create a density plot of the counts before filtering lowly expressed genes. How does it compare it to the density plot above?
 Count how many genes there were before filtering.
 
-# Scaling counts to normalise
+# Normalisation for sequencing depth and composition
 
-Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples. These are differences due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, it will also perform the filtering. We can choose from different normalisation methods. Here we will use the default, TMM, [@robinson2010tmm]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. 
+TMM normalisation is performed to eliminate composition biases between libraries [@robinson2010tmm]. This generates a set of normalisation factors, where the product of these factors and the library sizes defines the effective library size. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. In the tidybulk package the function `scale_abundance()` generates scaled counts, it will also perform the filtering.
 
 ```{r}
-# Scaling counts
+# Scaling counts for library size and composition bias
 counts_scaled <- counts_aggr %>% scale_abundance(factor_of_interest = dex)
 
 # take a look
 counts_scaled
 ```
 
-After we run `scale_abundance` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene wasn’t filtered, TRUE means it was. The `count_scaled` column contains the scaled counts.
+After we run `scale_abundance()` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene wasn’t filtered, TRUE means it was. The `count_scaled` column contains the scaled counts.
 
-We can now see the difference of abundance densities before and after scaling.
+We can now see the difference of abundance densities before and after scaling
 
 ```{r}
 counts_scaled %>%
@@ -315,7 +306,7 @@ counts_scaled %>%
 	
 ```
 
-Another way to check the distributions of the counts in the samples is with box plots. Box plots can make it easier to see the distributions for individual samples than density plots, especially if there are many samples. We can add a line through the median to help us see how similar (or not) the distributions are.
+Another way to check the distributions of the counts in the samples is with box plots. We can add a line through the median with to help us see how similar (or not) the distributions are.
 
 ```{r}
 # box plot after scaling
@@ -331,13 +322,13 @@ counts_scaled %>%
 These samples all look pretty similar, none are majorly different.
 
 #### Exercise
-Adapt the code above to create box plots of the counts before and after scaling, similar to what was done for the density plots. How does the before and after compare?
+Adapt the code above to create box plots of the counts before scaling. How do they compare to the box plots above?
 
 # Quality control
 
 ## Multidimensional scaling plots
 
-By far, one of the most important plots we make when we analyse RNA-Seq data are MDS plots. An MDS plot is a visualisation of a principal components analysis, which determines the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, and if there are genuine biological differences, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the tidybulk `reduce_dimensions` function to calculate the dimensions and then create an MDS plot.
+By far, one of the most important plots we make when we analyse RNA-Seq data are MDS plots. An MDS plot is a visualisation of a principal components analysis, which determines the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions()` function to calculate the dimensions.
 
 
 ```{r}
@@ -350,7 +341,7 @@ counts_scal_MDS <-
 counts_scal_MDS
 ```
 
-This joins the result to the counts object. For plotting, we can select just the dimensions for the samples with `pivot_sample`.
+For plotting, we can select just the dimensions for the samples.
 
 ```{r}
 # get the dimensions with all metadata
@@ -367,7 +358,7 @@ Next we can plot the MDS dimensions as a scatterplot.
 ```{r}
 # MDS plot
 MDSdims %>%
-ggplot(aes(x=Dim1, y=Dim2, colour=sample)) + 
+ggplot(aes(x=Dim1, y=Dim2, colour=dex)) + 
   geom_point() +
 	theme_bw()
 ```
@@ -375,14 +366,14 @@ ggplot(aes(x=Dim1, y=Dim2, colour=sample)) +
 
 #### Exercise 
 
-Colour the MDS plot i) by treatment, ii) by cell line.
-Try using `shape` inside `aes` with the dex and/or cell variables.
+Colour the MDS plot i) by sample, ii) by cell line.
+Try using `shape=` inside the aes() with the dex and/or cell variables.
 Discuss what is the greatest source of variation in the data (i.e. what does dimension 1 represent)?
 
 
 ## Hierarchical clustering with heatmaps
 
-An alternative to MDS for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable` to extract the most variable genes which we can then plot with tidyHeatmap.
+An alternative to MDS for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use to extract the 500 most variable genes which we can then plot with tidyHeatmap.
 
 ```{r fig.height=5, fig.width=8}
 counts_scal_MDS %>% 
@@ -402,7 +393,7 @@ counts_scal_MDS %>%
 
 # Differential expression
 
-Now that we are happy that the data looks good, we can continue to testing for differentially expressed genes. We will use the `test_differential_abundance` from tidybulk which currently uses *edgeR* to perform the differential expression analysis. We give `test_differential_abundance` our tidybulk counts object and a formula, specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different cell line so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance` will perform the filtering of lowly expressed genes as described before. The results will be joined to our counts for every sample. If we just want a table of differentially expressed genes we can use `pivot_transcript`.
+Now that we are happy that the data looks good, we can continue to testing for differentially expressed genes. We will use the `test_differential_abundance()` from tidybulk which uses edgeR to perform the differential expression analysis. We give `test_differential_abundance()` our tidybulk counts object and a formula, specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different celline so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare/contrast to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance()` will perform the filtering of lowly expressed genes as described before. The results will be joined to our counts for every sample. If we just want a table of differentially expressed genes we can use pivot_transcript.
 ```{r warning=FALSE}
 counts_de <- counts_scal_MDS %>%
     test_differential_abundance(
@@ -418,7 +409,7 @@ Now we have columns with our logFC and FDR P values. There is also a column call
 
 ### Table of differentially expressed genes
 
-We can write out our differentially expressed genes to a file that can be loaded into e.g. Excel. `write_tsv`from the tidyverse *readr* package will create a tab-separated file.
+We can write out our differentialy expressed genes to a file that can be loaded into e.g. Excel. `write_tsv()` will create a tab-separated file.
 
 ```{r eval=FALSE}
 # save results
@@ -430,7 +421,7 @@ counts_de %>%
 
 ### Counting differentially expressed genes
 
-We only have one contrast here so we could remove the suffix `_dextrt - dexuntrt` from the column headers to make the names shorter to use in the rest of the commands here, using `rename_at` from the tidyverse *dplyr* package together with `str_replace` from the tidyverse *stringr* package.
+We only have one contrast here so we can remove the suffix `_conditionbpreg - conditionblact` from the column headers, to make the names shorter to use in the rest of the commands here.
 
 ```{r}
 counts_de_pretty <- 
@@ -449,7 +440,7 @@ counts_de_pretty %>%
 ```
 
 #### Exercise
-Count how many upregulated DE genes there are Hint: use `filter` and the logFC column.  
+Count how many upregulated DE genes there are.  
 Count how many downregulated DE genes there are.
 
 ### Extracting top differentially expressed genes
@@ -464,7 +455,7 @@ topgenes <- counts_de_pretty %>%
 topgenes
 ```	
 
-We can extract the symbols for these top genes to use in some of the plots we will make.
+We can extract the symbols for these top genes with
 ```{r}
 topgenes_symbols <- topgenes %>% pull(transcript)
 
@@ -474,7 +465,7 @@ topgenes_symbols
 	
 # Plots after testing for DE
 
-Let's make a few plots to make sure everything looks good and that we haven't made a mistake in the analysis. Genome-wide plots that are useful for checking are MA plots and volcano plots. We can also use stripcharts to visualise groups of genes.
+Let's make a few plots to make sure everything looks good and that we haven't made a mistake in the analysis. Genome-wide plots that are useful for checking are MA plots and volcano plots. We can also use stripcharts and heatmaps to visualise groups of genes.
 
 ### MA plots
 
@@ -546,7 +537,9 @@ counts_de_pretty %>%
 
 ### Stripcharts
 
-In addition to the genome-wide plots already discussed, it is recommended to have a look at the expression levels of the individual samples for the genes of interest, before following up on the DE genes with further lab work. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups and how the expression compares to the other groups. We'll also add a box plot to show the distribution.
+In addition to the genome-wide plots already discussed, it is recommended to have a look at the expression levels of the individual samples for the genes of interest, before following up on the DE genes with further lab work. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups.
+
+With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. We'll also add a box plot to show the distribution.
 
 
 ```{r}
@@ -583,14 +576,14 @@ p <- counts_de_pretty %>%
 	theme_bw()
 ```
 
-Then we simply give our plot, p, to the ggplotly function. We can also specify which parameters from the `aes` we want to show up when we hover over the plot with `tooltip`.
+Then we simply give our plot, p, to the ggplotly function. We can also specify which parameters from the aes() we want to show up when we hover over the plot with tooltip=.
 
 ```{r}
 ggplotly(p, tooltip = c("label", "y"))
 ```
 
 # Reproducibility 
-Record package and version information with `sessionInfo`.
+Record package and version information with `sessionInfo()`
 
 ```{r}
 sessionInfo()
