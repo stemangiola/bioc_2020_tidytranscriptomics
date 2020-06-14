@@ -395,7 +395,7 @@ counts_scal_MDS %>%
 
 Now that we are happy that the data looks good, we can continue to testing for differentially expressed genes. We will use the `test_differential_abundance()` from tidybulk which uses edgeR to perform the differential expression analysis. We give `test_differential_abundance()` our tidybulk counts object and a formula, specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different celline so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare/contrast to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance()` will perform the filtering of lowly expressed genes as described before. The results will be joined to our counts for every sample. If we just want a table of differentially expressed genes we can use pivot_transcript.
 ```{r warning=FALSE}
-counts_de <- counts_scal_MDS %>%
+counts_de <- counts_aggr %>%
     test_differential_abundance(
       .formula = ~ 0 + dex + cell,
       .contrasts = c("dextrt - dexuntrt"))
@@ -543,7 +543,7 @@ With stripcharts we can see if replicates tend to group together and how the exp
 
 
 ```{r}
-counts_de_pretty %>%
+counts_scaled %>%
 	
 	# extract counts for top DE genes
 	filter(transcript %in% topgenes_symbols) %>%
@@ -562,7 +562,7 @@ counts_de_pretty %>%
 A really nice feature of using tidyverse and ggplot2 is that we can make interactive plots quite easily using the plotly package. This can be very useful for exploring what genes or samples are in the plots. To make interactive plots we first save our ggplot2 object, for example as "p". We can add label= into the aes() if we want other variables, such as the sample name to be visible when we hover over the plot.
 
 ```{r}
-p <- counts_de_pretty %>%
+p <- counts_scaled %>%
 	
 	# extract counts for top DE genes
 	filter(transcript %in% topgenes_symbols) %>%
