@@ -332,11 +332,11 @@ counts_scal_MDS %>%
 	
 	# extract 500 most variable genes
 	keep_variable( .abundance = counts_scaled, top = 500) %>%
-		
+	
 	# create heatmap
 	heatmap(
 	      .column = sample,
-	      .row = transcript,
+	      .row = feature,
 	      .value = counts_scaled,
 	      annotation = c(dex, cell),
 	      transform = log1p 
