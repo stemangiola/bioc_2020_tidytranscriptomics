@@ -350,7 +350,7 @@ We can now plot the reduced dimensions
 ```{r}
 # MDS plot
 counts_scal_MDS %>%
-	pivot_sample()
+	pivot_sample() %>%
 	ggplot(aes(x=Dim1, y=Dim2, colour=dex)) + 
   geom_point() +
 	theme_bw()
