@@ -242,7 +242,7 @@ counts_scaled <- counts_tt %>% scale_abundance(factor_of_interest = dex)
 counts_scaled
 ```
 
-After we run `scale_abundance()` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene wasn’t filtered, TRUE means it was. The `count_scaled` column contains the scaled counts.
+After we run `scale_abundance()` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene wasn’t filtered, TRUE means it was. The `counts_scaled` column contains the scaled counts.
 
 We can now see the difference of abundance densities before and after scaling
 
@@ -331,13 +331,13 @@ An alternative to MDS for examining relationships between samples is using hiera
 counts_scal_MDS %>% 
 	
 	# extract 500 most variable genes
-	keep_variable( .abundance = count_scaled, top = 500) %>%
+	keep_variable( .abundance = counts_scaled, top = 500) %>%
 		
 	# create heatmap
 	heatmap(
 	      .column = sample,
 	      .row = transcript,
-	      .value = count_scaled,
+	      .value = counts_scaled,
 	      annotation = c(dex, cell),
 	      transform = log1p 
 	  )
@@ -501,7 +501,7 @@ counts_scaled %>%
 	filter(transcript %in% topgenes_symbols) %>%
 	
 	# make stripchart
-	ggplot(aes(x = dex, y = count_scaled + 1, fill = dex)) +
+	ggplot(aes(x = dex, y = counts_scaled + 1, fill = dex)) +
 	geom_boxplot() +
 	geom_jitter() +
 	facet_wrap(~transcript) +
@@ -520,7 +520,7 @@ p <- counts_scaled %>%
 	filter(transcript %in% topgenes_symbols) %>%
 	
   # make stripchart
-	ggplot(aes(x = dex, y = count_scaled + 1, fill = dex, label = sample)) +
+	ggplot(aes(x = dex, y = counts_scaled + 1, fill = dex, label = sample)) +
 	geom_boxplot() +
 	geom_jitter() +
 	facet_wrap(~transcript) +
