@@ -248,7 +248,8 @@ We can now see the difference of abundance densities before and after scaling
 
 ```{r}
 counts_scaled %>%
-	pivot_longer(cols = contains("count"), names_to = "source", values_to = "abundance") %>%
+	
+	pivot_longer(cols = contains("counts"), names_to = "source", values_to = "abundance") %>%
   ggplot(aes(x=abundance + 1, group=sample, color=dex)) +
 	geom_density() +
 	facet_wrap(~source) +
@@ -263,9 +264,9 @@ Another way to check the distributions of the counts in the samples is with box 
 # box plot after scaling
 counts_scaled %>% 
   filter(!lowly_abundant) %>%
-  ggplot(aes(x=sample, y=count_scaled + 1, fill=dex)) +
+  ggplot(aes(x=sample, y=counts_scaled + 1, fill=dex)) +
   geom_boxplot() +
-  geom_hline(aes(yintercept = median(count_scaled + 1)), colour = 'red', show.legend = FALSE) +
+  geom_hline(aes(yintercept = median(counts_scaled + 1)), colour = 'red', show.legend = FALSE) +
   scale_y_log10()+
 	theme_bw()
 ```
