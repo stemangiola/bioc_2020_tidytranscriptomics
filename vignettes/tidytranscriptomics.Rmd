@@ -162,7 +162,7 @@ counts_tt <- counts_tt %>%
   mutate(sample=str_remove(sample, "SRR1039"))
 ```
 
-All above operations can be linked, so no temporary variable have to be created. Now that we have our data in the format we want we will create a tidybulk object, that we can use to perform differential expression analysis with the tidybulk package.
+All above operations can be linked, so no temporary variable have to be created. From this tidybulk tibble, we can perform differential expression analysis with the tidybulk package.
 
 ```{r}
 counts_tt <- 	
