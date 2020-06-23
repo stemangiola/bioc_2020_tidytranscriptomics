@@ -126,7 +126,7 @@ Here we will perform RNA-Seq analysis using the data from airway package. It has
 
 ## Setting up the tables
 
-The airway RNA-Seq data is stored as a RangedSummarizedExperiment object. We'll extract the counts into a table and do the same for the sample information. Tables are often the format of the data at the start of an RNA-seq analysis. We'll use the tidyverse table format, which is called a tibble.
+The airway RNA-Seq data is stored as a RangedSummarizedExperiment object. We'll convert the SummarizedExperiment object into a tidybulk tibble, which is the tidyverse table format.
 
 In this workshop we will be using the tidyverse pipe `%>%`. This 'pipes' the output from the command on the left into the command on the right/below. Using the pipe is not essential but it reduces the amount of code we need to write when we have multiple steps (as we'll see later). It also can make the steps clearer and easier to see.  For more details on the pipe see [here](https://r4ds.had.co.nz/pipes.html).
 
@@ -135,97 +135,48 @@ In this workshop we will be using the tidyverse pipe `%>%`. This 'pipes' the out
 data(airway)
 
 # extract counts, convert the rownames into a column called GeneID 
-counts <- assay(airway) %>%
-  as_tibble(rownames = "GeneID")
+counts_tt <-
+	airway %>%
+  tidybulk()
 ```
 
-You can type the name of the object to view the first few lines and to see how many rows and columns it has.
+You can type the name of the object to view the first few lines and to see how many rows and columns it has. 
+
+The `counts_annot` object contains information about genes and samples, the first column has the Ensembl gene identifier, the seconf column has the sample identifier and the third column has the gene transcription abundance expressed in number of reads aligning to the gene in each experimental sample. The remaining column include sample-wise information. The dex column tells us whether the samples are treated or untreated and the cell column tells us what cell line they are from.
 
 ```{r}
-counts
+counts_tt
 ```
 
-The `counts` object contains information about genes (one gene per row), the first column has the Ensembl gene id, and the remaining columns contain information about the number of reads aligning to the gene in each experimental sample.
-
-Next we'll extract the sample information, so we know what groups (treatment and cell line) the samples belong to.
-
-```{r}
-sampleinfo <- colData(airway) %>%
-  as_tibble(rownames = "sample")
-
-sampleinfo
-```
-The dex column tells us whether the samples are treated or untreated and the cell column tells us what cell line they are from.
-
-First we will convert the counts into long format (tidy format).
-
-```{r}
-# convert to tidy format
-counts_long <- 
-	pivot_longer(counts, cols = starts_with("SRR"), names_to = "sample", values_to = "count") 
-
-# take a look
-counts_long
-```
 We can get the gene symbols for these Ensembl gene ids with tidybulk's ensembl_to_symbol. This works for human and mouse.
 
 ```{r}
-counts_long <- ensembl_to_symbol(counts_long, GeneID)
-counts_long
-```
-
-
-Now we have our counts matrix in the long format, we will join it to our sampleinfo so we have information on the samples, what groups they belong to. The join will use all columns with the same name to join. Here we have a column called "sample" in both tables so that will be used to join the two tables.
-
-```{r}
-counts_annot <- left_join(counts_long, sampleinfo)
-
-# take a look
-counts_annot
+counts_tt <- ensembl_to_symbol(counts_tt, feature)
+counts_tt
 ```
 
 We can shorten the sample names. We can remove the SRR1039 prefix that's present in all of them, as shorter names can fit better in some of the plots we will create. We can use `mutate()` together with `str_replace()` to remove the SRR1039 string from the sample column.
 
 ```{r}
-counts_annot_pretty <- counts_annot %>% 
+counts_tt <- counts_tt %>% 
   mutate(sample=str_remove(sample, "SRR1039"))
 ```
 
-All above operations can be linked, so no temporary variable have to be created.
+All above operations can be linked, so no temporary variable have to be created. From this tidybulk tibble, we can perform differential expression analysis with the tidybulk package.
 
 ```{r}
-counts_annot_pretty <- counts %>%
-  pivot_longer(cols = starts_with("SRR"), names_to = "sample", values_to = "count") %>%
-  ensembl_to_symbol(GeneID) %>%
-  select(sample, transcript, count) %>%
-  left_join(sampleinfo) %>%
+counts_tt <- 	
+	airway %>%
+  tidybulk() %>%
+  ensembl_to_symbol(feature) %>%
   mutate(sample=str_remove(sample, "SRR1039"))
-```
-
-
-Now that we have our data in the format we want we will create a tidybulk object, that we can use to perform differential expression analysis with the tidybulk package. For this we need to specify our counts object and the names of the columns that contain our sample ids, our gene identifiers and our counts. Any other columns in the counts object e.g. our Ensembl gene id column will remain at the end.
-```{r}
-#create a 'tt' object
-counts_tt <- tidybulk(counts_annot_pretty, sample, transcript, count)
-
-# take a look
-counts_tt
-```
-Some gene symbols are not unique, they map to more than one gene id. We need to remove this redundancy and we can do that with tidybulk function `aggregate_duplicates()`. By default it will aggregate duplicate gene symbols summing their counts.  
-
-```{r}
-# get rid of duplicated gene symbols
-counts_aggr <- aggregate_duplicates(counts_tt) 
-
-# remove genes with NA for symbol
-counts_aggr <- filter(counts_aggr, !is.na(transcript))
 ```
 
 We can check how many counts we have for each sample by making a bar plot. This helps us see whether there are any major discrepancies between the samples more easily. We use weight= to sum up the counts for each sample.
 
 ```{r}
 # make barplot of counts
-ggplot(counts_aggr, aes(x=sample, weight=count, fill=dex)) + 
+ggplot(counts_tt, aes(x=sample, weight=counts, fill=dex)) + 
   geom_bar()+
 	theme_bw()
 ```
@@ -234,7 +185,7 @@ We can also easily view by cell line (or any other variable that's a column in o
 
 ```{r}
 # make barplot of counts
-ggplot(counts_aggr, aes(x=sample, weight=count, fill=cell)) + 
+ggplot(counts_tt, aes(x=sample, weight=counts, fill=cell)) + 
   geom_bar()+
 	theme_bw()
 ```
@@ -250,7 +201,7 @@ However, to explicitly and/or temporarly drop them from the data set is useful f
 
 ```{r}
 # Take a look at the abundant genes
-counts_aggr %>% 
+counts_tt %>% 
   keep_abundant(factor_of_interest = dex)
 ```
 
@@ -258,9 +209,9 @@ We can create density plots to view the distributions of the counts for the samp
 
 ```{r}
 # density plot after filtering 
-counts_aggr %>% 
+counts_tt %>% 
 	keep_abundant(factor_of_interest = dex) %>%
-  ggplot(aes(x=count + 1, group=sample, color=dex)) +
+  ggplot(aes(x=counts + 1, group=sample, color=dex)) +
   geom_density() +
   scale_x_log10() +
 	theme_bw()
@@ -270,7 +221,7 @@ These samples all look pretty similar, none are majorly different.
 
 We can count how many genes there are after filtering.
 ```{r}
-counts_aggr %>% 
+counts_tt %>% 
 	keep_abundant(factor_of_interest = dex) %>%
   summarise(num_genes = n_distinct(transcript))
 ```
@@ -285,19 +236,20 @@ TMM normalisation is performed to eliminate composition biases between libraries
 
 ```{r}
 # Scaling counts for library size and composition bias
-counts_scaled <- counts_aggr %>% scale_abundance(factor_of_interest = dex)
+counts_scaled <- counts_tt %>% scale_abundance(factor_of_interest = dex)
 
 # take a look
 counts_scaled
 ```
 
-After we run `scale_abundance()` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene wasn’t filtered, TRUE means it was. The `count_scaled` column contains the scaled counts.
+After we run `scale_abundance()` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene wasn’t filtered, TRUE means it was. The `counts_scaled` column contains the scaled counts.
 
 We can now see the difference of abundance densities before and after scaling
 
 ```{r}
 counts_scaled %>%
-	pivot_longer(cols = contains("count"), names_to = "source", values_to = "abundance") %>%
+	
+	pivot_longer(cols = contains("counts"), names_to = "source", values_to = "abundance") %>%
   ggplot(aes(x=abundance + 1, group=sample, color=dex)) +
 	geom_density() +
 	facet_wrap(~source) +
@@ -312,9 +264,9 @@ Another way to check the distributions of the counts in the samples is with box 
 # box plot after scaling
 counts_scaled %>% 
   filter(!lowly_abundant) %>%
-  ggplot(aes(x=sample, y=count_scaled + 1, fill=dex)) +
+  ggplot(aes(x=sample, y=counts_scaled + 1, fill=dex)) +
   geom_boxplot() +
-  geom_hline(aes(yintercept = median(count_scaled + 1)), colour = 'red', show.legend = FALSE) +
+  geom_hline(aes(yintercept = median(counts_scaled + 1)), colour = 'red', show.legend = FALSE) +
   scale_y_log10()+
 	theme_bw()
 ```
@@ -372,13 +324,13 @@ An alternative to MDS for examining relationships between samples is using hiera
 counts_scal_MDS %>% 
 	
 	# extract 500 most variable genes
-	keep_variable( .abundance = count_scaled, top = 500) %>%
-		
+	keep_variable( .abundance = counts_scaled, top = 500) %>%
+	
 	# create heatmap
 	heatmap(
 	      .column = sample,
-	      .row = transcript,
-	      .value = count_scaled,
+	      .row = feature,
+	      .value = counts_scaled,
 	      annotation = c(dex, cell),
 	      transform = log1p 
 	  )
@@ -388,7 +340,7 @@ counts_scal_MDS %>%
 
 Now that we are happy that the data looks good, we can continue to testing for differentially expressed genes. We will use the `test_differential_abundance()` from tidybulk which uses edgeR to perform the differential expression analysis. We give `test_differential_abundance()` our tidybulk counts object and a formula, specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different celline so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare/contrast to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance()` will perform the filtering of lowly expressed genes as described before. The results will be joined to our counts for every sample. If we just want a table of differentially expressed genes we can use pivot_transcript.
 ```{r warning=FALSE}
-counts_de <- counts_aggr %>%
+counts_de <- counts_tt %>%
     test_differential_abundance(
       .formula = ~ 0 + dex + cell,
       .contrasts = c("dextrt - dexuntrt"))
@@ -542,7 +494,7 @@ counts_scaled %>%
 	filter(transcript %in% topgenes_symbols) %>%
 	
 	# make stripchart
-	ggplot(aes(x = dex, y = count_scaled + 1, fill = dex)) +
+	ggplot(aes(x = dex, y = counts_scaled + 1, fill = dex)) +
 	geom_boxplot() +
 	geom_jitter() +
 	facet_wrap(~transcript) +
@@ -561,7 +513,7 @@ p <- counts_scaled %>%
 	filter(transcript %in% topgenes_symbols) %>%
 	
   # make stripchart
-	ggplot(aes(x = dex, y = count_scaled + 1, fill = dex, label = sample)) +
+	ggplot(aes(x = dex, y = counts_scaled + 1, fill = dex, label = sample)) +
 	geom_boxplot() +
 	geom_jitter() +
 	facet_wrap(~transcript) +
