@@ -336,29 +336,22 @@ By far, one of the most important plots we make when we analyse RNA-Seq data are
 counts_scal_MDS <-
   counts_scaled %>%
   reduce_dimensions(method="MDS", .dims = 2)
-
-# take a look
-counts_scal_MDS
 ```
 
-For plotting, we can select just the dimensions for the samples.
+For visualising or plotting, we can select just the dimensions for the samples.
 
 ```{r}
-# get the dimensions with all metadata
-MDSdims <-
-	counts_scal_MDS %>%
-	pivot_sample()
-
 # take a look
-MDSdims
+counts_scal_MDS %>% pivot_sample()
 ```
 
-Next we can plot the MDS dimensions as a scatterplot.
+We can now plot the reduced dimensions
 
 ```{r}
 # MDS plot
-MDSdims %>%
-ggplot(aes(x=Dim1, y=Dim2, colour=dex)) + 
+counts_scal_MDS %>%
+	pivot_sample() %>%
+	ggplot(aes(x=Dim1, y=Dim2, colour=dex)) + 
   geom_point() +
 	theme_bw()
 ```
