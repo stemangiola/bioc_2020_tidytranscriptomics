@@ -1,5 +1,11 @@
 # A Tidy Transcriptomics introduction to RNA-Seq analyses
 
+![](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/workflows/.github/workflows/basic_checks.yaml/badge.svg)
+
+Website: https://stemangiola.github.io/bioc_2020_tidytranscriptomics
+
+Docker image: https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics
+
 Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
 
 # Workshop Description
