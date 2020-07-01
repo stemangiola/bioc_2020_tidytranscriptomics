@@ -150,28 +150,34 @@ counts_airway
 
 The `counts_tt` object contains information about genes and samples, the first column has the Ensembl gene identifier, the second column has the sample identifier and the third column has the gene transcription abundance expressed in number of reads aligning to the gene in each experimental sample. The remaining columns include sample-wise information. The dex column tells us whether the samples are treated or untreated and the cell column tells us what cell line they are from.
 
-We can get the gene symbols for these Ensembl gene ids with tidybulk's `ensembl_to_symbol`. This works for human and mouse.
-
-```{r}
-counts_annot <- ensembl_to_symbol(counts_airway, feature)
-counts_annot
-```
-
 We can shorten the sample names. We can remove the SRR1039 prefix that's present in all of them, as shorter names can fit better in some of the plots we will create. We can use `mutate()` together with `str_replace()` to remove the SRR1039 string from the sample column.
 
 ```{r}
-counts_tt <- counts_annot %>% 
+counts_format <- counts_airway %>% 
   mutate(sample=str_remove(sample, "SRR1039"))
 ```
 
-With tidyverse, all above operations can be linked with the `%>%`, as shown below, so no temporary variables need to be created, less typing is required, and the steps can be seen more clearly. 
+
+## Adding gene symbols
+
+We can get the gene symbols for these Ensembl gene ids with tidybulk's `ensembl_to_symbol`. This works for human and mouse.
+
+```{r}
+counts_tt <- ensembl_to_symbol(counts_format, feature)
+counts_tt
+```
+
+With tidyverse, all above operations can be linked with the `%>%`, as shown below. This has the benefits that
+* no temporary variables need to be created
+* less typing is required
+* the steps can be seen more clearly. 
 
 ```{r}
 counts_tt <- 	
 	airway %>%
   tidybulk() %>%
-  ensembl_to_symbol(feature) %>%
-  mutate(sample=str_remove(sample, "SRR1039"))
+  mutate(sample=str_remove(sample, "SRR1039")) %>%
+  ensembl_to_symbol(feature)
 ```
 
 From this tidybulk tibble, we can perform differential expression analysis with the tidybulk package.
@@ -199,19 +205,60 @@ We can now see the difference of abundance densities before and after scaling.
 
 ```{r}
 counts_scaled %>%
-	pivot_longer(cols = contains("counts"), names_to = "source", values_to = "abundance") %>%
+	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
   filter(!lowly_abundant) %>%
-  ggplot(aes(x=abundance + 1, group=sample, color=dex)) +
+  ggplot(aes(x=abundance + 1, group=sample, color=sample)) +
 	geom_density() +
 	facet_wrap(~source) +
 	scale_x_log10() +
 	theme_bw()
 ```
 
-
 #### Exercises
 1. To see the effect of the filtering, adapt the code above to create density plots of the genes without filtering lowly expressed. How does the with and without filtering compare?
-2. Another way to check the distributions of the counts in the samples is with box plots. Adapt the code above to create box plots of the counts before and after scaling, similar to what was done for the density plots. How does the before and after compare?
+2. Another way to check the distributions of the counts in the samples is with box plots. Adapt the code above to create box plots of the counts before and after scaling. How does the before and after compare?
+
+
+As tidybulk smoothly integrates with ggplot2 and other tidyverse packages it can save on typing and make. Compare the code for creating density plots with tidybulk versus standard base R below (standard code adapted from the paper (here)[https://f1000research.com/articles/5-1408]).
+
+```{r}
+# tidybulk
+airway %>%
+  tidybulk() %>%
+  scale_abundance() %>%
+	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
+  filter(!lowly_abundant) %>%
+  ggplot(aes(x=abundance + 1, group=sample, color=sample)) +
+	geom_density() +
+	facet_wrap(~source) +
+	scale_x_log10() +
+	theme_bw()
+
+# standard method using edgeR
+dgList <- SE2DGEList(airway)
+keep.exprs <- filterByExpr(dgList, group=dgList$samples$dex)
+dgList <- dgList[keep.exprs,, keep.lib.sizes=FALSE]
+nsamples <- ncol(dgList)
+col <- RColorBrewer::brewer.pal(nsamples, "Paired")
+par(mfrow=c(1,2))
+logcounts <- log2(dgList$counts)
+plot(density(logcounts[,1]), col=col[1], lwd=2, ylim=c(0,0.26), las=2, main="", xlab="")
+title(main="Counts")
+for (i in 2:nsamples){
+  den <- density(logcounts[,i])
+  lines(den$x, den$y, col=col[i], lwd=2)
+}
+legend("topright", legend=dgList$samples$Run, text.col=col, bty="n")
+dgList_norm <- calcNormFactors(dgList)
+lcpm_n <- cpm(dgList_norm, log=TRUE)
+plot(density(lcpm_n[,1]), col=col[1], lwd=2, ylim=c(0,0.26), las=2, main="", xlab="")
+title("Counts scaled")
+for (i in 2:nsamples){
+  den <- density(lcpm_n[,i])
+  lines(den$x, den$y, col=col[i], lwd=2)
+}
+legend("topright", legend=dgList_norm$samples$Run, text.col=col, bty="n")
+```
 
 
 # Quality control
@@ -241,7 +288,7 @@ We can now plot the reduced dimensions
 # MDS plot
 counts_scal_MDS %>%
 	pivot_sample() %>%
-	ggplot(aes(x=Dim1, y=Dim2, colour=sample)) + 
+	ggplot(aes(x=Dim1, y=Dim2, colour=dex)) + 
   geom_point() +
 	theme_bw()
 ```
@@ -249,7 +296,7 @@ counts_scal_MDS %>%
 
 #### Exercises 
 
-1. Colour the MDS plot i) by treatment, ii) by cell line. Try using `shape` inside `aes` with the dex and/or cell variables.
+1. Colour the MDS plot by cell line. Try using `shape` inside `aes` with the dex or cell variables.
 2. Discuss what is the greatest source of variation in the data (i.e. what does dimension 1 represent)?
 
 
@@ -311,13 +358,13 @@ qlf <- glmQLFTest(fit,coef=2)
 
 ### Table of differentially expressed genes
 
-We can write out our differentialy expressed genes to a file that can be loaded into e.g. Excel. `write_tsv` will create a tab-separated file.
+We can write out our differentially expressed genes to a file that can be loaded into e.g. Excel. `write_tsv` will create a tab-separated file.
 
 ```{r eval=FALSE}
 # save results
 counts_de %>% 
 	pivot_transcript() %>%
-	write_tsv( "de_results.tsv")
+	write_tsv("de_results.tsv")
 ```
 
 
