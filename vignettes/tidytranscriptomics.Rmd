@@ -56,7 +56,7 @@ Students will be expected to participate in the workshop in a hands-on way, foll
 
 | Activity                                     | Time |
 |----------------------------------------------|------|
-| Data exploration                             | 15m  |
+| Data preprocessing                           | 15m  |
 | Data dimensionality reduction and clustering | 15m  |
 | Differential gene expression                 | 10m  |
 | Data visualisation                           | 20m  |
@@ -179,40 +179,7 @@ From this tidybulk tibble, we can perform differential expression analysis with 
 # Filtering lowly expressed genes  
 Genes with very low counts across all libraries provide little evidence for differential expression and they interfere with some of the statistical approximations that are used later in the pipeline. They also add to the multiple testing burden when estimating false discovery rates, reducing power to detect differentially expressed genes. These genes should be filtered out prior to further analysis.
 
-With tidybulk, it is not really necessary to explicitly filter lowly transcribed genes, as all calculations (e.g., scaling, removal of unwanted variation, differential expression testing) are performed on abundantly transcribed genes; although in case of scaling, the scaling is applied back to all genes in the dataset.
-
-However, to explicitly and/or temporarily drop them from the data set is useful for data visualisation. Tidybulk, uses the *edgeR* `filterByExpr` function described [here](https://f1000research.com/articles/5-1408). By default, this will keep genes with ~10 counts in a minimum number of samples, the number of the samples in the smallest group. In this dataset the smallest group size is 2 samples. tidybulk performs this filtering in the functions we will use `scale_abundance` and `test_differential_abundance` and we can explicitly apply it with `keep_abundant`.
-
-```{r}
-# Take a look at the abundant genes
-counts_tt %>% 
-  keep_abundant(factor_of_interest = dex)
-```
-
-We can create density plots to view the distributions of the counts for the samples. This is also a quality check to see if the samples look similar and that none look majorly different. Note we need to log the counts which we can do by using `scale_x_log10` We need to add a small offset (1) to the counts to avoid taking log of zero.
-
-```{r}
-# density plot after filtering 
-counts_tt %>% 
-	keep_abundant(factor_of_interest = dex) %>%
-  ggplot(aes(x=counts + 1, group=sample, color=dex)) +
-  geom_density() +
-  scale_x_log10() +
-	theme_bw()
-```
-
-These samples all look pretty similar, none are majorly different.
-
-We can count how many genes there are after filtering.
-```{r}
-counts_tt %>% 
-	keep_abundant(factor_of_interest = dex) %>%
-  summarise(num_genes = n_distinct(transcript))
-```
-
-#### Exercise
-Adapt the code above to create a density plot of the counts before filtering lowly expressed genes. How does it compare it to the density plot above?
-Count how many genes there were before filtering.
+With tidybulk, it is not really necessary to explicitly filter lowly transcribed genes, as all calculations (e.g., scaling, removal of unwanted variation, differential expression testing) are performed on abundantly transcribed genes; although in case of scaling, the scaling is applied back to all genes in the dataset. Tidybulk can use the *edgeR* `filterByExpr` function described [here](https://f1000research.com/articles/5-1408). By default, this will keep genes with ~10 counts in a minimum number of samples, the number of the samples in the smallest group. In this dataset the smallest group size is 2 samples. tidybulk performs this filtering in the functions we will use `scale_abundance` and `test_differential_abundance`.
 
 # Scaling counts to normalise
 
@@ -232,33 +199,20 @@ We can now see the difference of abundance densities before and after scaling.
 
 ```{r}
 counts_scaled %>%
-	
 	pivot_longer(cols = contains("counts"), names_to = "source", values_to = "abundance") %>%
+  filter(!lowly_abundant) %>%
   ggplot(aes(x=abundance + 1, group=sample, color=dex)) +
 	geom_density() +
 	facet_wrap(~source) +
 	scale_x_log10() +
 	theme_bw()
-	
 ```
 
-Another way to check the distributions of the counts in the samples is with box plots. We can add a line through the median with to help us see how similar (or not) the distributions are.
 
-```{r}
-# box plot after scaling
-counts_scaled %>% 
-  filter(!lowly_abundant) %>%
-  ggplot(aes(x=sample, y=counts_scaled + 1, fill=dex)) +
-  geom_boxplot() +
-  geom_hline(aes(yintercept = median(counts_scaled + 1)), colour = 'red', show.legend = FALSE) +
-  scale_y_log10()+
-	theme_bw()
-```
+#### Exercises
+1. To see the effect of the filtering, adapt the code above to create density plots of the genes without filtering lowly expressed. How does the with and without filtering compare?
+2. Another way to check the distributions of the counts in the samples is with box plots. Adapt the code above to create box plots of the counts before and after scaling, similar to what was done for the density plots. How does the before and after compare?
 
-These samples all look pretty similar, none are majorly different.
-
-#### Exercise
-Adapt the code above to create box plots of the counts before and after scaling, similar to what was done for the density plots. How does the before and after compare?
 
 # Quality control
 
@@ -293,11 +247,10 @@ counts_scal_MDS %>%
 ```
 
 
-#### Exercise 
+#### Exercises 
 
-Colour the MDS plot i) by treatment, ii) by cell line.
-Try using `shape` inside `aes` with the dex and/or cell variables.
-Discuss what is the greatest source of variation in the data (i.e. what does dimension 1 represent)?
+1. Colour the MDS plot i) by treatment, ii) by cell line. Try using `shape` inside `aes` with the dex and/or cell variables.
+2. Discuss what is the greatest source of variation in the data (i.e. what does dimension 1 represent)?
 
 
 ## Hierarchical clustering with heatmaps
@@ -305,7 +258,7 @@ Discuss what is the greatest source of variation in the data (i.e. what does dim
 An alternative to MDS for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable` to extract the most variable genes which we can then plot with tidyHeatmap.
 
 ```{r fig.height=5, fig.width=8}
-counts_scal_MDS %>% 
+counts_scaled %>% 
 	
 	# extract 500 most variable genes
 	keep_variable( .abundance = counts_scaled, top = 500) %>%
