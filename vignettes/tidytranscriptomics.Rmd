@@ -176,34 +176,12 @@ counts_tt <-
 
 From this tidybulk tibble, we can perform differential expression analysis with the tidybulk package.
 
-With tidybulk, all outputs are compatible with tidyverse so we can seamlessly create ggplot2 plots. Examples will be shown throughout this tutorial. 
-
-We can check how many counts we have for each sample by making a bar plot. This helps us see whether there are any major discrepancies between the samples more easily. We use `weight` to sum up the counts for each sample.
-
-```{r}
-# make barplot of counts
-ggplot(counts_tt, aes(x=sample, weight=counts, fill=dex)) + 
-  geom_bar()+
-	theme_bw()
-```
-
-As we are using ggplot2, we can also easily view by any other variable that's a column in our dataset, such as cell line, simply by changing `fill`.
-
-```{r}
-# make barplot of counts
-ggplot(counts_tt, aes(x=sample, weight=counts, fill=cell)) + 
-  geom_bar()+
-	theme_bw()
-```
-
-The bar plots show us there are 15-30 million counts per sample.
-
 # Filtering lowly expressed genes  
 Genes with very low counts across all libraries provide little evidence for differential expression and they interfere with some of the statistical approximations that are used later in the pipeline. They also add to the multiple testing burden when estimating false discovery rates, reducing power to detect differentially expressed genes. These genes should be filtered out prior to further analysis.
 
 With tidybulk, it is not really necessary to explicitly filter lowly transcribed genes, as all calculations (e.g., scaling, removal of unwanted variation, differential expression testing) are performed on abundantly transcribed genes; although in case of scaling, the scaling is applied back to all genes in the dataset.
 
-However, to explicitly and/or temporarly drop them from the data set is useful for data visualisation. Tidybulk, uses the *edgeR* `filterByExpr` function described [here](https://f1000research.com/articles/5-1408). By default, this will keep genes with ~10 counts in a minimum number of samples, the number of the samples in the smallest group. In this dataset the smallest group size is 2 samples. tidybulk performs this filtering in the functions we will use `scale_abundance` and `test_differential_abundance` and we can explicitely apply it with `keep_abundant`.
+However, to explicitly and/or temporarily drop them from the data set is useful for data visualisation. Tidybulk, uses the *edgeR* `filterByExpr` function described [here](https://f1000research.com/articles/5-1408). By default, this will keep genes with ~10 counts in a minimum number of samples, the number of the samples in the smallest group. In this dataset the smallest group size is 2 samples. tidybulk performs this filtering in the functions we will use `scale_abundance` and `test_differential_abundance` and we can explicitly apply it with `keep_abundant`.
 
 ```{r}
 # Take a look at the abundant genes
