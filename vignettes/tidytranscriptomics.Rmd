@@ -81,9 +81,9 @@ The tidytranscriptomics approach to RNA sequencing data analysis abstracts out t
 ## Acknowledgements
 This material is adapted from an R for RNA-Seq workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
 
-
-`r knitr::include_graphics(system.file(package='tidytranscriptomics',  'vignettes', 'tidybulk_logo.png'))`
-
+```{r, out.width = "200px"}
+knitr::include_graphics(system.file(package='tidytranscriptomics',  'vignettes', 'tidybulk_logo.png'))
+```
 
 # Overview
 
@@ -168,6 +168,7 @@ counts_tt
 ```
 
 With tidyverse, all above operations can be linked with the `%>%`, as shown below. This has the benefits that
+
 * no temporary variables need to be created
 * less typing is required
 * the steps can be seen more clearly. 
@@ -189,7 +190,7 @@ With tidybulk, it is not really necessary to explicitly filter lowly transcribed
 
 # Scaling counts to normalise
 
-Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples. These are differences due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, it will also perform the filtering. We can choose from different normalisation methods. Here we will use the default, TMM, [@robinson2010tmm]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample.
+Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, with scaling factors calculated on abundant (filtered) transcript and applied to all transcripts. We can choose from different normalisation methods. Here we will use the default, TMM, [@robinson2010tmm]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample.
 
 ```{r}
 # Scaling counts
@@ -199,11 +200,11 @@ counts_scaled <- counts_tt %>% scale_abundance(factor_of_interest = dex)
 counts_scaled
 ```
 
-After we run `scale_abundance` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene wasn’t filtered, TRUE means it was. The `counts_scaled` column contains the scaled counts.
+After we run `scale_abundance` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene was not filtered, TRUE means it was. The `counts_scaled` column contains the scaled counts.
 
 We can now see the difference of abundance densities before and after scaling.
 
-```{r}
+```{r }
 counts_scaled %>%
 	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
   filter(!lowly_abundant) %>%
@@ -219,7 +220,9 @@ counts_scaled %>%
 2. Another way to check the distributions of the counts in the samples is with box plots. Adapt the code above to create box plots of the counts before and after scaling. How does the before and after compare?
 
 
-As tidybulk smoothly integrates with ggplot2 and other tidyverse packages it can save on typing and make. Compare the code for creating density plots with tidybulk versus standard base R below (standard code adapted from the paper (here)[https://f1000research.com/articles/5-1408]).
+As tidybulk smoothly integrates with ggplot2 and other tidyverse packages it can save on typing and make. Compare the code for creating density plots with tidybulk versus standard base R below (standard code adapted from the paper [here](https://f1000research.com/articles/5-1408)).
+
+**tidybulk**
 
 ```{r eval=FALSE}
 # tidybulk
@@ -233,8 +236,12 @@ airway %>%
 	facet_wrap(~source) +
 	scale_x_log10() +
 	theme_bw()
+```
 
-# standard method using edgeR
+
+**base R using edgeR**
+
+```{r eval=FALSE}
 dgList <- SE2DGEList(airway)
 keep.exprs <- filterByExpr(dgList, group=dgList$samples$dex)
 dgList <- dgList[keep.exprs,, keep.lib.sizes=FALSE]
@@ -261,7 +268,7 @@ legend("topright", legend=dgList_norm$samples$Run, text.col=col, bty="n")
 ```
 
 
-# Quality control
+# Exploratory analyses
 
 ## Multidimensional scaling plots
 
@@ -338,13 +345,15 @@ Now we have columns with our logFC and FDR P values. There is also a column call
 
 Tidybulk enables a simplified way of performing an RNA-seq differential expression testing (with the benefit of smoothly integrating with ggplot2 and other tidyverse packages). Compare the code for a tidybulk edgeR analysis versus standard edgeR below.
 
+**tidybulk using edgeR**
 ```{r eval=FALSE}
-# tidybulk with edgeR
 counts_m %>%
   tidybulk() %>%
   test_differential_abundance(.formula = ~ 0 + dex + cell, .contrasts = c("dextrt - dexuntrt"))
+```
 
-# standard edgeR
+**standard edgeR**
+```{r eval=FALSE}
 dgList <- DGEList(counts=counts_m, group=dex)
 keep <- filterByExpr(dgList)
 dgList <- dgList[keep,,keep.lib.sizes=FALSE]
@@ -492,50 +501,31 @@ With stripcharts we can see if replicates tend to group together and how the exp
 
 
 ```{r}
-counts_scaled %>%
+strip_chart = 
+	counts_scaled %>%
 	
 	# extract counts for top DE genes
 	filter(transcript %in% topgenes_symbols) %>%
 	
 	# make stripchart
-	ggplot(aes(x = dex, y = counts_scaled + 1, fill = dex)) +
-	geom_boxplot() +
-	geom_jitter() +
-	facet_wrap(~transcript) +
-	scale_y_log10()+
-	theme_bw()
-```
-
-### Interactive Plots
-
-A really nice feature of using tidyverse and ggplot2 is that we can make interactive plots quite easily using the plotly package. This can be very useful for exploring what genes or samples are in the plots. To make interactive plots we first save our ggplot2 object, for example as "p". We can add label= into the `aes` if we want other variables, such as the sample name to be visible when we hover over the plot.
-
-```{r}
-p <- counts_scaled %>%
-	
-	# extract counts for top DE genes
-	filter(transcript %in% topgenes_symbols) %>%
-	
-  # make stripchart
 	ggplot(aes(x = dex, y = counts_scaled + 1, fill = dex, label = sample)) +
 	geom_boxplot() +
 	geom_jitter() +
 	facet_wrap(~transcript) +
 	scale_y_log10()+
 	theme_bw()
+
+strip_chart
 ```
 
-Then we simply give our plot, p, to the ggplotly function. We can also specify which parameters from the aes() we want to show up when we hover over the plot with `tooltip`.
+### Interactive Plots
 
-```{r}
-ggplotly(p, tooltip = c("label", "y"))
-```
+A really nice feature of using tidyverse and ggplot2 is that we can make interactive plots quite easily using the plotly package. This can be very useful for exploring what genes or samples are in the plots. We can make interactive plots directly from our ggplot2 object (strip_cart). Having label= into the `aes` is useful to visualise the identified of the data point or other variables to be visible when we hover over the plot.
 
-# Reproducibility 
-Record package and version information with `sessionInfo`
+We can also specify which parameters from the aes() we want to show up when we hover over the plot with `tooltip`.
 
-```{r}
-sessionInfo()
+```{r, echo=FALSE}
+strip_chart %>% ggplotly(tooltip = c("label", "y"))
 ```
 
 # Key Points
@@ -547,3 +537,10 @@ sessionInfo()
 
 # Further Reading
 [RNA-Seq analysis is easy as 1-2-3 with limma, Glimma and edgeR](https://f1000research.com/articles/5-1408)  
+
+# Reproducibility 
+Record package and version information with `sessionInfo`
+
+```{r}
+sessionInfo()
+```
