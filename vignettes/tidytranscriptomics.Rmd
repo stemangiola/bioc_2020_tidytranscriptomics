@@ -221,7 +221,7 @@ counts_scaled %>%
 
 As tidybulk smoothly integrates with ggplot2 and other tidyverse packages it can save on typing and make. Compare the code for creating density plots with tidybulk versus standard base R below (standard code adapted from the paper (here)[https://f1000research.com/articles/5-1408]).
 
-```{r}
+```{r eval=FALSE}
 # tidybulk
 airway %>%
   tidybulk() %>%
@@ -338,7 +338,7 @@ Now we have columns with our logFC and FDR P values. There is also a column call
 
 Tidybulk enables a simplified way of performing an RNA-seq differential expression testing (with the benefit of smoothly integrating with ggplot2 and other tidyverse packages). Compare the code for a tidybulk edgeR analysis versus standard edgeR below.
 
-```{r}
+```{r eval=FALSE}
 # tidybulk with edgeR
 counts_m %>%
   tidybulk() %>%
