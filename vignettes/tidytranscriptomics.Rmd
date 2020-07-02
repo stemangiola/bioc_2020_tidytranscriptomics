@@ -524,7 +524,7 @@ A really nice feature of using tidyverse and ggplot2 is that we can make interac
 
 We can also specify which parameters from the `aes` we want to show up when we hover over the plot with `tooltip`.
 
-```{r, echo=FALSE}
+```{r, warning=FALSE}
 strip_chart %>% ggplotly(tooltip = c("label", "y"))
 ```
 
