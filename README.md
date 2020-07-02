@@ -8,7 +8,7 @@ Docker image: https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tid
 
 Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
 
-# Workshop Description
+## Workshop Description
 
 This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions. 
 
@@ -27,11 +27,11 @@ The topics presented in this workshop will be
 * Familiarity with tidyverse syntax
 
 Recommended Background Reading 
-[Introduction to R for Biologists](https://mblue9.github.io/r-intro-biologists/intro_r_biologists.html)
+[Introduction to R for Biologists](https://melbournebioinformatics.github.io/r-intro-biologists/intro_r_biologists.html)
 
 ## Workshop Participation
 
-Students will be expected to participate in the workshop in a hands-on way, following along with the code provided and performing  exercises.
+Students will be expected to participate in the workshop in a hands-on way, following along with the code provided and performing exercises.
 
 ## _R_ / _Bioconductor_ packages used
 
@@ -39,16 +39,17 @@ Students will be expected to participate in the workshop in a hands-on way, foll
 * tidybulk
 * tidyHeatmap
 * edgeR
-* devtools
+* ggrepel
+* airway
 
 ## Time outline
 
 | Activity                                     | Time |
 |----------------------------------------------|------|
-| Data exploration                             | 30m  |
-| Data dimensionality reduction and clustering | 30m  |
-| Differential gene expression                 | 30m  |
-| Data visualisation                           | 30m  |
+| Data preprocessing                           | 15m  |
+| Data dimensionality reduction and clustering | 15m  |
+| Differential gene expression                 | 10m  |
+| Data visualisation                           | 20m  |
 
 # Workshop goals and objectives
 
