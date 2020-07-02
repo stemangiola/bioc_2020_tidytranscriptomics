@@ -1,8 +1,8 @@
 ---
 title: "A Tidy Transcriptomics introduction to RNA-Seq analyses"
 author:
-  - Maria Doyle^[Peter Mac, maria.doyle@petermac.org]
-  - Stefano Mangiola^[WEHI, mangiola.s@wehi.edu.au]
+  - Maria Doyle, Peter MacCallum Cancer Centre^[maria.doyle@petermac.org]
+  - Stefano Mangiola, Walter and Eliza Hall Institute^[mangiola.s@wehi.edu.au]
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{TidyTranscriptomics}
@@ -90,7 +90,7 @@ knitr::include_graphics(system.file(package='tidytranscriptomics',  'vignettes',
 * Setting up the data 
 * Filtering lowly expressed genes
 * Scaling of counts
-* Quality control plots
+* Exploratory analyses
 * Differential expression analysis
 * Visualisation (MA plot, Volcano plot)
 
@@ -520,11 +520,11 @@ strip_chart
 
 ### Interactive Plots
 
-A really nice feature of using tidyverse and ggplot2 is that we can make interactive plots quite easily using the plotly package. This can be very useful for exploring what genes or samples are in the plots. We can make interactive plots directly from our ggplot2 object (strip_cart). Having label= into the `aes` is useful to visualise the identified of the data point or other variables to be visible when we hover over the plot.
+A really nice feature of using tidyverse and ggplot2 is that we can make interactive plots quite easily using the plotly package. This can be very useful for exploring what genes or samples are in the plots. We can make interactive plots directly from our ggplot2 object (strip_chart). Having `label` into the `aes` is useful to visualise the identified of the data point or other variables to be visible when we hover over the plot.
 
-We can also specify which parameters from the aes() we want to show up when we hover over the plot with `tooltip`.
+We can also specify which parameters from the `aes` we want to show up when we hover over the plot with `tooltip`.
 
-```{r, echo=FALSE}
+```{r, warning=FALSE}
 strip_chart %>% ggplotly(tooltip = c("label", "y"))
 ```
 
@@ -532,7 +532,7 @@ strip_chart %>% ggplotly(tooltip = c("label", "y"))
 - RNA-Seq data can be analysed in a 'tidy' way using the packages tidyverse, tidybulk and tidyHeatmap
 - Key steps in an RNA-Seq analysis are filtering lowly expressed genes, normalisation for sequencing depth and composition, and testing for differential expression
 - MDS plots are very important for examining the quality of the data
-- Other useful plots for assessing RNA-Seq data are bar plots, density plots, box plots, MA plots, volcano plots, stripcharts and heatmaps. These can all be made in a 'tidy' way.
+- Other useful plots for assessing RNA-Seq data are density plots, box plots, MA plots, volcano plots, stripcharts and heatmaps. These can all be made in a 'tidy' way.
 
 
 # Further Reading
