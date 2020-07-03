@@ -1,6 +1,10 @@
 # A Tidy Transcriptomics introduction to RNA-Seq analyses
 
-![](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/workflows/.github/workflows/basic_checks.yaml/badge.svg)
+![](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/workflows/.github/workflows/basic_checks.yaml/badge.svg) 
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3929366.svg)](https://doi.org/10.5281/zenodo.3929366)
+
+
 
 Website: https://stemangiola.github.io/bioc_2020_tidytranscriptomics
 
