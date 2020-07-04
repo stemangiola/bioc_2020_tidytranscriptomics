@@ -29,7 +29,7 @@ Suggests:
     rmarkdown,
     pkgdown
 Biarch: true
-biocViews: AssayDomain, Infrastructure
+biocViews: Clustering, DifferentialExpression, GeneExpression, Normalization, QualityControl, RNASeq, Sequencing, Transcription, Transcriptomics
 URL: https://stemangiola.github.io/bioc_2020_tidytranscriptomics/
 BugReports: https://github.com/stemangiola/bioc_2020_tidytranscriptomics/issues/new/choose
 VignetteBuilder: knitr
