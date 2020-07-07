@@ -82,7 +82,7 @@ The tidytranscriptomics approach to RNA sequencing data analysis abstracts out t
 This material is adapted from an R for RNA-Seq workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
 
 ```{r, out.width = "200px"}
-knitr::include_graphics(system.file(package='tidytranscriptomics',  'vignettes', 'tidybulk_logo.png'))
+knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
 ```
 
 # Overview
