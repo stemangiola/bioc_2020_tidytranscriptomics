@@ -270,46 +270,47 @@ legend("topright", legend=dgList_norm$samples$Run, text.col=col, bty="n")
 
 # Exploratory analyses
 
-## Multidimensional scaling plots
+## PCA plot
 
-By far, one of the most important plots we make when we analyse RNA-Seq data are MDS plots. An MDS plot is a visualisation of a principal components analysis, which determines the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions` function to calculate the dimensions.
+By far, one of the most important plots we make when we analyse RNA-Seq data are PCA or MDS plots. A PCA plot is a visualisation which determines the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions` function to calculate the dimensions.
 
 
 ```{r}
-# get MDS dimensions
-counts_scal_MDS <-
+# get PCA dimensions
+counts_scal_PCA <-
   counts_scaled %>%
-  reduce_dimensions(method="MDS", .dims = 2)
+  reduce_dimensions(method="PCA", .dims = 4)
 ```
 
 This joins the result to the counts object. For plotting, we can select just the dimensions for the samples with `pivot_sample`.
 
 ```{r}
 # take a look
-counts_scal_MDS %>% pivot_sample()
+counts_scal_PCA %>% pivot_sample()
 ```
 
 We can now plot the reduced dimensions
 
 ```{r}
-# MDS plot
-counts_scal_MDS %>%
+# PCA plot
+counts_scal_PCA %>%
 	pivot_sample() %>%
-	ggplot(aes(x=Dim1, y=Dim2, colour=dex)) + 
+	ggplot(aes(x=PC1, y=PC2, colour=dex)) + 
   geom_point() +
+  geom_text_repel(aes(label=sample)) +
 	theme_bw()
 ```
 
 
 #### Exercises 
 
-1. Colour the MDS plot by cell line. Try using `shape` inside `aes` with the dex or cell variables.
+1. Colour the PCA plot by cell line. Try using `shape` inside `aes` with the dex or cell variables.
 2. Discuss what is the greatest source of variation in the data (i.e. what does dimension 1 represent)?
 
 
 ## Hierarchical clustering with heatmaps
 
-An alternative to MDS for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable` to extract the most variable genes which we can then plot with tidyHeatmap.
+An alternative to PCA for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable` to extract the most variable genes which we can then plot with tidyHeatmap.
 
 ```{r fig.height=5, fig.width=8}
 counts_scaled %>% 
@@ -495,7 +496,7 @@ strip_chart %>% ggplotly(tooltip = c("label", "y"))
 # Key Points
 - RNA-Seq data can be analysed in a 'tidy' way using the packages tidyverse, tidybulk and tidyHeatmap
 - Key steps in an RNA-Seq analysis are filtering lowly expressed genes, normalisation for sequencing depth and composition, and testing for differential expression
-- MDS plots are very important for examining the quality of the data
+- PCA (or MDS) plots are very important for examining the quality of the data
 - Other useful plots for assessing RNA-Seq data are density plots, box plots, MA plots, volcano plots, stripcharts and heatmaps. These can all be made in a 'tidy' way.
 
 
