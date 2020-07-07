@@ -423,45 +423,9 @@ topgenes_symbols
 	
 # Plots after testing for DE
 
-Let's make a few plots to make sure everything looks good and that we haven't made a mistake in the analysis. Genome-wide plots that are useful for checking are MA plots and volcano plots. We can also use stripcharts to visualise groups of genes.
-
-### MA plots
-
-MA plots enable us to visualise **amount** of expression (logCPM) versus logFC. Highly expressed genes are towards the right of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
-
-```{r}
-# maplot, minimal
-counts_de_pretty %>%
-  pivot_transcript() %>%
-  filter(!lowly_abundant) %>%
-  ggplot(aes(x=logCPM, y=-logFC, colour=significant)) +
-  geom_point()+
-	theme_bw()
-```
-
-A more informative plot, integrating some of the packages in tidyverse.
-
-```{r warning=FALSE}
-counts_de_pretty %>%
-    pivot_transcript() %>%
-
-    # Subset data
-		filter(!lowly_abundant) %>%
-    mutate(significant = FDR<0.05 & abs(logFC) >=2) %>%
-    mutate(transcript = ifelse(abs(logFC) >=5, as.character(transcript), "")) %>%
-
-    # Plot
-    ggplot(aes(x = logCPM, y = logFC, label=transcript)) +
-    geom_point(aes(color = significant, size = significant, alpha=significant)) +
-    geom_text_repel() +
-    scale_color_manual(values=c("black", "#e11f28")) +
-    scale_size_discrete(range = c(0, 2)) +
-		theme_bw()
-```
-
 ### Volcano plots
 
-Volcano plots enable us to visualise **significance** of expression (P value) versus logFC. Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
+Volcano plots are a useful genome-wide plot for checking that the analysis looks good. Volcano plots enable us to visualise significance of expression (P value) versus logFC. Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
 
 ```{r}
 # volcanoplot, minimal
@@ -495,7 +459,7 @@ counts_de_pretty %>%
 
 ### Stripcharts
 
-In addition to the genome-wide plots already discussed, it is recommended to have a look at the expression levels of the individual samples for the genes of interest, before following up on the DE genes with further lab work. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups.
+Before following up on the DE genes with further lab work, it is also recommended to have a look at the expression levels of the individual samples for the genes of interest. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups.
 
 With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. We'll also add a box plot to show the distribution.
 
@@ -518,7 +482,7 @@ strip_chart =
 strip_chart
 ```
 
-### Interactive Plots
+# Interactive Plots
 
 A really nice feature of using tidyverse and ggplot2 is that we can make interactive plots quite easily using the plotly package. This can be very useful for exploring what genes or samples are in the plots. We can make interactive plots directly from our ggplot2 object (strip_chart). Having `label` into the `aes` is useful to visualise the identified of the data point or other variables to be visible when we hover over the plot.
 
