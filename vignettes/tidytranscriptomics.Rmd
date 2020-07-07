@@ -4,6 +4,7 @@ author:
   - Maria Doyle, Peter MacCallum Cancer Centre^[maria.doyle@petermac.org]
   - Stefano Mangiola, Walter and Eliza Hall Institute^[mangiola.s@wehi.edu.au]
 output: rmarkdown::html_vignette
+bibliography: "`r file.path(system.file(package='tidytranscriptomics', 'vignettes'), 'tidytranscriptomics.bib')`"
 vignette: >
   %\VignetteIndexEntry{TidyTranscriptomics}
   %\VignetteEngine{knitr::rmarkdown}
@@ -20,9 +21,9 @@ knitr::opts_chunk$set(
 
 ## Workshop Description
 
-This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions. 
+This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm [@wickham2014tidy]. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions. 
 
-This can be achieved for RNA sequencing data with the [tidybulk](github.com/stemangiola/tidybulk), [tidyHeatmap](github.com/stemangiola/tidyHeatmap) and tidyverse packages. The package [tidybulk](github.com/stemangiola/tidybulk) provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data.
+This can be achieved for RNA sequencing data with the [tidybulk](github.com/stemangiola/tidybulk), [tidyHeatmap](github.com/stemangiola/tidyHeatmap) and tidyverse [@wickham2019welcome] packages. The package [tidybulk](github.com/stemangiola/tidybulk) provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data.
 
 The topics presented in this workshop will be
 
@@ -82,7 +83,7 @@ The tidytranscriptomics approach to RNA sequencing data analysis abstracts out t
 This material is adapted from an R for RNA-Seq workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
 
 ```{r, out.width = "200px"}
-knitr::include_graphics(system.file(package='tidytranscriptomics',  'vignettes', 'tidybulk_logo.png'))
+knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
 ```
 
 # Overview
@@ -186,7 +187,7 @@ From this tidybulk tibble, we can perform differential expression analysis with 
 # Filtering lowly expressed genes  
 Genes with very low counts across all libraries provide little evidence for differential expression and they interfere with some of the statistical approximations that are used later in the pipeline. They also add to the multiple testing burden when estimating false discovery rates, reducing power to detect differentially expressed genes. These genes should be filtered out prior to further analysis.
 
-With tidybulk, it is not really necessary to explicitly filter lowly transcribed genes, as all calculations (e.g., scaling, removal of unwanted variation, differential expression testing) are performed on abundantly transcribed genes; although in case of scaling, the scaling is applied back to all genes in the dataset. Tidybulk can use the *edgeR* `filterByExpr` function described [here](https://f1000research.com/articles/5-1408). By default, this will keep genes with ~10 counts in a minimum number of samples, the number of the samples in the smallest group. In this dataset the smallest group size is 2 samples. tidybulk performs this filtering in the functions we will use `scale_abundance` and `test_differential_abundance`.
+With tidybulk, it is not really necessary to explicitly filter lowly transcribed genes, as all calculations (e.g., scaling, removal of unwanted variation, differential expression testing) are performed on abundantly transcribed genes; although in case of scaling, the scaling is applied back to all genes in the dataset. Tidybulk can use the *edgeR* `filterByExpr` function described in [@law2016rna]. By default, this will keep genes with ~10 counts in a minimum number of samples, the number of the samples in the smallest group. In this dataset the smallest group size is 2 samples. tidybulk performs this filtering in the functions we will use `scale_abundance` and `test_differential_abundance`.
 
 # Scaling counts to normalise
 
@@ -220,7 +221,7 @@ counts_scaled %>%
 2. Another way to check the distributions of the counts in the samples is with box plots. Adapt the code above to create box plots of the counts before and after scaling. How does the before and after compare?
 
 
-As tidybulk smoothly integrates with ggplot2 and other tidyverse packages it can save on typing and make. Compare the code for creating density plots with tidybulk versus standard base R below (standard code adapted from the paper [here](https://f1000research.com/articles/5-1408)).
+As tidybulk smoothly integrates with ggplot2 and other tidyverse packages it can save on typing and make. Compare the code for creating density plots with tidybulk versus standard base R below (standard code adapted from [@law2016rna]).
 
 **tidybulk**
 
@@ -270,46 +271,47 @@ legend("topright", legend=dgList_norm$samples$Run, text.col=col, bty="n")
 
 # Exploratory analyses
 
-## Multidimensional scaling plots
+## PCA plot
 
-By far, one of the most important plots we make when we analyse RNA-Seq data are MDS plots. An MDS plot is a visualisation of a principal components analysis, which determines the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions` function to calculate the dimensions.
+By far, one of the most important plots we make when we analyse RNA-Seq data are PCA or MDS plots. A PCA plot is a visualisation which determines the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions` function to calculate the dimensions.
 
 
 ```{r}
-# get MDS dimensions
-counts_scal_MDS <-
+# get PCA dimensions
+counts_scal_PCA <-
   counts_scaled %>%
-  reduce_dimensions(method="MDS", .dims = 2)
+  reduce_dimensions(method="PCA", .dims = 4)
 ```
 
 This joins the result to the counts object. For plotting, we can select just the dimensions for the samples with `pivot_sample`.
 
 ```{r}
 # take a look
-counts_scal_MDS %>% pivot_sample()
+counts_scal_PCA %>% pivot_sample()
 ```
 
 We can now plot the reduced dimensions
 
 ```{r}
-# MDS plot
-counts_scal_MDS %>%
+# PCA plot
+counts_scal_PCA %>%
 	pivot_sample() %>%
-	ggplot(aes(x=Dim1, y=Dim2, colour=dex)) + 
+	ggplot(aes(x=PC1, y=PC2, colour=dex)) + 
   geom_point() +
+  geom_text_repel(aes(label=sample), show.legend = FALSE) +
 	theme_bw()
 ```
 
 
 #### Exercises 
 
-1. Colour the MDS plot by cell line. Try using `shape` inside `aes` with the dex or cell variables.
+1. Colour the PCA plot by cell line. Try using `shape` inside `aes` with the dex or cell variables.
 2. Discuss what is the greatest source of variation in the data (i.e. what does dimension 1 represent)?
 
 
 ## Hierarchical clustering with heatmaps
 
-An alternative to MDS for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable` to extract the most variable genes which we can then plot with tidyHeatmap.
+An alternative to PCA for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable` to extract the most variable genes which we can then plot with tidyHeatmap.
 
 ```{r fig.height=5, fig.width=8}
 counts_scaled %>% 
@@ -329,7 +331,7 @@ counts_scaled %>%
 
 # Differential expression
 
-Now that we are happy that the data looks good, we can continue to testing for differentially expressed genes. We will use the `test_differential_abundance` from tidybulk which currently uses *edgeR* to perform the differential expression analysis. We give `test_differential_abundance` our tidybulk counts object and a formula, specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different cell line so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance` will perform the filtering of lowly expressed genes as described before. The results will be joined to our counts for every sample. If we just want a table of differentially expressed genes we can use `pivot_transcript`.
+Now that we are happy that the data looks good, we can continue to testing for differentially expressed genes. We will use the `test_differential_abundance` from tidybulk which currently uses *edgeR* [@robinson2010edger] to perform the differential expression analysis. We give `test_differential_abundance` our tidybulk counts object and a formula, specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different cell line so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance` will perform the filtering of lowly expressed genes as described before. The results will be joined to our counts for every sample. If we just want a table of differentially expressed genes we can use `pivot_transcript`.
 
 ```{r warning=FALSE}
 counts_de <- counts_tt %>%
@@ -423,45 +425,9 @@ topgenes_symbols
 	
 # Plots after testing for DE
 
-Let's make a few plots to make sure everything looks good and that we haven't made a mistake in the analysis. Genome-wide plots that are useful for checking are MA plots and volcano plots. We can also use stripcharts to visualise groups of genes.
-
-### MA plots
-
-MA plots enable us to visualise **amount** of expression (logCPM) versus logFC. Highly expressed genes are towards the right of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
-
-```{r}
-# maplot, minimal
-counts_de_pretty %>%
-  pivot_transcript() %>%
-  filter(!lowly_abundant) %>%
-  ggplot(aes(x=logCPM, y=-logFC, colour=significant)) +
-  geom_point()+
-	theme_bw()
-```
-
-A more informative plot, integrating some of the packages in tidyverse.
-
-```{r warning=FALSE}
-counts_de_pretty %>%
-    pivot_transcript() %>%
-
-    # Subset data
-		filter(!lowly_abundant) %>%
-    mutate(significant = FDR<0.05 & abs(logFC) >=2) %>%
-    mutate(transcript = ifelse(abs(logFC) >=5, as.character(transcript), "")) %>%
-
-    # Plot
-    ggplot(aes(x = logCPM, y = logFC, label=transcript)) +
-    geom_point(aes(color = significant, size = significant, alpha=significant)) +
-    geom_text_repel() +
-    scale_color_manual(values=c("black", "#e11f28")) +
-    scale_size_discrete(range = c(0, 2)) +
-		theme_bw()
-```
-
 ### Volcano plots
 
-Volcano plots enable us to visualise **significance** of expression (P value) versus logFC. Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
+Volcano plots are a useful genome-wide plot for checking that the analysis looks good. Volcano plots enable us to visualise significance of expression (P value) versus logFC. Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
 
 ```{r}
 # volcanoplot, minimal
@@ -495,7 +461,7 @@ counts_de_pretty %>%
 
 ### Stripcharts
 
-In addition to the genome-wide plots already discussed, it is recommended to have a look at the expression levels of the individual samples for the genes of interest, before following up on the DE genes with further lab work. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups.
+Before following up on the DE genes with further lab work, it is also recommended to have a look at the expression levels of the individual samples for the genes of interest. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups.
 
 With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. We'll also add a box plot to show the distribution.
 
@@ -518,7 +484,7 @@ strip_chart =
 strip_chart
 ```
 
-### Interactive Plots
+# Interactive Plots
 
 A really nice feature of using tidyverse and ggplot2 is that we can make interactive plots quite easily using the plotly package. This can be very useful for exploring what genes or samples are in the plots. We can make interactive plots directly from our ggplot2 object (strip_chart). Having `label` into the `aes` is useful to visualise the identified of the data point or other variables to be visible when we hover over the plot.
 
@@ -531,7 +497,7 @@ strip_chart %>% ggplotly(tooltip = c("label", "y"))
 # Key Points
 - RNA-Seq data can be analysed in a 'tidy' way using the packages tidyverse, tidybulk and tidyHeatmap
 - Key steps in an RNA-Seq analysis are filtering lowly expressed genes, normalisation for sequencing depth and composition, and testing for differential expression
-- MDS plots are very important for examining the quality of the data
+- PCA (or MDS) plots are very important for examining the quality of the data
 - Other useful plots for assessing RNA-Seq data are density plots, box plots, MA plots, volcano plots, stripcharts and heatmaps. These can all be made in a 'tidy' way.
 
 
