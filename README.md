@@ -12,6 +12,8 @@ Docker image: https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tid
 
 Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
 
+**This material was created for a Bioc2020 conference workshop but it can also be used for self-learning.**
+
 ## Workshop Description
 
 This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions. 
