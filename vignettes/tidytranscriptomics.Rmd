@@ -127,11 +127,11 @@ library(airway)
 ```
 
 ### Airway RNA-seq dataset
-Here we will perform RNA-Seq analysis using the data from the *airway* package. It has 8 samples, a sample treated with dex and an untreated control sample for 4 cell lines.
+Here we will perform RNA-Seq analysis using the data from the *airway* package. It has 8 samples from human airway smooth muscle cells: a sample treated with dexamethasone and an untreated control sample for 4 cell lines.
 
 ### Setting up the data
 
-The airway RNA-Seq data is stored as a *RangedSummarizedExperiment* object. We'll convert the SummarizedExperiment object into a tidybulk tibble, which is the tidyverse table format.
+The airway RNA-Seq data is stored as a *RangedSummarizedExperiment* object. We can convert a SummarizedExperiment object into a tidybulk tibble, which is the tidyverse table format.
 
 In this workshop we will be using the tidyverse pipe `%>%`. This 'pipes' the output from the command on the left into the command on the right/below. Using the pipe is not essential but it reduces the amount of code we need to write when we have multiple steps (as we'll see later). It also can make the steps clearer and easier to see. For more details on the pipe see [here](https://r4ds.had.co.nz/pipes.html).
 
@@ -217,11 +217,6 @@ counts_scaled %>%
 	scale_x_log10() +
 	theme_bw()
 ```
-
-#### Exercises
-1. To see the effect of the filtering, adapt the code above to create density plots of the genes without filtering lowly expressed. How does the with and without filtering compare?
-2. Another way to check the distributions of the counts in the samples is with box plots. Adapt the code above to create box plots of the counts before and after scaling. How does the before and after compare?
-
 
 As tidybulk smoothly integrates with ggplot2 and other tidyverse packages it can save on typing and make. Compare the code for creating density plots with tidybulk versus standard base R below (standard code adapted from [@law2016rna]).
 
@@ -395,10 +390,6 @@ counts_de_pretty %>%
   summarise(num_de = n_distinct(transcript))
 ```
 
-#### Exercise
-Count how many upregulated DE genes there are.  
-Count how many downregulated DE genes there are.
-
 ### Extracting top differentially expressed genes
 
 We can see the top genes by smallest P value. We'll take a look at the top 6.
@@ -502,5 +493,25 @@ Record package and version information with `sessionInfo`
 ```{r}
 sessionInfo()
 ```
+
+## Exercises
+
+Try to apply what you've learned to another RNA-seq dataset. The data is was generated from the pasilla package which obtained the data from the paper by Brooks et al. 2010. Here we provide it as a SummarizedExperiment object. The dataset has 7 samples from Drosophila (fruitfly): 3 treated with siRNA knockdown of the pasilla gene and 4 untreated controls.
+Load the data and create the tidybulk object with:
+```{r}
+data("pasilla", package = "tidytranscriptomics")
+counts_tt <- pasilla %>% 
+  tidybulk()
+```
+
+Note that as this is fly data you can't use ensembl_to_symbol to get gene symbols, just work with the gene ids.
+
+Questions: 
+1. What is the Fraction of Variance for PC1 and PC2? What do PC1 and PC2 represent?
+2. How many differentially expressed genes are there?
+3. What code can generate a heatmap of variable genes for pasilla (starting from count_scaled)?
+4. What code can generate an interactive volcano plot that has gene symbols showing on hover?
+5. What code can generate a heatmap of the top 100 differentially expressed genes?
+
 
 ## References
