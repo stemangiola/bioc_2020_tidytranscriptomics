@@ -6,4 +6,4 @@
 .github
 Dockerfile
 _pkgdown.yml
-
+^data-raw$

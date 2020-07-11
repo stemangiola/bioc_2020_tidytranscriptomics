@@ -20,7 +20,7 @@ By contributing, you agree that we may redistribute your work under [this reposi
 
 We will address your issues and/or assess your change proposal as promptly as we can.
 
-If you have any questions, you can reach us using the repository Issues.
+If you have any questions, you can reach us by creating an [Issue](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/issues/new/choose) in the workshop repository.
 
 # How can I contribute?
 
@@ -30,7 +30,7 @@ You can report mistakes or errors, add suggestions, additions, updates or improv
 
 ## Maintainers
 
-The maintainers are the workshop authors.
+The maintainers are listed in the [DESCRIPTION](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/blob/master/DESCRIPTION) file.
 
 They are responsible for making sure issues and change requests are looked at. They have the final say over what is included in the training material.
 
