@@ -307,7 +307,7 @@ counts_scal_PCA %>%
 
 ### Hierarchical clustering with heatmaps
 
-An alternative to PCA for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable` to extract the most variable genes which we can then plot with tidyHeatmap.
+An alternative to PCA for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable`, to extract the most variable genes which we can then plot with tidyHeatmap.
 
 ```{r fig.height=5, fig.width=8}
 counts_scaled %>% 
@@ -325,7 +325,41 @@ counts_scaled %>%
 	  )
 ```
 
-In the heatmap we can see the samples cluster into the two groups, treated and untreated, for three of the cell lines but one cell line (N080611) clusters away from the others.
+In the heatmap we can see the samples cluster into two groups, treated and untreated, for three of the cell lines, but one cell line (N080611) clusters away from the others.
+
+Tidybulk enables a simplified way of generating a clustered heatmap of variable genes. Compare the code below for tidybulk versus a base R method.
+
+**tidybulk**
+```{r eval=FALSE}
+airway %>%
+  tidybulk() %>%
+  scale_abundance() %>%
+	keep_variable( .abundance = counts_scaled, top = 500) %>%
+	heatmap(
+	      .column = sample,
+	      .row = feature,
+	      .value = counts_scaled,
+	      annotation = c(dex, cell),
+	      transform = log1p 
+	  )
+```
+
+**base R using edgeR**
+```{r eval=FALSE}
+dgList <- SE2DGEList(airway)
+group <- factor(dgList$samples$dex)
+keep.exprs <- filterByExpr(dgList, group=group)
+dgList <- dgList[keep.exprs,, keep.lib.sizes=FALSE]
+dgList <- calcNormFactors(dgList)
+logcounts <- cpm(dgList, log=TRUE)
+var_genes <- apply(logcounts, 1, var)
+select_var <- names(sort(var_genes, decreasing=TRUE))[1:500]
+highly_variable_lcpm <- logcounts[select_var,]
+colours <- c("#440154FF", "#21908CFF", "#fefada" )
+col.group <- c("red","grey")[group]
+gplots::heatmap.2(highly_variable_lcpm, col=colours, trace="none", ColSideColors=col.group, scale="row")
+```
+
 
 ## Differential expression
 
