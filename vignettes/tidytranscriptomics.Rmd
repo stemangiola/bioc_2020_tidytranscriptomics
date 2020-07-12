@@ -179,9 +179,9 @@ With tidyverse, all above operations can be linked with the `%>%`, as shown belo
 ```{r}
 counts_tt <- 	
 	airway %>%
-  tidybulk() %>%
-  mutate(sample=str_remove(sample, "SRR1039")) %>%
-  ensembl_to_symbol(feature)
+	tidybulk() %>%
+	mutate(sample=str_remove(sample, "SRR1039")) %>%
+	ensembl_to_symbol(feature)
 ```
 
 From this tidybulk tibble, we can perform differential expression analysis with the tidybulk package.
@@ -210,8 +210,8 @@ We can now see the difference of abundance densities before and after scaling.
 ```{r }
 counts_scaled %>%
 	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
-  filter(!lowly_abundant) %>%
-  ggplot(aes(x=abundance + 1, group=sample, color=sample)) +
+	filter(!lowly_abundant) %>%
+	ggplot(aes(x=abundance + 1, group=sample, color=sample)) +
 	geom_density() +
 	facet_wrap(~source) +
 	scale_x_log10() +
@@ -225,11 +225,11 @@ As tidybulk smoothly integrates with ggplot2 and other tidyverse packages it can
 ```{r eval=FALSE}
 # tidybulk
 airway %>%
-  tidybulk() %>%
-  scale_abundance() %>%
+	tidybulk() %>%
+	scale_abundance() %>%
 	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
-  filter(!lowly_abundant) %>%
-  ggplot(aes(x=abundance + 1, group=sample, color=sample)) +
+	filter(!lowly_abundant) %>%
+	ggplot(aes(x=abundance + 1, group=sample, color=sample)) +
 	geom_density() +
 	facet_wrap(~source) +
 	scale_x_log10() +
@@ -240,13 +240,18 @@ airway %>%
 **base R using edgeR**
 
 ```{r eval=FALSE}
+# Prapare data set
 dgList <- SE2DGEList(airway)
 keep.exprs <- filterByExpr(dgList, group=dgList$samples$dex)
 dgList <- dgList[keep.exprs,, keep.lib.sizes=FALSE]
 nsamples <- ncol(dgList)
+logcounts <- log2(dgList$counts)
+
+# Setup graphics
 col <- RColorBrewer::brewer.pal(nsamples, "Paired")
 par(mfrow=c(1,2))
-logcounts <- log2(dgList$counts)
+
+# Plot raw counts
 plot(density(logcounts[,1]), col=col[1], lwd=2, ylim=c(0,0.26), las=2, main="", xlab="")
 title(main="Counts")
 for (i in 2:nsamples){
@@ -254,6 +259,8 @@ for (i in 2:nsamples){
   lines(den$x, den$y, col=col[i], lwd=2)
 }
 legend("topright", legend=dgList$samples$Run, text.col=col, bty="n")
+
+# Plot scaled counts
 dgList_norm <- calcNormFactors(dgList)
 lcpm_n <- cpm(dgList_norm, log=TRUE)
 plot(density(lcpm_n[,1]), col=col[1], lwd=2, ylim=c(0,0.26), las=2, main="", xlab="")
@@ -277,7 +284,7 @@ By far, one of the most important plots we make when we analyse RNA-Seq data are
 # get PCA dimensions
 counts_scal_PCA <-
   counts_scaled %>%
-  reduce_dimensions(method="PCA", .dims = 4)
+  reduce_dimensions(method="PCA")
 ```
 
 This joins the result to the counts object. For plotting, we can select just the dimensions for the samples with `pivot_sample`.
@@ -294,8 +301,8 @@ We can now plot the reduced dimensions
 counts_scal_PCA %>%
 	pivot_sample() %>%
 	ggplot(aes(x=PC1, y=PC2, colour=dex, shape=cell)) + 
-  geom_point() +
-  geom_text_repel(aes(label=sample), show.legend = FALSE) +
+	geom_point() +
+	geom_text_repel(aes(label=sample), show.legend = FALSE) +
 	theme_bw()
 ```
 
@@ -328,11 +335,11 @@ Now that we are happy that the data looks good, we can continue to testing for d
 counts_de <- counts_tt %>%
     test_differential_abundance(
       .formula = ~ 0 + dex + cell,
-      .contrasts = c("dextrt - dexuntrt"))
+      .contrasts = c("dextrt - dexuntrt")
+    )
 
 # take a look
-counts_de %>%
-	pivot_transcript()
+counts_de %>% pivot_transcript()
 ```
 Now we have columns with our logFC and FDR P values. There is also a column called significant that indicates if the gene has FDR < 0.05.
 
@@ -377,8 +384,10 @@ We only have one contrast here so we could remove the suffix `_dextrt - dexuntrt
 ```{r}
 counts_de_pretty <- 
 	counts_de %>%
-  rename_at(vars(contains("dex")),
-            ~str_replace(., "_dextrt - dexuntrt", ""))
+  rename_at(
+  	vars(contains("dex")), 
+  	~str_replace(., "_dextrt - dexuntrt", "")
+  )
 ```
 
 
@@ -394,10 +403,11 @@ counts_de_pretty %>%
 
 We can see the top genes by smallest P value. We'll take a look at the top 6.
 ```{r}
-topgenes <- counts_de_pretty %>%
+topgenes <- 
+	counts_de_pretty %>%
 	pivot_transcript() %>%
-  arrange(PValue) %>%
-  head(6)
+	arrange(PValue) %>%
+	head(6)
 
 topgenes
 ```	
@@ -419,9 +429,9 @@ Volcano plots are a useful genome-wide plot for checking that the analysis looks
 ```{r}
 # volcanoplot, minimal
 counts_de_pretty %>%
-  filter(!lowly_abundant) %>%
-  ggplot(aes(x=logFC, y=-log10(PValue), colour=significant)) +
-  geom_point() +
+	filter(!lowly_abundant) %>%
+	ggplot(aes(x=logFC, y=-log10(PValue), colour=significant)) +
+	geom_point() +
 	theme_bw()
 ```
 
@@ -429,21 +439,21 @@ A more informative plot, integrating some of the packages in tidyverse.
 
 ```{r warning=FALSE}
 counts_de_pretty %>%
-    pivot_transcript() %>%
+	pivot_transcript() %>%
 
     # Subset data
-		filter(!lowly_abundant) %>%
-    mutate(significant = FDR<0.05 & abs(logFC) >=2) %>%
-    mutate(transcript = ifelse(transcript %in% topgenes_symbols, as.character(transcript), "")) %>%
+	filter(!lowly_abundant) %>%
+	mutate(significant = FDR<0.05 & abs(logFC) >=2) %>%
+	mutate(transcript = ifelse(transcript %in% topgenes_symbols, as.character(transcript), "")) %>%
 
     # Plot
-    ggplot(aes(x = logFC, y = -log10(PValue), label=transcript)) +
-    geom_point(aes(color = significant, size = significant, alpha=significant)) +
-    geom_text_repel() +
-    scale_color_manual(values=c("black", "#e11f28")) +
-    scale_size_discrete(range = c(0, 2)) +
-    xlim(c(-10,10)) +
-		theme_bw()
+	ggplot(aes(x = logFC, y = -log10(PValue), label=transcript)) +
+	geom_point(aes(color = significant, size = significant, alpha=significant)) +
+	geom_text_repel() +
+	scale_color_manual(values=c("black", "#e11f28")) +
+	scale_size_discrete(range = c(0, 2)) +
+	xlim(c(-10,10)) +
+	theme_bw()
 ```
 
 ### Stripcharts
@@ -500,8 +510,9 @@ Try to apply what you've learned to another RNA-seq dataset. The data is was gen
 Load the data and create the tidybulk object with:
 ```{r}
 data("pasilla", package = "tidytranscriptomics")
-counts_tt <- pasilla %>% 
-  tidybulk()
+counts_tt <- 
+	pasilla %>% 
+  tidybulk(sample, symbol, `count normalised adjusted`)
 ```
 
 Note that as this is fly data you can't use ensembl_to_symbol to get gene symbols, just work with the gene ids.
