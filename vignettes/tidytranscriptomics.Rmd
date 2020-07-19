@@ -367,11 +367,14 @@ gplots::heatmap.2(highly_variable_lcpm, col=colours, trace="none", ColSideColors
 
 Now that we are happy that the data looks good, we can continue to testing for differentially expressed (DE) genes. We will use the `test_differential_abundance` from tidybulk which currently uses *edgeR* [@robinson2010edger] to perform the differential expression analysis. We give `test_differential_abundance` our tidybulk counts object and a formula, specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different cell line so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance` will perform the filtering of lowly expressed genes as described before. 
 
+We only have one contrast here so we omit the suffix.
+
 ```{r warning=FALSE}
 counts_de <- counts_tt %>%
     test_differential_abundance(
       .formula = ~ 0 + dex + cell,
-      .contrasts = c("dextrt - dexuntrt")
+      .contrasts = c("dextrt - dexuntrt"),
+      omit_contrast_in_colnames = TRUE
     )
 ```
 
@@ -430,22 +433,10 @@ counts_de %>%
 
 ### Counting differentially expressed genes
 
-We only have one contrast here so we could remove the suffix `_dextrt - dexuntrt` from the column headers to make the names shorter to use in the rest of the commands here, using `rename_at` package together with `str_replace`.
-
-```{r}
-counts_de_pretty <- 
-	counts_de %>%
-  rename_at(
-  	vars(contains("dex")), 
-  	~str_replace(., "_dextrt - dexuntrt", "")
-  )
-```
-
-
 We can count how many DE genes there are using the significant column.
 
 ```{r}
-counts_de_pretty %>% 
+counts_de %>% 
   filter(significant == TRUE) %>% 
   summarise(num_de = n_distinct(transcript))
 ```
@@ -455,7 +446,7 @@ counts_de_pretty %>%
 We can see the top genes by smallest P value. We'll take a look at the top 6.
 ```{r}
 topgenes <- 
-	counts_de_pretty %>%
+	counts_de %>%
 	pivot_transcript() %>%
 	arrange(PValue) %>%
 	head(6)
@@ -478,8 +469,8 @@ topgenes_symbols
 Volcano plots are a useful genome-wide plot for checking that the analysis looks good. Volcano plots enable us to visualise significance of expression (P value) versus logFC. Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
 
 ```{r}
-# volcanoplot, minimal
-counts_de_pretty %>%
+# volcano plot, minimal
+counts_de %>%
 	filter(!lowly_abundant) %>%
 	ggplot(aes(x=logFC, y=-log10(PValue), colour=significant)) +
 	geom_point() +
@@ -489,7 +480,7 @@ counts_de_pretty %>%
 A more informative plot, integrating some of the packages in tidyverse.
 
 ```{r warning=FALSE}
-counts_de_pretty %>%
+counts_de %>%
 	pivot_transcript() %>%
 
     # Subset data
