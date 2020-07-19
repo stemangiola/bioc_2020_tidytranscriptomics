@@ -331,21 +331,6 @@ In the heatmap we can see the samples cluster into two groups, treated and untre
 
 Tidybulk enables a simplified way of generating a clustered heatmap of variable genes. Compare the code below for tidybulk versus a base R method.
 
-**tidybulk**
-```{r eval=FALSE}
-airway %>%
-  tidybulk() %>%
-  scale_abundance() %>%
-	keep_variable( .abundance = counts_scaled, top = 500) %>%
-	heatmap(
-	      .column = sample,
-	      .row = feature,
-	      .value = counts_scaled,
-	      annotation = c(dex, cell),
-	      transform = log1p 
-	  )
-```
-
 **base R using edgeR**
 ```{r eval=FALSE}
 dgList <- SE2DGEList(airway)
@@ -395,13 +380,6 @@ counts_de %>% pivot_transcript()
 Now we have columns with our logFC and FDR P values. There is also a column called significant that indicates if the gene has FDR < 0.05.
 
 Tidybulk enables a simplified way of performing an RNA-seq differential expression testing (with the benefit of smoothly integrating with ggplot2 and other tidyverse packages). Compare the code for a tidybulk edgeR analysis versus standard edgeR below.
-
-**tidybulk using edgeR**
-```{r eval=FALSE}
-airway %>%
-  tidybulk() %>%
-  test_differential_abundance(.formula = ~ 0 + dex + cell, .contrasts = c("dextrt - dexuntrt"))
-```
 
 **standard edgeR**
 ```{r eval=FALSE}
