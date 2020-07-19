@@ -7,3 +7,5 @@
 Dockerfile
 _pkgdown.yml
 ^data-raw$
+dev$
+CONTRIBUTING.md
