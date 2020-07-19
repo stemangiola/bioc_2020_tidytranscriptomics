@@ -8,7 +8,7 @@ jobs:
 
       - name: Query dependencies and update old packages
         run: |
-          install.packages('remotes')i
+          install.packages('remotes')
           options(repos = c(CRAN = 'https://cran.r-project.org'))
           BiocManager::install(ask=FALSE)
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
