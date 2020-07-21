@@ -538,10 +538,10 @@ Note that as this is fly data you can't use ensembl_to_symbol to get gene symbol
 
 Questions:  
 1. What is the Fraction of Variance for PC1 and PC2? What do PC1 and PC2 represent?  
-2. How many DE genes are there for treated vs untreated? What is the top DE gene by P value?  
+2. How many DE genes are there for treated vs untreated (FDR < 0.05)? What is the top DE gene by P value?  
 3. What code can generate a heatmap of variable genes (starting from count_scaled)?  
 4. What code can you use to visualise expression of the pasilla gene (gene id: FBgn0261552)  
-5. What code can generate an interactive volcano plot that has gene symbols showing on hover?  
+5. What code can generate an interactive volcano plot that has gene ids showing on hover?  
 6. What code can generate a heatmap of the top 100 DE genes?  
 
 
