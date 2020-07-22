@@ -511,10 +511,12 @@ strip_chart %>% ggplotly(tooltip = c("label", "y"))
 ```
 
 ## Key Points
-- RNA-Seq data can be analysed in a 'tidy' way using the packages tidyverse, tidybulk and tidyHeatmap
-- Key steps in an RNA-Seq analysis are filtering lowly expressed genes, normalisation for sequencing depth and composition, and testing for differential expression
-- PCA (or MDS) plots are very important for examining the quality of the data
-- Other useful plots for assessing RNA-Seq data are density plots, volcano plots, stripcharts and heatmaps. These can all be made in a 'tidy' way.
+- RNA sequencing data can be represented and analysed in a 'tidy' way using tidybulk and the tidyverse
+- With the modularity offered by piping we don't need to create variables, unless an object is used more than one. This improves robustness of the code.
+- The principles of tidy transcriptomics is to interface as much as possible commonly known manipulation and visualisation tools, rather than creating custom functions. 
+- Some of the key steps in an RNA-Seq analysis are (i) filtering lowly abundant transcripts, (ii) compensating for sequencing depth, (iii) testing for differential expression
+- Dimensionality reduction (PCA or MDS) plots is very important for exploring the data 
+- Density plots, volcano plots, strip-charts and heatmaps are useful visualisation tools for evaluating the hypothesis testing. 
 
 ## Reproducibility
 Record package and version information with `sessionInfo`
