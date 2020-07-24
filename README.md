@@ -1,21 +1,21 @@
+<!-- badges: start -->
+[![.github/workflows/basic_checks.yaml](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/workflows/.github/workflows/basic_checks.yaml/badge.svg)](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/actions) [![Docker](https://github.com/Bioconductor/BioC2020/raw/master/docs/images/docker_icon.png)](https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics) 	
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3929366.svg)](https://doi.org/10.5281/zenodo.3929366)
+<!-- badges: end -->
+
 # A Tidy Transcriptomics introduction to RNA-Seq analyses
 
-![](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/workflows/.github/workflows/basic_checks.yaml/badge.svg) 
-
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3929366.svg)](https://doi.org/10.5281/zenodo.3929366)
-
-
-
-Website: https://stemangiola.github.io/bioc_2020_tidytranscriptomics
-
-Docker image: https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics
-
-Material [web page](https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html) .
+## Instructor names and contact information
 
 Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
 
+## Syllabus
+
+Material [web page](https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html).
+
 **This material was created for a Bioc2020 conference workshop but it can also be used for self-learning.**
 
+More details on the workshop are below.
 
 ## Workshop package installation (necessary in order to reproduce)
 
@@ -36,7 +36,7 @@ You should see the Rmarkdown file with all the workshop code which you can run.
 
 ### Via GitHub
 
-Alternatively, you could install the workshop with the commands below in R `4.0`.
+Alternatively, you could install the workshop using the commands below in R `4.0`.
 
 ```
 devtools::install_github("stemangiola/tidybulk")
