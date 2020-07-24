@@ -82,7 +82,7 @@ The tidytranscriptomics approach to RNA sequencing data analysis abstracts out t
 * Create plots that summarise the information content of the data and analysis results
 
 ### Acknowledgements
-This material is adapted from an R for RNA-Seq workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
+This material is adapted from an R for RNA sequencing workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
 
 ```{r, echo=FALSE, out.width = "200px"}
 knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
@@ -90,9 +90,9 @@ knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
 
 
 ## Introduction
-Measuring gene expression on a genome-wide scale has become common practice over the last two decades or so, with microarrays predominantly used pre-2008. With the advent of next generation sequencing technology in 2008, an increasing number of scientists use this technology to measure and understand changes in gene expression in often complex systems. As sequencing costs have decreased, using RNA-Seq to simultaneously measure the expression of tens of thousands of genes for multiple samples has never been easier. The cost of these experiments has now moved from generating the data to storing and analysing it.
+Measuring gene expression on a genome-wide scale has become common practice over the last two decades or so, with microarrays predominantly used pre-2008. With the advent of next generation sequencing technology in 2008, an increasing number of scientists use this technology to measure and understand changes in gene expression in often complex systems. As sequencing costs have decreased, using RNA sequencing to simultaneously measure the expression of tens of thousands of genes for multiple samples has never been easier. The cost of these experiments has now moved from generating the data to storing and analysing it.
 
-There are many steps involved in analysing an RNA-Seq experiment. Analysing an RNAseq experiment begins with sequencing reads. These are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and getting stuck into analysis.
+There are many steps involved in analysing an RNA sequencing experiment. Analysing an RNAseq experiment begins with sequencing reads. These are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and getting stuck into analysis.
 
 First, let’s load all the packages we will need to analyse the data.
 
@@ -118,16 +118,16 @@ library(airway)
 ```
 
 ### Airway RNA-seq dataset
-Here we will perform RNA-Seq analysis using the data from the *airway* package. The airway data comes from the paper by [@himes2014rna]. It is 8 RNA-seq samples from human airway smooth muscle cells: a sample treated with dexamethasone and an untreated control sample for 4 cell lines.
+Here we will perform RNA sequencing analysis using the data from the *airway* package. The airway data comes from the paper by [@himes2014rna]. It is 8 RNA-seq samples from human airway smooth muscle cells: a sample treated with dexamethasone and an untreated control sample for 4 cell lines.
 
 ### Setting up the data
 
-The airway RNA-Seq data is stored as a *RangedSummarizedExperiment* object. We can convert a SummarizedExperiment object into a tidybulk tibble, which is the tidyverse table format.
+The airway RNA sequencing data is stored as a *RangedSummarizedExperiment* object. We can convert a SummarizedExperiment object into a tidybulk tibble, which is the tidyverse table format.
 
 In this workshop we will be using the tidyverse pipe `%>%`. This 'pipes' the output from the command on the left into the command on the right/below. Using the pipe is not essential but it reduces the amount of code we need to write when we have multiple steps (as we'll see later). It also can make the steps clearer and easier to see. For more details on the pipe see [here](https://r4ds.had.co.nz/pipes.html).
 
 ```{r}
-# load airway RNA-Seq data
+# load airway RNA sequencing data
 data(airway)
 
 # convert to tidybulk format
@@ -269,7 +269,7 @@ legend("topright", legend=dgList_norm$samples$Run, text.col=col, bty="n")
 
 ### PCA plot
 
-By far, one of the most important plots we make when we analyse RNA-Seq data are PCA or MDS plots. A PCA plot is a visualisation which determines the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions` function to calculate the dimensions.
+By far, one of the most important plots we make when we analyse RNA sequencing data are PCA or MDS plots. A PCA plot is a visualisation which determines the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions` function to calculate the dimensions.
 
 
 ```{r}
@@ -518,7 +518,7 @@ strip_chart %>% ggplotly(tooltip = c("label", "y"))
 - RNA sequencing data can be represented and analysed in a 'tidy' way using tidybulk and the tidyverse
 - With the modularity offered by piping we don't need to create variables, unless an object is used more than one. This improves robustness of the code.
 - The principles of tidy transcriptomics are to interface as much as possible with commonly known manipulation and visualisation tools, rather than creating custom functions. 
-- Some of the key steps in an RNA-Seq analysis are (i) filtering lowly abundant transcripts, (ii) adjusting for differences in sequencing depth and composition, (iii) testing for differential expression
+- Some of the key steps in an RNA sequencing analysis are (i) filtering lowly abundant transcripts, (ii) adjusting for differences in sequencing depth and composition, (iii) testing for differential expression
 - Dimensionality reduction (PCA or MDS) plots are very important for exploring the data 
 - Density plots, volcano plots, strip-charts and heatmaps are useful visualisation tools for evaluating the hypothesis testing. 
 
