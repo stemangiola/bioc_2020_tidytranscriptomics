@@ -377,7 +377,7 @@ If we just want a table of differentially expressed genes we can select the tran
 counts_de %>% pivot_transcript()
 ```
 
-Now we have columns with our logFC and FDR P values. There is also a column called significant that indicates if the gene has FDR < 0.05.
+Now we have columns with our log-fold change (logFC), false-discovery rate (FDR) and probability value (p-value). There is also a column called significant that indicates if the gene has false-discovery rate < 0.05.
 
 Tidybulk enables a simplified way of performing an RNA sequencing differential expression analysis (with the benefit of smoothly integrating with ggplot2 and other tidyverse packages). Compare the code for a tidybulk edgeR analysis versus standard edgeR below.
 
@@ -421,7 +421,7 @@ counts_de %>%
 
 ### Extracting top differentially expressed genes
 
-We can see the top genes by smallest P value. We'll take a look at the top 6.
+We can see the top genes by smallest p-value. We'll take a look at the top 6.
 ```{r}
 topgenes <- 
 	counts_de %>%
@@ -444,7 +444,7 @@ topgenes_symbols
 
 ### Volcano plots
 
-Volcano plots are a useful genome-wide plot for checking that the analysis looks good. Volcano plots enable us to visualise significance of expression (P value) versus logFC. Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
+Volcano plots are a useful genome-wide plot for checking that the analysis looks good. Volcano plots enable us to visualise the significance of change (p-value) versus the fold change (logFC). Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with false-discovery rate < 0.05) 
 
 ```{r}
 # volcano plot, minimal
@@ -537,7 +537,7 @@ Note that as this is fly data you can't use ensembl_to_symbol to get gene symbol
 
 Questions:  
 1. What is the Fraction of Variance for PC1 and PC2? What do PC1 and PC2 represent?  
-2. How many differentially expressed genes are there for treated vs untreated (FDR < 0.05)? What is the top differentially expressed gene by P value? 
+2. How many differentially expressed genes are there for treated vs untreated (false discovery rate < 0.05)? What is the top differentially expressed gene by p-value? 
 3. What code can generate a heatmap of variable genes (starting from count_scaled)?  
 4. What code can you use to visualise expression of the pasilla gene (gene id: FBgn0261552)  
 5. What code can generate an interactive volcano plot that has gene ids showing on hover?  
