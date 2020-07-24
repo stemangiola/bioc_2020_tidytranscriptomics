@@ -18,7 +18,6 @@ navbar:
     - text: Supplementary 
       href: articles/supplementary.html
 
-navbar:
   right:
    - icon: fa-github
      href: https://github.com/stemangiola/bioc_2020_tidytranscriptomics
