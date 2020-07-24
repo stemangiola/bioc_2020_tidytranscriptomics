@@ -231,6 +231,8 @@ airway %>%
 **base R using edgeR**
 
 ```{r eval=FALSE}
+# Example code, no need to run
+
 # Prepare data set
 dgList <- SE2DGEList(airway)
 group <- factor(dgList$samples$dex)
@@ -336,6 +338,8 @@ Tidybulk enables a simplified way of generating a clustered heatmap of variable 
 
 **base R using edgeR**
 ```{r eval=FALSE}
+# Example code, no need to run
+
 dgList <- SE2DGEList(airway)
 group <- factor(dgList$samples$dex)
 keep.exprs <- filterByExpr(dgList, group=group)
@@ -386,6 +390,8 @@ Tidybulk enables a simplified way of performing an RNA sequencing differential e
 
 **standard edgeR**
 ```{r eval=FALSE}
+# Example code, no need to run
+
 dgList <- SE2DGEList(airway)
 group <- factor(dgList$samples$dex)
 keep.exprs <- filterByExpr(dgList, group=group)
