@@ -313,6 +313,9 @@ An alternative to principal component analysis for examining relationships betwe
 
 ```{r fig.height=5, fig.width=8}
 counts_scaled %>% 
+  
+  # filter lowly abundant
+  filter(!lowly_abundant) %>% 
 	
 	# extract 500 most variable genes
 	keep_variable( .abundance = counts_scaled, top = 500) %>%
