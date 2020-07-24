@@ -450,9 +450,11 @@ Volcano plots are a useful genome-wide plot for checking that the analysis looks
 # volcano plot, minimal
 counts_de %>%
 	filter(!lowly_abundant) %>%
-	ggplot(aes(x=logFC, y=-log10(PValue), colour=significant)) +
+	ggplot(aes(x=logFC, y=PValue, colour=significant)) +
 	geom_point() +
+	scale_y_continuous(trans = "log10_reverse") +
 	theme_bw()
+
 ```
 
 A more informative plot, integrating some of the packages in tidyverse.
@@ -461,18 +463,20 @@ A more informative plot, integrating some of the packages in tidyverse.
 counts_de %>%
 	pivot_transcript() %>%
 
-    # Subset data
+  # Subset data
 	filter(!lowly_abundant) %>%
 	mutate(significant = FDR<0.05 & abs(logFC) >=2) %>%
 	mutate(transcript = ifelse(transcript %in% topgenes_symbols, as.character(transcript), "")) %>%
 
-    # Plot
-	ggplot(aes(x = logFC, y = -log10(PValue), label=transcript)) +
+  # Plot
+	ggplot(aes(x = logFC, y = PValue, label=transcript)) +
 	geom_point(aes(color = significant, size = significant, alpha=significant)) +
 	geom_text_repel() +
+	
+	# Custom scales
+	scale_y_continuous(trans = "log10_reverse") +
 	scale_color_manual(values=c("black", "#e11f28")) +
 	scale_size_discrete(range = c(0, 2)) +
-	xlim(c(-11,11)) +
 	theme_bw()
 ```
 
