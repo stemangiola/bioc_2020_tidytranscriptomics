@@ -198,7 +198,7 @@ After we run `scale_abundance` we should see some columns have been added at the
 
 We can now see the difference of abundance densities before and after scaling.
 
-```{r }
+```{r fig.height=5, fig.width=8}
 counts_scaled %>%
 	filter(!lowly_abundant) %>%
 	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
@@ -294,7 +294,7 @@ counts_scal_PCA %>% pivot_sample()
 
 We can now plot the reduced dimensions.
 
-```{r}
+```{r fig.height=5, fig.width=8}
 # PCA plot
 counts_scal_PCA %>%
 	pivot_sample() %>%
@@ -449,7 +449,7 @@ topgenes_symbols
 
 Volcano plots are a useful genome-wide plot for checking that the analysis looks good. Volcano plots enable us to visualise the significance of change (p-value) versus the fold change (logFC). Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with false-discovery rate < 0.05) 
 
-```{r}
+```{r fig.height=5, fig.width=8}
 # volcano plot, minimal
 counts_de %>%
 	filter(!lowly_abundant) %>%
@@ -462,7 +462,7 @@ counts_de %>%
 
 A more informative plot, integrating some of the packages in tidyverse.
 
-```{r warning=FALSE}
+```{r fig.height=5, fig.width=8 warning=FALSE}
 counts_de %>%
 	pivot_transcript() %>%
 
@@ -489,7 +489,7 @@ Before following up on the differentially expressed genes with further lab work,
 
 With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. We'll also add a box plot to show the distribution.
 
-```{r}
+```{r fig.height=5, fig.width=8}
 strip_chart <- 
 	counts_scaled %>%
 	
@@ -513,7 +513,7 @@ A really nice feature of using tidyverse and ggplot2 is that we can make interac
 
 We can also specify which parameters from the `aes` we want to show up when we hover over the plot with `tooltip`.
 
-```{r, warning=FALSE}
+```{r, fig.height=5, fig.width=8, warning=FALSE}
 strip_chart %>% ggplotly(tooltip = c("label", "y"))
 ```
 
