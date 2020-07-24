@@ -10,25 +10,20 @@ Website: https://stemangiola.github.io/bioc_2020_tidytranscriptomics
 
 Docker image: https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics
 
+Material [web page](https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html) .
+
 Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
 
 **This material was created for a Bioc2020 conference workshop but it can also be used for self-learning.**
 
-The workshop material can be accessed [here](https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html) .
 
-## Running the workshop
+## Workshop package installation (necessary in order to reproduce)
 
 The workshop is designed for R `4.0` and packages from the 3.12 `devel` branch of Bioconductor. It can be installed as an R package. 
-```
-devtools::install_github("stemangiola/bioc_2020_tidytranscriptomics", build_vignettes = TRUE, force=TRUE)
-```
 
+### Via Docker image
 
-But the easiest way to try out the workshop is to use the Docker image (see section below), which has all the software pre-configured to the correct versions. 
-
-## Docker image
-
-You can run this workshop using the Docker image. If you need to install Docker you can get it from [here](https://docs.docker.com/get-docker/):
+All the software is pre-configured to the correct versions. If you need to install Docker you can get it from [here](https://docs.docker.com/get-docker/):
 
 ```
 docker run -e PASSWORD=abc -p 8787:8787 stemangiola/bioc_2020_tidytranscriptomics
@@ -36,6 +31,14 @@ docker run -e PASSWORD=abc -p 8787:8787 stemangiola/bioc_2020_tidytranscriptomic
 
 Once running, navigate to <http://localhost:8787/> and then login with
 `rstudio:abc`.
+
+### Via GitHub
+```
+devtools::install_github("stemangiola/tidybulk")
+devtools::install_github("stemangiola/bioc_2020_tidytranscriptomics", build_vignettes = TRUE)
+library(tidytranscriptomics)
+vignette("tidytranscriptomics")
+```
 
 ## Workshop Description
 
