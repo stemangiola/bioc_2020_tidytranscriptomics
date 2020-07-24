@@ -522,13 +522,6 @@ strip_chart %>% ggplotly(tooltip = c("label", "y"))
 - Dimensionality reduction (PCA or MDS) plots are very important for exploring the data 
 - Density plots, volcano plots, strip-charts and heatmaps are useful visualisation tools for evaluating the hypothesis testing. 
 
-## Reproducibility
-Record package and version information with `sessionInfo`
-
-```{r}
-sessionInfo()
-```
-
 ## Exercises
 
 Try to apply what you've learned to another RNA-seq dataset. This dataset was generated from the pasilla package, which obtained the data from the paper by [@brooks2011conservation]. Here we provide it as a SummarizedExperiment object. The dataset has 7 samples from Drosophila (fruitfly): 3 treated with siRNA knockdown of the pasilla gene and 4 untreated controls.
@@ -550,5 +543,11 @@ Questions:
 5. What code can generate an interactive volcano plot that has gene ids showing on hover?  
 6. What code can generate a heatmap of the top 100 DE genes?  
 
+## Reproducibility
+Record package and version information with `sessionInfo`
+
+```{r}
+sessionInfo()
+```
 
 ## References
