@@ -8,10 +8,25 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r message=FALSE, warning=FALSE}
+# load libraries
+library(tibble)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(stringr)
+library(ggplot2)
+library(tidyHeatmap)
+library(tidybulk)
+library(ggrepel)
+library(airway)
+```
+
 ## How to start from tables
 
 ```{r}
 # create some example tables to use
+data(airway)
 
 # counts table
 counts <- assay(airway) %>%
@@ -135,7 +150,7 @@ counts_de_pretty %>%
 
 ## How to do gene set analysis
 
-```{r}
+```{r eval=FALSE}
 library(clusterProfiler)
 library(org.Hs.eg.db)
 
