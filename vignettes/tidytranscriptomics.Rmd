@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm [@wickham2014tidy]. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions. 
 
-This can be achieved for RNA sequencing data with the [tidybulk](github.com/stemangiola/tidybulk), [tidyHeatmap](github.com/stemangiola/tidyHeatmap) and tidyverse [@wickham2019welcome] packages. The package [tidybulk](github.com/stemangiola/tidybulk) provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data.
+This can be achieved for RNA sequencing data with the [tidybulk](github.com/stemangiola/tidybulk), [tidyHeatmap](github.com/stemangiola/tidyHeatmap) and tidyverse [@wickham2019welcome] packages. The package [tidybulk](github.com/stemangiola/tidybulk) provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data representation and analysis
 
 The topics presented in this workshop will be
 
@@ -66,9 +66,9 @@ The workshop format is a 55 min session consisting of a 30 min demo followed by 
 
 ### Workshop goals and objectives
 
-In exploring and analysing RNA sequencing data, there are a number of key concepts, such as filtering, scaling, dimensionality reduction, hypothesis testing, clustering and visualisation, that need to be understood. These concepts can be intuitively explained to new users, however, (i) the use of a heterogeneous vocabulary and jargon by methodologies/algorithms/packages, (ii) the complexity of data wrangling, and (iii) the coding burden, impede effective learning of the statistics and biology underlying an informed RNA sequencing analysis. 
+In exploring and analysing RNA sequencing data, there are a number of key concepts, such as filtering, scaling, dimensionality reduction, hypothesis testing, clustering and visualisation, that need to be understood. These concepts can be intuitively explained to new users, however, (i) the use of a heterogeneous vocabulary and jargon by methodologies/algorithms/packages, (ii) the complexity of data wrangling, and (iii) the coding burden, impede effective learning of the statistics and biology underlying an informed analysis. 
 
-The tidytranscriptomics approach to RNA sequencing data analysis abstracts out the coding-related complexity and provides tools that use an intuitive and jargon-free vocabulary, enabling focus on the statistical and biological challenges.
+The tidytranscriptomics approach abstracts out the coding-related complexity and provides tools that use an intuitive and jargon-free vocabulary, enabling focus on the statistical and biological challenges.
 
 #### Learning goals
 
@@ -92,7 +92,7 @@ knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
 ## Introduction
 Measuring gene expression on a genome-wide scale has become common practice over the last two decades or so, with microarrays predominantly used pre-2008. With the advent of next generation sequencing technology in 2008, an increasing number of scientists use this technology to measure and understand changes in gene expression in often complex systems. As sequencing costs have decreased, using RNA sequencing to simultaneously measure the expression of tens of thousands of genes for multiple samples has never been easier. The cost of these experiments has now moved from generating the data to storing and analysing it.
 
-There are many steps involved in analysing an RNA sequencing experiment. Analysing an RNA sequencing experiment begins with sequencing reads. These are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and getting stuck into analysis.
+There are many steps involved in analysing an RNA sequencing data-set. Sequenced reads are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and getting stuck into analysis.
 
 First, let’s load all the packages we will need to analyse the data.
 
@@ -117,12 +117,12 @@ library(plotly)
 library(airway)
 ```
 
-### Airway RNA-seq dataset
-Here we will perform RNA sequencing analysis using the data from the *airway* package. The airway data comes from the paper by [@himes2014rna]. It is 8 RNA-seq samples from human airway smooth muscle cells: a sample treated with dexamethasone and an untreated control sample for 4 cell lines.
+### Airway RNA sequencing dataset
+Here we will perform our analysis using the data from the *airway* package. The airway data comes from the paper by [@himes2014rna]; and it includes 8 biological replicates from human airway smooth muscle cells, from 4 cell lines. For each cell linea treated (with dexamethasone) and untreated (negative control) sample are have been probed.
 
 ### Setting up the data
 
-The airway RNA sequencing data is stored as a *RangedSummarizedExperiment* object. We can convert a SummarizedExperiment object into a tidybulk tibble, which is the tidyverse table format.
+The airway data is stored as a *RangedSummarizedExperiment* object. We can convert a SummarizedExperiment object into a tidybulk tibble, which is the tidyverse table format.
 
 In this workshop we will be using the tidyverse pipe `%>%`. This 'pipes' the output from the command on the left into the command on the right/below. Using the pipe is not essential but it reduces the amount of code we need to write when we have multiple steps (as we'll see later). It also can make the steps clearer and easier to see. For more details on the pipe see [here](https://r4ds.had.co.nz/pipes.html).
 
@@ -267,13 +267,13 @@ legend("topright", legend=dgList_norm$samples$Run, text.col=col, bty="n")
 
 ## Exploratory analyses
 
-### PCA plot
+### Dimensionality reduction
 
-By far, one of the most important plots we make when we analyse RNA sequencing data are PCA or MDS plots. A PCA plot is a visualisation which determines the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions` function to calculate the dimensions.
+By far, one of the most important plots we make when we analyse RNA sequencing data are principal-component analysis (PCA) or multi-dimensional scaling (MDS) plots. We reduce the dimensions of the data to identify the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions` function to calculate the dimensions.
 
 
 ```{r}
-# get PCA dimensions
+# Get principal components
 counts_scal_PCA <-
   counts_scaled %>%
   reduce_dimensions(method="PCA")
@@ -282,7 +282,7 @@ counts_scal_PCA <-
 This joins the result to the counts object.
 
 ```{r}
-# take a look
+# Take a look
 counts_scal_PCA
 ```
 For plotting, we can select just the sample-wise information with `pivot_sample`.
@@ -309,7 +309,7 @@ The samples separate by treatment on PC 1 which is what we hope to see. PC2 sepa
 
 ### Hierarchical clustering with heatmaps
 
-An alternative to PCA for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable`, to extract the most variable genes which we can then plot with tidyHeatmap.
+An alternative to principal component analysis for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable`, to extract the most variable genes which we can then plot with tidyHeatmap.
 
 ```{r fig.height=5, fig.width=8}
 counts_scaled %>% 
@@ -379,7 +379,7 @@ counts_de %>% pivot_transcript()
 
 Now we have columns with our logFC and FDR P values. There is also a column called significant that indicates if the gene has FDR < 0.05.
 
-Tidybulk enables a simplified way of performing an RNA-seq differential expression testing (with the benefit of smoothly integrating with ggplot2 and other tidyverse packages). Compare the code for a tidybulk edgeR analysis versus standard edgeR below.
+Tidybulk enables a simplified way of performing an RNA sequencing differential expression analysis (with the benefit of smoothly integrating with ggplot2 and other tidyverse packages). Compare the code for a tidybulk edgeR analysis versus standard edgeR below.
 
 **standard edgeR**
 ```{r eval=FALSE}
@@ -524,7 +524,7 @@ strip_chart %>% ggplotly(tooltip = c("label", "y"))
 
 ## Exercises
 
-Try to apply what you've learned to another RNA-seq dataset. This dataset was generated from the pasilla package, which obtained the data from the paper by [@brooks2011conservation]. Here we provide it as a SummarizedExperiment object. The dataset has 7 samples from Drosophila (fruitfly): 3 treated with siRNA knockdown of the pasilla gene and 4 untreated controls.
+Try to apply what you've learned to another dataset. This dataset was generated from the pasilla package, which obtained the data from the paper by [@brooks2011conservation]. Here we provide it as a SummarizedExperiment object. The dataset has 7 samples from Drosophila (fruitfly): 3 treated with siRNA knockdown of the pasilla gene and 4 untreated controls.
 Load the data and create the tidybulk object with:
 ```{r}
 data("pasilla", package = "tidytranscriptomics")
