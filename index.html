@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">tidytranscriptomics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.4</span>
       </span>
     </div>
 
@@ -82,28 +82,22 @@
 <p><a href="https://doi.org/10.5281/zenodo.3929366"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3929366.svg" alt="DOI"></a></p>
 <p>Website: <a href="https://stemangiola.github.io/bioc_2020_tidytranscriptomics" class="uri">https://stemangiola.github.io/bioc_2020_tidytranscriptomics</a></p>
 <p>Docker image: <a href="https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics" class="uri">https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics</a></p>
-<p>Material <a href="https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html">web page</a> .</p>
 <p>Dr. Maria Doyle (<a href="mailto:Maria.Doyle@petermac.org" class="email">Maria.Doyle@petermac.org</a>) and Dr. Stefano Mangiola (<a href="mailto:mangiola.s@wehi.edu.au" class="email">mangiola.s@wehi.edu.au</a>)</p>
 <p><strong>This material was created for a Bioc2020 conference workshop but it can also be used for self-learning.</strong></p>
-<div id="workshop-package-installation-necessary-in-order-to-reproduce" class="section level2">
+<p>The workshop material can be accessed <a href="https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html">here</a> .</p>
+<div id="running-the-workshop" class="section level2">
 <h2 class="hasAnchor">
-<a href="#workshop-package-installation-necessary-in-order-to-reproduce" class="anchor"></a>Workshop package installation (necessary in order to reproduce)</h2>
+<a href="#running-the-workshop" class="anchor"></a>Running the workshop</h2>
 <p>The workshop is designed for R <code>4.0</code> and packages from the 3.12 <code>devel</code> branch of Bioconductor. It can be installed as an R package.</p>
-<div id="via-docker-image" class="section level3">
-<h3 class="hasAnchor">
-<a href="#via-docker-image" class="anchor"></a>Via Docker image</h3>
-<p>All the software is pre-configured to the correct versions. If you need to install Docker you can get it from <a href="https://docs.docker.com/get-docker/">here</a>:</p>
+<pre><code><a href="https://devtools.r-lib.org//reference/remote-reexports.html">devtools::install_github("stemangiola/bioc_2020_tidytranscriptomics", build_vignettes = TRUE, force=TRUE)</a></code></pre>
+<p>But the easiest way to try out the workshop is to use the Docker image (see section below), which has all the software pre-configured to the correct versions.</p>
+</div>
+<div id="docker-image" class="section level2">
+<h2 class="hasAnchor">
+<a href="#docker-image" class="anchor"></a>Docker image</h2>
+<p>You can run this workshop using the Docker image. If you need to install Docker you can get it from <a href="https://docs.docker.com/get-docker/">here</a>:</p>
 <pre><code>docker run -e PASSWORD=abc -p 8787:8787 stemangiola/bioc_2020_tidytranscriptomics</code></pre>
 <p>Once running, navigate to <a href="http://localhost:8787/" class="uri">http://localhost:8787/</a> and then login with <code>rstudio:abc</code>.</p>
-</div>
-<div id="via-github" class="section level3">
-<h3 class="hasAnchor">
-<a href="#via-github" class="anchor"></a>Via GitHub</h3>
-<pre><code><a href="https://devtools.r-lib.org//reference/remote-reexports.html">devtools::install_github("stemangiola/tidybulk")
-devtools::install_github("stemangiola/bioc_2020_tidytranscriptomics", build_vignettes = TRUE)
-library(tidytranscriptomics)
-vignette("tidytranscriptomics")</a></code></pre>
-</div>
 </div>
 <div id="workshop-description" class="section level2">
 <h2 class="hasAnchor">
