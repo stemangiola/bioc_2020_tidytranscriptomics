@@ -42,7 +42,7 @@ Recommended Background Reading
 
 ### Workshop Participation
 
-The workshop format is a 55 min session consisting of a 30 min demo followed by 25 min opportunity for attendees to try out the code, exercises and Q&A.
+The workshop length is 55 min. It consists of a 30 min demo followed by 25 min opportunity for attendees to try out the code, exercises and Q&A.
 
 ### _R_ / _Bioconductor_ packages used
 
@@ -184,7 +184,7 @@ With tidybulk, it is not really necessary to explicitly filter lowly transcribed
 
 ## Scaling counts to normalise
 
-Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, with scaling factors calculated on abundant (filtered) transcript and applied to all transcripts. We can choose from different normalisation methods. Here we will use the default, TMM, [@robinson2010tmm]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. We use `factor_of_interest` to specify the column containing the groups for the filtering described above.
+Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, with scaling factors calculated on abundant (filtered) transcript and applied to all transcripts. We can choose from different normalisation methods. Here we will use the default, TMM, [robinson2010scaling]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. We use `factor_of_interest` to specify the column containing the groups for the filtering described above.
 
 ```{r}
 # Scaling counts

@@ -2,7 +2,7 @@
 title: "Supplementary Material"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{TidyTranscriptomics}
+  %\VignetteIndexEntry{Supplementary}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
