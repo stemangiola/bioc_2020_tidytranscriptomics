@@ -450,9 +450,11 @@ Volcano plots are a useful genome-wide plot for checking that the analysis looks
 # volcano plot, minimal
 counts_de %>%
 	filter(!lowly_abundant) %>%
-	ggplot(aes(x=logFC, y=-log10(PValue), colour=significant)) +
+	ggplot(aes(x=logFC, y=PValue, colour=significant)) +
 	geom_point() +
+	scale_y_continuous(trans = "log10_reverse") +
 	theme_bw()
+
 ```
 
 A more informative plot, integrating some of the packages in tidyverse.
@@ -461,18 +463,20 @@ A more informative plot, integrating some of the packages in tidyverse.
 counts_de %>%
 	pivot_transcript() %>%
 
-    # Subset data
+  # Subset data
 	filter(!lowly_abundant) %>%
 	mutate(significant = FDR<0.05 & abs(logFC) >=2) %>%
 	mutate(transcript = ifelse(transcript %in% topgenes_symbols, as.character(transcript), "")) %>%
 
-    # Plot
-	ggplot(aes(x = logFC, y = -log10(PValue), label=transcript)) +
+  # Plot
+	ggplot(aes(x = logFC, y = PValue, label=transcript)) +
 	geom_point(aes(color = significant, size = significant, alpha=significant)) +
 	geom_text_repel() +
+	
+	# Custom scales
+	scale_y_continuous(trans = "log10_reverse") +
 	scale_color_manual(values=c("black", "#e11f28")) +
 	scale_size_discrete(range = c(0, 2)) +
-	xlim(c(-11,11)) +
 	theme_bw()
 ```
 
@@ -511,10 +515,12 @@ strip_chart %>% ggplotly(tooltip = c("label", "y"))
 ```
 
 ## Key Points
-- RNA-Seq data can be analysed in a 'tidy' way using the packages tidyverse, tidybulk and tidyHeatmap
-- Key steps in an RNA-Seq analysis are filtering lowly expressed genes, normalisation for sequencing depth and composition, and testing for differential expression
-- PCA (or MDS) plots are very important for examining the quality of the data
-- Other useful plots for assessing RNA-Seq data are density plots, volcano plots, stripcharts and heatmaps. These can all be made in a 'tidy' way.
+- RNA sequencing data can be represented and analysed in a 'tidy' way using tidybulk and the tidyverse
+- With the modularity offered by piping we don't need to create variables, unless an object is used more than one. This improves robustness of the code.
+- The principles of tidy transcriptomics are to interface as much as possible with commonly known manipulation and visualisation tools, rather than creating custom functions. 
+- Some of the key steps in an RNA-Seq analysis are (i) filtering lowly abundant transcripts, (ii) adjusting for differences in sequencing depth and composition, (iii) testing for differential expression
+- Dimensionality reduction (PCA or MDS) plots are very important for exploring the data 
+- Density plots, volcano plots, strip-charts and heatmaps are useful visualisation tools for evaluating the hypothesis testing. 
 
 ## Reproducibility
 Record package and version information with `sessionInfo`
