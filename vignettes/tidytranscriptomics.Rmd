@@ -552,6 +552,9 @@ Questions:
 5. What code can generate an interactive volcano plot that has gene ids showing on hover?  
 6. What code can generate a heatmap of the top 100 differentially expressed genes?  
 
+## Contributing
+If you want to suggest improvements for this workshop or ask questions, you can do so as described [here](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/blob/master/CONTRIBUTING.md).
+
 ## Reproducibility
 Record package and version information with `sessionInfo`
 
