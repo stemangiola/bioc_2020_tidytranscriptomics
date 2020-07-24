@@ -19,20 +19,25 @@ Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@
 
 ## Workshop package installation (necessary in order to reproduce)
 
-The workshop is designed for R `4.0` and packages from the 3.12 `devel` branch of Bioconductor. It can be installed as an R package. 
+The workshop is designed for R `4.0` and packages from the 3.12 `devel` branch of Bioconductor. It can be installed using one of the two ways below.
 
 ### Via Docker image
 
-All the software is pre-configured to the correct versions. If you need to install Docker you can get it from [here](https://docs.docker.com/get-docker/):
+If you're familiar with [Docker][(https://docs.docker.com/get-docker/) you could use the Docker image which has all the software pre-configured to the correct versions.
 
 ```
 docker run -e PASSWORD=abc -p 8787:8787 stemangiola/bioc_2020_tidytranscriptomics
 ```
 
 Once running, navigate to <http://localhost:8787/> and then login with
-`rstudio:abc`.
+`Username:rstudio` and `Password:abc`.
+
+You should see the Rmarkdown file with all the workshop code which you can run.
 
 ### Via GitHub
+
+Alternatively, you could install the workshop with the commands below in R `4.0`.
+
 ```
 devtools::install_github("stemangiola/tidybulk")
 devtools::install_github("stemangiola/bioc_2020_tidytranscriptomics", build_vignettes = TRUE)
@@ -40,11 +45,13 @@ library(tidytranscriptomics)
 vignette("tidytranscriptomics")
 ```
 
+To run the code, you could then copy and paste the code from the workshop [R markdown file](https://raw.githubusercontent.com/stemangiola/bioc_2020_tidytranscriptomics/master/vignettes/tidytranscriptomics.Rmd) into a new R Markdown file on your computer.
+
 ## Workshop Description
 
-This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm [@wickham2014tidy]. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions. 
+This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions. 
 
-This can be achieved for RNA sequencing data with the [tidybulk](github.com/stemangiola/tidybulk), [tidyHeatmap](github.com/stemangiola/tidyHeatmap) and tidyverse [@wickham2019welcome] packages. The package [tidybulk](github.com/stemangiola/tidybulk) provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data.
+This can be achieved for RNA sequencing data with the [tidybulk](github.com/stemangiola/tidybulk), [tidyHeatmap](github.com/stemangiola/tidyHeatmap) and tidyverse packages. The package [tidybulk](github.com/stemangiola/tidybulk) provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data.
 
 The topics presented in this workshop will be
 
@@ -76,14 +83,14 @@ The workshop format is a 55 min session consisting of a 30 min demo followed by 
 
 ### Time outline
 
-| Activity                                         | Time |
-|--------------------------------------------------|------|
-| Demo                                             | 30m  |
-|     Introduction and Data preprocessing          |      |
-|     Data dimensionality reduction and clustering |      |
-|     Differential gene expression                 |      |
-|     Data visualisation                           |      |
-| Try out code, Exercises, Q&A                     | 25m  |
+| Activity                                           | Time |
+|----------------------------------------------------|------|
+| Demo                                               | 30m  |
+|     *Introduction and Data preprocessing*          |      |
+|     *Data dimensionality reduction and clustering* |      |
+|     *Differential gene expression*                 |      |
+|     *Data visualisation*                           |      |
+| Try out code, Exercises, Q&A                       | 25m  |
 
 ### Workshop goals and objectives
 
