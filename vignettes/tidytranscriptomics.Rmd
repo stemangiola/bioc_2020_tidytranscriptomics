@@ -517,9 +517,9 @@ strip_chart %>% ggplotly(tooltip = c("label", "y"))
 ## Key Points
 - RNA sequencing data can be represented and analysed in a 'tidy' way using tidybulk and the tidyverse
 - With the modularity offered by piping we don't need to create variables, unless an object is used more than one. This improves robustness of the code.
-- The principles of tidy transcriptomics is to interface as much as possible commonly known manipulation and visualisation tools, rather than creating custom functions. 
-- Some of the key steps in an RNA-Seq analysis are (i) filtering lowly abundant transcripts, (ii) compensating for sequencing depth, (iii) testing for differential expression
-- Dimensionality reduction (PCA or MDS) plots is very important for exploring the data 
+- The principles of tidy transcriptomics are to interface as much as possible with commonly known manipulation and visualisation tools, rather than creating custom functions. 
+- Some of the key steps in an RNA-Seq analysis are (i) filtering lowly abundant transcripts, (ii) adjusting for differences in sequencing depth and composition, (iii) testing for differential expression
+- Dimensionality reduction (PCA or MDS) plots are very important for exploring the data 
 - Density plots, volcano plots, strip-charts and heatmaps are useful visualisation tools for evaluating the hypothesis testing. 
 
 ## Reproducibility
