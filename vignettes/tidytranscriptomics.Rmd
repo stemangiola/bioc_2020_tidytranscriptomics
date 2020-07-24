@@ -468,7 +468,7 @@ counts_de %>%
 
 A more informative plot, integrating some of the packages in tidyverse.
 
-```{r fig.height=5, fig.width=8 warning=FALSE}
+```{r fig.height=5, fig.width=8, warning=FALSE}
 counts_de %>%
 	pivot_transcript() %>%
 

@@ -1,6 +1,5 @@
 ---
 title: "Supplementary Material"
-subtitle: "A Tidy Transcriptomics introduction to RNA-Seq analyses"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{TidyTranscriptomics}
@@ -41,56 +40,68 @@ sampleinfo <- colData(airway) %>%
 counts_tt <- 
   
   # convert to tidy format
-	pivot_longer(counts, cols = starts_with("SRR"), names_to = "sample", values_to = "count") %>%
+	pivot_longer(counts, cols = starts_with("SRR"), names_to = "sample", values_to = "counts") %>%
   
   # get gene symbols
   ensembl_to_symbol(geneID) %>%
   
-  # shorten sample name
-  mutate(sample=str_remove(sample, "SRR1039")) %>%
-  
   # order the columns for tidybulk
-  select(sample, transcript, count) %>%
+  select(sample, geneID, counts, transcript) %>%
   
   # add the sample info
   left_join(sampleinfo) %>%
   
+  # shorten sample name
+  mutate(sample=str_remove(sample, "SRR1039")) %>%
+  
   # convert to tidybulk object
-  tidybulk()
+  tidybulk(.sample=sample, .transcript=geneID, .abundance=counts)
 ```
 
 ## How to count reads per sample
 
 ```{r}
-counts_tt %>% 
+reads_per_sample <- counts_tt %>% 
   group_by(sample) %>% 
-  summarise(total_reads=sum(count))
+  summarise(total_reads=sum(counts))
+
+reads_per_sample
 ```
 
-We can also check how many counts we have for each sample by making a bar plot. This helps us see whether there are any major discrepancies between the samples more easily. We use `weight` to sum up the counts for each sample.
+We can also check how many counts we have for each sample by making a bar plot. This helps us see whether there are any major discrepancies between the samples more easily.
 
 ```{r}
 # make barplot of counts
-ggplot(counts_tt, aes(x=sample, weight=counts, fill=dex)) + 
+ggplot(counts_tt, aes(x=sample, weight=counts, fill=sample)) + 
   geom_bar()+
 	theme_bw()
 ```
 
 As we are using ggplot2, we can also easily view by any other variable that's a column in our dataset, such as cell line, simply by changing `fill`.
 
+We can colour by dex treatment.
+
 ```{r}
-# make barplot of counts
+ggplot(counts_tt, aes(x=sample, weight=counts, fill=dex)) + 
+  geom_bar()+
+	theme_bw()
+```
+We can colour by cell line.
+
+```{r}
 ggplot(counts_tt, aes(x=sample, weight=counts, fill=cell)) + 
   geom_bar()+
 	theme_bw()
 ```
 
-The bar plots show us there are 15-30 million counts per sample.
-
 
 ## How to examine normalised counts with boxplots
 
 ```{r}
+# scale counts
+counts_scaled <- counts_tt %>% scale_abundance(factor_of_interest = dex)
+
+# create box plots
 counts_scaled %>%
   filter(!lowly_abundant) %>%
 	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
@@ -120,8 +131,16 @@ geom_point()
 MA plots enable us to visualise amount of expression (logCPM) versus logFC. Highly expressed genes are towards the right of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
 
 ```{r}
+# perform differential testing
+counts_de <- counts_tt %>%
+    test_differential_abundance(
+      .formula = ~ 0 + dex + cell,
+      .contrasts = c("dextrt - dexuntrt"),
+      omit_contrast_in_colnames = TRUE
+    )
+
 # maplot, minimal
-counts_de_pretty %>%
+counts_de %>%
   pivot_transcript() %>%
   filter(!lowly_abundant) %>%
   ggplot(aes(x=logCPM, y=-logFC, colour=significant)) +
@@ -132,7 +151,7 @@ counts_de_pretty %>%
 A more informative MA plot, integrating some of the packages in tidyverse.
 
 ```{r warning=FALSE}
-counts_de_pretty %>%
+counts_de %>%
     pivot_transcript() %>%
     # Subset data
 		filter(!lowly_abundant) %>%
@@ -148,7 +167,8 @@ counts_de_pretty %>%
 ```
 
 
-## How to do gene set analysis
+## How to perform gene set analysis
+
 
 ```{r eval=FALSE}
 library(clusterProfiler)
