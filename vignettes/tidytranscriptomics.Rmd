@@ -200,9 +200,9 @@ We can now see the difference of abundance densities before and after scaling.
 
 ```{r }
 counts_scaled %>%
-	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
 	filter(!lowly_abundant) %>%
-	ggplot(aes(x=abundance + 1, group=sample, color=sample)) +
+	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
+	ggplot(aes(x=abundance + 1, color=sample)) +
 	geom_density() +
 	facet_wrap(~source) +
 	scale_x_log10() +
@@ -220,7 +220,7 @@ airway %>%
 	scale_abundance() %>%
 	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
 	filter(!lowly_abundant) %>%
-	ggplot(aes(x=abundance + 1, group=sample, color=sample)) +
+	ggplot(aes(x=abundance + 1, color=sample)) +
 	geom_density() +
 	facet_wrap(~source) +
 	scale_x_log10() +
@@ -285,7 +285,7 @@ This joins the result to the counts object.
 # take a look
 counts_scal_PCA
 ```
-For plotting, we can select just the dimensions for the samples with `pivot_sample`.
+For plotting, we can select just the sample-wise information with `pivot_sample`.
 
 ```{r}
 # take a look
@@ -370,7 +370,7 @@ The results will be joined to our counts for every sample.
 counts_de
 ```
 
-If we just want a table of DE genes we can use `pivot_transcript`.
+If we just want a table of differentially expressed genes we can select the transcript-wise information with `pivot_transcript`.
 
 ```{r}
 # take a look
@@ -399,7 +399,7 @@ qlf <- glmQLFTest(fit, contrast=TvsU)
 
 ### Table of differentially expressed genes
 
-We can write out our DE genes to a file that can be loaded into e.g. Excel. `write_tsv` will create a tab-separated file.
+We can write out our differentially expressed genes to a file that can be loaded into e.g. Excel. `write_tsv` will create a tab-separated file.
 
 ```{r eval=FALSE}
 # save results
@@ -411,7 +411,7 @@ counts_de %>%
 
 ### Counting differentially expressed genes
 
-We can count how many DE genes there are using the significant column.
+We can count how many differentially expressed genes there are using the significant column.
 
 ```{r}
 counts_de %>% 
@@ -440,7 +440,7 @@ topgenes_symbols <- topgenes %>% pull(transcript)
 topgenes_symbols
 ```
 	
-## Plots after testing for DE
+## Plots after testing for differentially expressed
 
 ### Volcano plots
 
@@ -482,7 +482,7 @@ counts_de %>%
 
 ### Stripcharts
 
-Before following up on the DE genes with further lab work, it is also recommended to have a look at the expression levels of the individual samples for the genes of interest. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups.
+Before following up on the differentially expressed genes with further lab work, it is also recommended to have a look at the expression levels of the individual samples for the genes of interest. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups.
 
 With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. We'll also add a box plot to show the distribution.
 
@@ -490,7 +490,7 @@ With stripcharts we can see if replicates tend to group together and how the exp
 strip_chart <- 
 	counts_scaled %>%
 	
-	# extract counts for top DE genes
+	# extract counts for top differentially expressed genes
 	filter(transcript %in% topgenes_symbols) %>%
 	
 	# make stripchart
@@ -537,11 +537,11 @@ Note that as this is fly data you can't use ensembl_to_symbol to get gene symbol
 
 Questions:  
 1. What is the Fraction of Variance for PC1 and PC2? What do PC1 and PC2 represent?  
-2. How many DE genes are there for treated vs untreated (FDR < 0.05)? What is the top DE gene by P value?  
+2. How many differentially expressed genes are there for treated vs untreated (FDR < 0.05)? What is the top differentially expressed gene by P value? 
 3. What code can generate a heatmap of variable genes (starting from count_scaled)?  
 4. What code can you use to visualise expression of the pasilla gene (gene id: FBgn0261552)  
 5. What code can generate an interactive volcano plot that has gene ids showing on hover?  
-6. What code can generate a heatmap of the top 100 DE genes?  
+6. What code can generate a heatmap of the top 100 differentially expressed genes?  
 
 ## Reproducibility
 Record package and version information with `sessionInfo`
