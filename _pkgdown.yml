@@ -8,9 +8,19 @@ template:
 home:
   title: "TidyTranscriptomics"
   type: inverse
-
-
+  
 navbar:
+  title: ~
+  type: default
+  left:
+    - text: Workshop
+      href: articles/tidytranscriptomics.html
+    - text: Supplementary 
+      href: articles/supplementary.html
+
   right:
    - icon: fa-github
      href: https://github.com/stemangiola/bioc_2020_tidytranscriptomics
+   - icon: fa-docker
+     href: https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics
+    

@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm [@wickham2014tidy]. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions. 
 
-This can be achieved for RNA sequencing data with the [tidybulk](github.com/stemangiola/tidybulk), [tidyHeatmap](github.com/stemangiola/tidyHeatmap) and tidyverse [@wickham2019welcome] packages. The package [tidybulk](github.com/stemangiola/tidybulk) provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data.
+This can be achieved for RNA sequencing data with the [tidybulk](github.com/stemangiola/tidybulk), [tidyHeatmap](github.com/stemangiola/tidyHeatmap) and tidyverse [@wickham2019welcome] packages. The package [tidybulk](github.com/stemangiola/tidybulk) provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data representation and analysis
 
 The topics presented in this workshop will be
 
@@ -42,7 +42,7 @@ Recommended Background Reading
 
 ### Workshop Participation
 
-The workshop format is a 55 min session consisting of a 30 min demo followed by 25 min opportunity for attendees to try out the code, exercises and Q&A.
+The workshop length is 55 min. It consists of a 30 min demo followed by 25 min opportunity for attendees to try out the code, exercises and Q&A.
 
 ### _R_ / _Bioconductor_ packages used
 
@@ -66,9 +66,9 @@ The workshop format is a 55 min session consisting of a 30 min demo followed by 
 
 ### Workshop goals and objectives
 
-In exploring and analysing RNA sequencing data, there are a number of key concepts, such as filtering, scaling, dimensionality reduction, hypothesis testing, clustering and visualisation, that need to be understood. These concepts can be intuitively explained to new users, however, (i) the use of a heterogeneous vocabulary and jargon by methodologies/algorithms/packages, (ii) the complexity of data wrangling, and (iii) the coding burden, impede effective learning of the statistics and biology underlying an informed RNA sequencing analysis. 
+In exploring and analysing RNA sequencing data, there are a number of key concepts, such as filtering, scaling, dimensionality reduction, hypothesis testing, clustering and visualisation, that need to be understood. These concepts can be intuitively explained to new users, however, (i) the use of a heterogeneous vocabulary and jargon by methodologies/algorithms/packages, (ii) the complexity of data wrangling, and (iii) the coding burden, impede effective learning of the statistics and biology underlying an informed analysis. 
 
-The tidytranscriptomics approach to RNA sequencing data analysis abstracts out the coding-related complexity and provides tools that use an intuitive and jargon-free vocabulary, enabling focus on the statistical and biological challenges.
+The tidytranscriptomics approach abstracts out the coding-related complexity and provides tools that use an intuitive and jargon-free vocabulary, enabling focus on the statistical and biological challenges.
 
 #### Learning goals
 
@@ -82,7 +82,7 @@ The tidytranscriptomics approach to RNA sequencing data analysis abstracts out t
 * Create plots that summarise the information content of the data and analysis results
 
 ### Acknowledgements
-This material is adapted from an R for RNA-Seq workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
+This material is adapted from an R for RNA sequencing workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
 
 ```{r, echo=FALSE, out.width = "200px"}
 knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
@@ -90,9 +90,9 @@ knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
 
 
 ## Introduction
-Measuring gene expression on a genome-wide scale has become common practice over the last two decades or so, with microarrays predominantly used pre-2008. With the advent of next generation sequencing technology in 2008, an increasing number of scientists use this technology to measure and understand changes in gene expression in often complex systems. As sequencing costs have decreased, using RNA-Seq to simultaneously measure the expression of tens of thousands of genes for multiple samples has never been easier. The cost of these experiments has now moved from generating the data to storing and analysing it.
+Measuring gene expression on a genome-wide scale has become common practice over the last two decades or so, with microarrays predominantly used pre-2008. With the advent of next generation sequencing technology in 2008, an increasing number of scientists use this technology to measure and understand changes in gene expression in often complex systems. As sequencing costs have decreased, using RNA sequencing to simultaneously measure the expression of tens of thousands of genes for multiple samples has never been easier. The cost of these experiments has now moved from generating the data to storing and analysing it.
 
-There are many steps involved in analysing an RNA-Seq experiment. Analysing an RNAseq experiment begins with sequencing reads. These are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and getting stuck into analysis.
+There are many steps involved in analysing an RNA sequencing data-set. Sequenced reads are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and getting stuck into analysis.
 
 First, let’s load all the packages we will need to analyse the data.
 
@@ -117,17 +117,17 @@ library(plotly)
 library(airway)
 ```
 
-### Airway RNA-seq dataset
-Here we will perform RNA-Seq analysis using the data from the *airway* package. The airway data comes from the paper by [@himes2014rna]. It is 8 RNA-seq samples from human airway smooth muscle cells: a sample treated with dexamethasone and an untreated control sample for 4 cell lines.
+### Airway RNA sequencing dataset
+Here we will perform our analysis using the data from the *airway* package. The airway data comes from the paper by [@himes2014rna]; and it includes 8 biological replicates from human airway smooth muscle cells, from 4 cell lines. For each cell linea treated (with dexamethasone) and untreated (negative control) sample are have been probed.
 
 ### Setting up the data
 
-The airway RNA-Seq data is stored as a *RangedSummarizedExperiment* object. We can convert a SummarizedExperiment object into a tidybulk tibble, which is the tidyverse table format.
+The airway data is stored as a *RangedSummarizedExperiment* object. We can convert a SummarizedExperiment object into a tidybulk tibble, which is the tidyverse table format.
 
 In this workshop we will be using the tidyverse pipe `%>%`. This 'pipes' the output from the command on the left into the command on the right/below. Using the pipe is not essential but it reduces the amount of code we need to write when we have multiple steps (as we'll see later). It also can make the steps clearer and easier to see. For more details on the pipe see [here](https://r4ds.had.co.nz/pipes.html).
 
 ```{r}
-# load airway RNA-Seq data
+# load airway RNA sequencing data
 data(airway)
 
 # convert to tidybulk format
@@ -184,7 +184,7 @@ With tidybulk, it is not really necessary to explicitly filter lowly transcribed
 
 ## Scaling counts to normalise
 
-Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, with scaling factors calculated on abundant (filtered) transcript and applied to all transcripts. We can choose from different normalisation methods. Here we will use the default, TMM, [@robinson2010tmm]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. We use `factor_of_interest` to specify the column containing the groups for the filtering described above.
+Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, with scaling factors calculated on abundant (filtered) transcript and applied to all transcripts. We can choose from different normalisation methods. Here we will use the default, TMM, [robinson2010scaling]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. We use `factor_of_interest` to specify the column containing the groups for the filtering described above.
 
 ```{r}
 # Scaling counts
@@ -198,11 +198,11 @@ After we run `scale_abundance` we should see some columns have been added at the
 
 We can now see the difference of abundance densities before and after scaling.
 
-```{r }
+```{r fig.height=5, fig.width=8}
 counts_scaled %>%
-	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
 	filter(!lowly_abundant) %>%
-	ggplot(aes(x=abundance + 1, group=sample, color=sample)) +
+	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
+	ggplot(aes(x=abundance + 1, color=sample)) +
 	geom_density() +
 	facet_wrap(~source) +
 	scale_x_log10() +
@@ -220,7 +220,7 @@ airway %>%
 	scale_abundance() %>%
 	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
 	filter(!lowly_abundant) %>%
-	ggplot(aes(x=abundance + 1, group=sample, color=sample)) +
+	ggplot(aes(x=abundance + 1, color=sample)) +
 	geom_density() +
 	facet_wrap(~source) +
 	scale_x_log10() +
@@ -231,6 +231,8 @@ airway %>%
 **base R using edgeR**
 
 ```{r eval=FALSE}
+# Example code, no need to run
+
 # Prepare data set
 dgList <- SE2DGEList(airway)
 group <- factor(dgList$samples$dex)
@@ -267,13 +269,13 @@ legend("topright", legend=dgList_norm$samples$Run, text.col=col, bty="n")
 
 ## Exploratory analyses
 
-### PCA plot
+### Dimensionality reduction
 
-By far, one of the most important plots we make when we analyse RNA-Seq data are PCA or MDS plots. A PCA plot is a visualisation which determines the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions` function to calculate the dimensions.
+By far, one of the most important plots we make when we analyse RNA sequencing data are principal-component analysis (PCA) or multi-dimensional scaling (MDS) plots. We reduce the dimensions of the data to identify the greatest sources of variation in the data. A principal components analysis is an example of an unsupervised analysis, where we don't need to specify the groups. If your experiment is well controlled and has worked well, what we hope to see is that the greatest sources of variation in the data are the treatments/groups we are interested in. It is also an incredibly useful tool for quality control and checking for outliers. We can use the `reduce_dimensions` function to calculate the dimensions.
 
 
 ```{r}
-# get PCA dimensions
+# Get principal components
 counts_scal_PCA <-
   counts_scaled %>%
   reduce_dimensions(method="PCA")
@@ -282,10 +284,10 @@ counts_scal_PCA <-
 This joins the result to the counts object.
 
 ```{r}
-# take a look
+# Take a look
 counts_scal_PCA
 ```
-For plotting, we can select just the dimensions for the samples with `pivot_sample`.
+For plotting, we can select just the sample-wise information with `pivot_sample`.
 
 ```{r}
 # take a look
@@ -294,7 +296,7 @@ counts_scal_PCA %>% pivot_sample()
 
 We can now plot the reduced dimensions.
 
-```{r}
+```{r fig.height=5, fig.width=8}
 # PCA plot
 counts_scal_PCA %>%
 	pivot_sample() %>%
@@ -309,10 +311,13 @@ The samples separate by treatment on PC 1 which is what we hope to see. PC2 sepa
 
 ### Hierarchical clustering with heatmaps
 
-An alternative to PCA for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable`, to extract the most variable genes which we can then plot with tidyHeatmap.
+An alternative to principal component analysis for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable`, to extract the most variable genes which we can then plot with tidyHeatmap.
 
 ```{r fig.height=5, fig.width=8}
 counts_scaled %>% 
+  
+  # filter lowly abundant
+  filter(!lowly_abundant) %>% 
 	
 	# extract 500 most variable genes
 	keep_variable( .abundance = counts_scaled, top = 500) %>%
@@ -333,6 +338,8 @@ Tidybulk enables a simplified way of generating a clustered heatmap of variable 
 
 **base R using edgeR**
 ```{r eval=FALSE}
+# Example code, no need to run
+
 dgList <- SE2DGEList(airway)
 group <- factor(dgList$samples$dex)
 keep.exprs <- filterByExpr(dgList, group=group)
@@ -370,19 +377,21 @@ The results will be joined to our counts for every sample.
 counts_de
 ```
 
-If we just want a table of DE genes we can use `pivot_transcript`.
+If we just want a table of differentially expressed genes we can select the transcript-wise information with `pivot_transcript`.
 
 ```{r}
 # take a look
 counts_de %>% pivot_transcript()
 ```
 
-Now we have columns with our logFC and FDR P values. There is also a column called significant that indicates if the gene has FDR < 0.05.
+Now we have columns with our log-fold change (logFC), false-discovery rate (FDR) and probability value (p-value). There is also a column called significant that indicates if the gene has false-discovery rate < 0.05.
 
-Tidybulk enables a simplified way of performing an RNA-seq differential expression testing (with the benefit of smoothly integrating with ggplot2 and other tidyverse packages). Compare the code for a tidybulk edgeR analysis versus standard edgeR below.
+Tidybulk enables a simplified way of performing an RNA sequencing differential expression analysis (with the benefit of smoothly integrating with ggplot2 and other tidyverse packages). Compare the code for a tidybulk edgeR analysis versus standard edgeR below.
 
 **standard edgeR**
 ```{r eval=FALSE}
+# Example code, no need to run
+
 dgList <- SE2DGEList(airway)
 group <- factor(dgList$samples$dex)
 keep.exprs <- filterByExpr(dgList, group=group)
@@ -399,7 +408,7 @@ qlf <- glmQLFTest(fit, contrast=TvsU)
 
 ### Table of differentially expressed genes
 
-We can write out our DE genes to a file that can be loaded into e.g. Excel. `write_tsv` will create a tab-separated file.
+We can write out our differentially expressed genes to a file that can be loaded into e.g. Excel. `write_tsv` will create a tab-separated file.
 
 ```{r eval=FALSE}
 # save results
@@ -411,7 +420,7 @@ counts_de %>%
 
 ### Counting differentially expressed genes
 
-We can count how many DE genes there are using the significant column.
+We can count how many differentially expressed genes there are using the significant column.
 
 ```{r}
 counts_de %>% 
@@ -421,7 +430,7 @@ counts_de %>%
 
 ### Extracting top differentially expressed genes
 
-We can see the top genes by smallest P value. We'll take a look at the top 6.
+We can see the top genes by smallest p-value. We'll take a look at the top 6.
 ```{r}
 topgenes <- 
 	counts_de %>%
@@ -440,53 +449,57 @@ topgenes_symbols <- topgenes %>% pull(transcript)
 topgenes_symbols
 ```
 	
-## Plots after testing for DE
+## Plots after testing for differentially expressed
 
 ### Volcano plots
 
-Volcano plots are a useful genome-wide plot for checking that the analysis looks good. Volcano plots enable us to visualise significance of expression (P value) versus logFC. Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
+Volcano plots are a useful genome-wide plot for checking that the analysis looks good. Volcano plots enable us to visualise the significance of change (p-value) versus the fold change (logFC). Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with false-discovery rate < 0.05) 
 
-```{r}
+```{r fig.height=5, fig.width=8}
 # volcano plot, minimal
 counts_de %>%
 	filter(!lowly_abundant) %>%
-	ggplot(aes(x=logFC, y=-log10(PValue), colour=significant)) +
+	ggplot(aes(x=logFC, y=PValue, colour=significant)) +
 	geom_point() +
+	scale_y_continuous(trans = "log10_reverse") +
 	theme_bw()
+
 ```
 
 A more informative plot, integrating some of the packages in tidyverse.
 
-```{r warning=FALSE}
+```{r fig.height=5, fig.width=8, warning=FALSE}
 counts_de %>%
 	pivot_transcript() %>%
 
-    # Subset data
+  # Subset data
 	filter(!lowly_abundant) %>%
 	mutate(significant = FDR<0.05 & abs(logFC) >=2) %>%
 	mutate(transcript = ifelse(transcript %in% topgenes_symbols, as.character(transcript), "")) %>%
 
-    # Plot
-	ggplot(aes(x = logFC, y = -log10(PValue), label=transcript)) +
+  # Plot
+	ggplot(aes(x = logFC, y = PValue, label=transcript)) +
 	geom_point(aes(color = significant, size = significant, alpha=significant)) +
 	geom_text_repel() +
+	
+	# Custom scales
+	scale_y_continuous(trans = "log10_reverse") +
 	scale_color_manual(values=c("black", "#e11f28")) +
 	scale_size_discrete(range = c(0, 2)) +
-	xlim(c(-11,11)) +
 	theme_bw()
 ```
 
 ### Stripcharts
 
-Before following up on the DE genes with further lab work, it is also recommended to have a look at the expression levels of the individual samples for the genes of interest. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups.
+Before following up on the differentially expressed genes with further lab work, it is also recommended to have a look at the expression levels of the individual samples for the genes of interest. We can use stripcharts to do this. These will help show if expression is consistent amongst replicates in the groups.
 
 With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. We'll also add a box plot to show the distribution.
 
-```{r}
+```{r fig.height=5, fig.width=8}
 strip_chart <- 
 	counts_scaled %>%
 	
-	# extract counts for top DE genes
+	# extract counts for top differentially expressed genes
 	filter(transcript %in% topgenes_symbols) %>%
 	
 	# make stripchart
@@ -506,26 +519,21 @@ A really nice feature of using tidyverse and ggplot2 is that we can make interac
 
 We can also specify which parameters from the `aes` we want to show up when we hover over the plot with `tooltip`.
 
-```{r, warning=FALSE}
+```{r, fig.height=5, fig.width=8, warning=FALSE}
 strip_chart %>% ggplotly(tooltip = c("label", "y"))
 ```
 
 ## Key Points
-- RNA-Seq data can be analysed in a 'tidy' way using the packages tidyverse, tidybulk and tidyHeatmap
-- Key steps in an RNA-Seq analysis are filtering lowly expressed genes, normalisation for sequencing depth and composition, and testing for differential expression
-- PCA (or MDS) plots are very important for examining the quality of the data
-- Other useful plots for assessing RNA-Seq data are density plots, volcano plots, stripcharts and heatmaps. These can all be made in a 'tidy' way.
-
-## Reproducibility
-Record package and version information with `sessionInfo`
-
-```{r}
-sessionInfo()
-```
+- RNA sequencing data can be represented and analysed in a 'tidy' way using tidybulk and the tidyverse
+- With the modularity offered by piping we don't need to create variables, unless an object is used more than one. This improves robustness of the code.
+- The principles of tidy transcriptomics are to interface as much as possible with commonly known manipulation and visualisation tools, rather than creating custom functions. 
+- Some of the key steps in an RNA sequencing analysis are (i) filtering lowly abundant transcripts, (ii) adjusting for differences in sequencing depth and composition, (iii) testing for differential expression
+- Dimensionality reduction (PCA or MDS) plots are very important for exploring the data 
+- Density plots, volcano plots, strip-charts and heatmaps are useful visualisation tools for evaluating the hypothesis testing. 
 
 ## Exercises
 
-Try to apply what you've learned to another RNA-seq dataset. This dataset was generated from the pasilla package, which obtained the data from the paper by [@brooks2011conservation]. Here we provide it as a SummarizedExperiment object. The dataset has 7 samples from Drosophila (fruitfly): 3 treated with siRNA knockdown of the pasilla gene and 4 untreated controls.
+Try to apply what you've learned to another dataset. This dataset was generated from the pasilla package, which obtained the data from the paper by [@brooks2011conservation]. Here we provide it as a SummarizedExperiment object. The dataset has 7 samples from Drosophila (fruitfly): 3 treated with siRNA knockdown of the pasilla gene and 4 untreated controls.
 Load the data and create the tidybulk object with:
 ```{r}
 data("pasilla", package = "tidytranscriptomics")
@@ -538,11 +546,20 @@ Note that as this is fly data you can't use ensembl_to_symbol to get gene symbol
 
 Questions:  
 1. What is the Fraction of Variance for PC1 and PC2? What do PC1 and PC2 represent?  
-2. How many DE genes are there for treated vs untreated (FDR < 0.05)? What is the top DE gene by P value?  
+2. How many differentially expressed genes are there for treated vs untreated (false discovery rate < 0.05)? What is the top differentially expressed gene by p-value? 
 3. What code can generate a heatmap of variable genes (starting from count_scaled)?  
 4. What code can you use to visualise expression of the pasilla gene (gene id: FBgn0261552)  
 5. What code can generate an interactive volcano plot that has gene ids showing on hover?  
-6. What code can generate a heatmap of the top 100 DE genes?  
+6. What code can generate a heatmap of the top 100 differentially expressed genes?  
 
+## Contributing
+If you want to suggest improvements for this workshop or ask questions, you can do so as described [here](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/blob/master/CONTRIBUTING.md).
+
+## Reproducibility
+Record package and version information with `sessionInfo`
+
+```{r}
+sessionInfo()
+```
 
 ## References
