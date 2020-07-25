@@ -9,6 +9,9 @@
 
 Dr. Maria Doyle <Maria.Doyle at petermac.org> and Dr. Stefano Mangiola <mangiola.s at wehi.edu.au>
 
+<img width="250" alt="bioc2020" src="https://github.com/Bioconductor/BiocStickers/blob/master/events/Bioc2020/BioC2020.png?raw=true"/>
+<img width="250" alt="tidybulk" src="https://github.com/Bioconductor/BiocStickers/blob/master/tidybulk/tidybulk.png?raw=true"/>
+
 ## Syllabus
 
 Material [web page](https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html).
