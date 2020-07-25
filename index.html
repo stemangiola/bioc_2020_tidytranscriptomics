@@ -83,24 +83,25 @@
 <div id="instructor-names-and-contact-information" class="section level2">
 <h2 class="hasAnchor">
 <a href="#instructor-names-and-contact-information" class="anchor"></a>Instructor names and contact information</h2>
-<p>Dr. Maria Doyle (<a href="mailto:Maria.Doyle@petermac.org" class="email">Maria.Doyle@petermac.org</a>) and Dr. Stefano Mangiola (<a href="mailto:mangiola.s@wehi.edu.au" class="email">mangiola.s@wehi.edu.au</a>)</p>
+<p>Dr. Maria Doyle &lt;Maria.Doyle at petermac.org&gt; and Dr. Stefano Mangiola &lt;mangiola.s at wehi.edu.au&gt;</p>
+<p><img width="250" alt="bioc2020" src="https://github.com/Bioconductor/BiocStickers/blob/master/events/Bioc2020/BioC2020.png?raw=true"><img width="250" alt="tidybulk" src="https://github.com/Bioconductor/BiocStickers/blob/master/tidybulk/tidybulk.png?raw=true"></p>
 </div>
 <div id="syllabus" class="section level2">
 <h2 class="hasAnchor">
 <a href="#syllabus" class="anchor"></a>Syllabus</h2>
 <p>Material <a href="https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html">web page</a>.</p>
-<p><strong>This material was created for a Bioc2020 conference workshop but it can also be used for self-learning.</strong></p>
+<p>This material was created for a Bioc2020 conference workshop but it can also be used for self-learning.</p>
 <p>More details on the workshop are below.</p>
 </div>
-<div id="workshop-package-installation-necessary-in-order-to-reproduce" class="section level2">
+<div id="workshop-package-installation" class="section level2">
 <h2 class="hasAnchor">
-<a href="#workshop-package-installation-necessary-in-order-to-reproduce" class="anchor"></a>Workshop package installation (necessary in order to reproduce)</h2>
-<p>The workshop is designed for R <code>4.0</code> and packages from the 3.12 <code>devel</code> branch of Bioconductor. It can be installed using one of the two ways below.</p>
+<a href="#workshop-package-installation" class="anchor"></a>Workshop package installation</h2>
+<p>This is necessary in order to reproduce the code shown in the workshop. The workshop is designed for R <code>4.0</code> and packages from the 3.12 <code>devel</code> branch of Bioconductor. It can be installed using one of the two ways below.</p>
 <div id="via-docker-image" class="section level3">
 <h3 class="hasAnchor">
 <a href="#via-docker-image" class="anchor"></a>Via Docker image</h3>
-<p>If you’re familiar with [Docker][(<a href="https://docs.docker.com/get-docker/" class="uri">https://docs.docker.com/get-docker/</a>) you could use the Docker image which has all the software pre-configured to the correct versions.</p>
-<pre><code>docker run -e PASSWORD=abc -p 8787:8787 stemangiola/bioc_2020_tidytranscriptomics</code></pre>
+<p>If you’re familiar with <a href="https://docs.docker.com/get-docker/">Docker</a> you could use the Docker image which has all the software pre-configured to the correct versions.</p>
+<pre><code>docker run -e PASSWORD=abc -p 8787:8787 stemangiola/bioc_2020_tidytranscriptomics:bioc2020</code></pre>
 <p>Once running, navigate to <a href="http://localhost:8787/" class="uri">http://localhost:8787/</a> and then login with <code>Username:rstudio</code> and <code>Password:abc</code>.</p>
 <p>You should see the Rmarkdown file with all the workshop code which you can run.</p>
 </div>
@@ -244,17 +245,17 @@ vignette("bioc2020tidytranscriptomics")</a></code></pre>
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>Maria Doyle <br><small class="roles"> Maintainer </small>  </li>
-<li><a href="authors.html">All authors...</a></li>
+<li>Maria Doyle <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-4847-8436" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Stefano Mangiola <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-7474-836X" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
+<li><a href="https://doi.org/10.5281/zenodo.3959148"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3959148.svg" alt="DOI"></a></li>
 <li><a href="https://github.com/stemangiola/bioc_2020_tidytranscriptomics/actions"><img src="https://github.com/stemangiola/bioc_2020_tidytranscriptomics/workflows/.github/workflows/basic_checks.yaml/badge.svg" alt=".github/workflows/basic_checks.yaml"></a></li>
 <li><a href="https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics"><img src="https://github.com/Bioconductor/BioC2020/raw/master/docs/images/docker_icon.png" alt="Docker"></a></li>
-<li><a href="https://doi.org/10.5281/zenodo.3959148"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3959148.svg" alt="DOI"></a></li>
 </ul>
 </div>
 </div>
@@ -262,7 +263,7 @@ vignette("bioc2020tidytranscriptomics")</a></code></pre>
 
 
       <footer><div class="copyright">
-  <p>Developed by Maria Doyle.</p>
+  <p>Developed by Maria Doyle, Stefano Mangiola.</p>
 </div>
 
 <div class="pkgdown">
