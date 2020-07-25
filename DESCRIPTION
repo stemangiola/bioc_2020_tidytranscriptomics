@@ -1,7 +1,13 @@
 Package: bioc2020tidytranscriptomics
 Title: A Tidy Transcriptomics introduction to RNA-Seq analyses
 Version: 1.0.6
-Author: Maria Doyle, Stefano Mangiola
+Authors@R: c(
+    person("Maria", "Doyle", email="maria.doyle@petermac.org",
+    role = c("aut"),
+    comment = c(ORCID = "0000-0003-4847-8436")),
+    person("Stefano", "Mangiola", email="mangiola.s@wehi.edu.au",
+    role = c("aut","cre"),
+    comment = c(ORCID = "0000-0001-7474-836X")))
 Maintainer: Maria Doyle <maria.doyle@petermac.org>, Stefano Mangiola <mangiola.s@wehi.edu.au>
 Description: This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm, using      the tidybulk, tidyHeatmap and tidyverse packages.
 License: CC BY-SA 4.0 + file LICENSE
@@ -35,4 +41,4 @@ biocViews: RNASeq, DifferentialExpression, GeneExpression, Normalization, Cluste
 URL: https://stemangiola.github.io/bioc_2020_tidytranscriptomics/
 BugReports: https://github.com/stemangiola/bioc_2020_tidytranscriptomics/issues/new/choose
 VignetteBuilder: knitr
-DockerImage: stemangiola/bioc_2020_tidytranscriptomics:latest
+DockerImage: stemangiola/bioc_2020_tidytranscriptomics:bioc2020

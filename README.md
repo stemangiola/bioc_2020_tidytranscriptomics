@@ -1,32 +1,35 @@
 <!-- badges: start -->
-[![.github/workflows/basic_checks.yaml](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/workflows/.github/workflows/basic_checks.yaml/badge.svg)](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/actions) [![Docker](https://github.com/Bioconductor/BioC2020/raw/master/docs/images/docker_icon.png)](https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics) 	
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3959148.svg)](https://doi.org/10.5281/zenodo.3959148)
+[![.github/workflows/basic_checks.yaml](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/workflows/.github/workflows/basic_checks.yaml/badge.svg)](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/actions) [![Docker](https://github.com/Bioconductor/BioC2020/raw/master/docs/images/docker_icon.png)](https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics) 	
 <!-- badges: end -->
 
 # A Tidy Transcriptomics introduction to RNA sequencing analyses
 
 ## Instructor names and contact information
 
-Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
+Dr. Maria Doyle <Maria.Doyle at petermac.org> and Dr. Stefano Mangiola <mangiola.s at wehi.edu.au>
+
+<img width="250" alt="bioc2020" src="https://github.com/Bioconductor/BiocStickers/blob/master/events/Bioc2020/BioC2020.png?raw=true"/>
+<img width="250" alt="tidybulk" src="https://github.com/Bioconductor/BiocStickers/blob/master/tidybulk/tidybulk.png?raw=true"/>
 
 ## Syllabus
 
 Material [web page](https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html).
 
-**This material was created for a Bioc2020 conference workshop but it can also be used for self-learning.**
+This material was created for a Bioc2020 conference workshop but it can also be used for self-learning.
 
 More details on the workshop are below.
 
-## Workshop package installation (necessary in order to reproduce)
+## Workshop package installation 
 
-The workshop is designed for R `4.0` and packages from the 3.12 `devel` branch of Bioconductor. It can be installed using one of the two ways below.
+This is necessary in order to reproduce the code shown in the workshop. The workshop is designed for R `4.0` and packages from the 3.12 `devel` branch of Bioconductor. It can be installed using one of the two ways below.
 
 ### Via Docker image
 
-If you're familiar with [Docker][(https://docs.docker.com/get-docker/) you could use the Docker image which has all the software pre-configured to the correct versions.
+If you're familiar with [Docker](https://docs.docker.com/get-docker/) you could use the Docker image which has all the software pre-configured to the correct versions.
 
 ```
-docker run -e PASSWORD=abc -p 8787:8787 stemangiola/bioc_2020_tidytranscriptomics
+docker run -e PASSWORD=abc -p 8787:8787 stemangiola/bioc_2020_tidytranscriptomics:bioc2020
 ```
 
 Once running, navigate to <http://localhost:8787/> and then login with

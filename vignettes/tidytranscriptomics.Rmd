@@ -1,8 +1,8 @@
 ---
 title: "A Tidy Transcriptomics introduction to RNA-Seq analyses"
 author:
-  - Maria Doyle, Peter MacCallum Cancer Centre^[maria.doyle@petermac.org]
-  - Stefano Mangiola, Walter and Eliza Hall Institute^[mangiola.s@wehi.edu.au]
+  - Maria Doyle, Peter MacCallum Cancer Centre^[<maria.doyle at petermac.org>]
+  - Stefano Mangiola, Walter and Eliza Hall Institute^[<mangiola.s at wehi.edu.au>]
 output: rmarkdown::html_vignette
 bibliography: "`r file.path(system.file(package='bioc2020tidytranscriptomics', 'vignettes'), 'tidytranscriptomics.bib')`"
 vignette: >
@@ -92,7 +92,11 @@ knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
 ## Introduction
 Measuring gene expression on a genome-wide scale has become common practice over the last two decades or so, with microarrays predominantly used pre-2008. With the advent of next generation sequencing technology in 2008, an increasing number of scientists use this technology to measure and understand changes in gene expression in often complex systems. As sequencing costs have decreased, using RNA sequencing to simultaneously measure the expression of tens of thousands of genes for multiple samples has never been easier. The cost of these experiments has now moved from generating the data to storing and analysing it.
 
-There are many steps involved in analysing an RNA sequencing data-set. Sequenced reads are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and getting stuck into analysis.
+There are many steps involved in analysing an RNA sequencing dataset. The main steps for a differential expression analysis are shown in the figure below. Sequenced reads are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and showing how the statistical testing can be performed in a friendly way using tidybulk.
+
+```{r, echo=FALSE, out.width = "200px"}
+knitr::include_graphics("../inst/vignettes/rnaseq_steps.png")
+```
 
 First, let’s load all the packages we will need to analyse the data.
 

@@ -53,7 +53,7 @@ jobs:
           repository: stemangiola/bioc_2020_tidytranscriptomics
           tag_with_ref: true
           tag_with_sha: true
-          tags: latest
+          tags: bio2020
 
       - name: Build pkgdown
         run: |

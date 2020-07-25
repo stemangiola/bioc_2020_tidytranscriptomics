@@ -16,7 +16,7 @@ The following is a set of guidelines for contributing to this training material 
 
 This repository contains the files for the TidyTranscriptomics workshop.
 
-By contributing, you agree that we may redistribute your work under [this repository's license](LICENSE.md).
+By contributing, you agree that we may redistribute your work under [this repository's license](LICENSE).
 
 We will address your issues and/or assess your change proposal as promptly as we can.
 
