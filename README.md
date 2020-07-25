@@ -1,9 +1,9 @@
 <!-- badges: start -->
 [![.github/workflows/basic_checks.yaml](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/workflows/.github/workflows/basic_checks.yaml/badge.svg)](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/actions) [![Docker](https://github.com/Bioconductor/BioC2020/raw/master/docs/images/docker_icon.png)](https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics) 	
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3929366.svg)](https://doi.org/10.5281/zenodo.3929366)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3959148.svg)](https://doi.org/10.5281/zenodo.3959148)
 <!-- badges: end -->
 
-# A Tidy Transcriptomics introduction to RNA-Seq analyses
+# A Tidy Transcriptomics introduction to RNA sequencing analyses
 
 ## Instructor names and contact information
 

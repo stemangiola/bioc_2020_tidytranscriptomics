@@ -1,6 +1,6 @@
 Package: tidytranscriptomics
 Title: A Tidy Transcriptomics introduction to RNA-Seq analyses
-Version: 1.0.4
+Version: 1.0.5
 Author: Maria Doyle, Stefano Mangiola
 Maintainer: Maria Doyle <maria.doyle@petermac.org>, Stefano Mangiola <mangiola.s@wehi.edu.au>
 Description: This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm, using      the tidybulk, tidyHeatmap and tidyverse packages.
