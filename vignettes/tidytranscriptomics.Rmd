@@ -1,8 +1,8 @@
 ---
 title: "A Tidy Transcriptomics introduction to RNA-Seq analyses"
 author:
-  - Maria Doyle, Peter MacCallum Cancer Centre^[maria.doyle@petermac.org]
-  - Stefano Mangiola, Walter and Eliza Hall Institute^[mangiola.s@wehi.edu.au]
+  - Maria Doyle, Peter MacCallum Cancer Centre^[<maria.doyle at petermac.org>]
+  - Stefano Mangiola, Walter and Eliza Hall Institute^[<mangiola.s at wehi.edu.au>]
 output: rmarkdown::html_vignette
 bibliography: "`r file.path(system.file(package='bioc2020tidytranscriptomics', 'vignettes'), 'tidytranscriptomics.bib')`"
 vignette: >

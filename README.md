@@ -1,19 +1,19 @@
 <!-- badges: start -->
-[![.github/workflows/basic_checks.yaml](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/workflows/.github/workflows/basic_checks.yaml/badge.svg)](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/actions) [![Docker](https://github.com/Bioconductor/BioC2020/raw/master/docs/images/docker_icon.png)](https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics) 	
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3959148.svg)](https://doi.org/10.5281/zenodo.3959148)
+[![.github/workflows/basic_checks.yaml](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/workflows/.github/workflows/basic_checks.yaml/badge.svg)](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/actions) [![Docker](https://github.com/Bioconductor/BioC2020/raw/master/docs/images/docker_icon.png)](https://hub.docker.com/repository/docker/stemangiola/bioc_2020_tidytranscriptomics) 	
 <!-- badges: end -->
 
 # A Tidy Transcriptomics introduction to RNA sequencing analyses
 
 ## Instructor names and contact information
 
-Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
+Dr. Maria Doyle <Maria.Doyle at petermac.org> and Dr. Stefano Mangiola <mangiola.s at wehi.edu.au>
 
 ## Syllabus
 
 Material [web page](https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html).
 
-**This material was created for a Bioc2020 conference workshop but it can also be used for self-learning.**
+This material was created for a Bioc2020 conference workshop but it can also be used for self-learning.
 
 More details on the workshop are below.
 
