@@ -1,6 +1,6 @@
-Package: tidytranscriptomics
+Package: bioc2020tidytranscriptomics
 Title: A Tidy Transcriptomics introduction to RNA-Seq analyses
-Version: 1.0.5
+Version: 1.0.6
 Author: Maria Doyle, Stefano Mangiola
 Maintainer: Maria Doyle <maria.doyle@petermac.org>, Stefano Mangiola <mangiola.s@wehi.edu.au>
 Description: This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm, using      the tidybulk, tidyHeatmap and tidyverse packages.
@@ -11,9 +11,9 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends:
     R (>= 4.0.0)
-Imports: 
+Imports:
     stats,
-    utils, 
+    utils,
     tibble,
     stringr,
     ggplot2,
@@ -26,8 +26,8 @@ Imports:
     ggrepel,
     plotly,
     airway,
-Suggests: 
-    knitr, 
+Suggests:
+    knitr,
     rmarkdown,
     pkgdown
 Biarch: true

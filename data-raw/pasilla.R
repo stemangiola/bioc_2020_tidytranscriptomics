@@ -13,4 +13,4 @@ sampleinfo = data.frame(
 
 pasilla <- SummarizedExperiment::SummarizedExperiment(assays=list(counts=counts), colData=sampleinfo)
 
-usethis::use_data(pasilla, overwrite = TRUE)
+usethis::use_data(pasilla, overwrite = TRUE, compress = "xz")
