@@ -42,7 +42,7 @@ Recommended Background Reading
 
 ### Workshop Participation
 
-The workshop format is a 55 min session consisting of a 30 min demo followed by 25 min opportunity for attendees to try out the code, exercises and Q&A.
+The workshop length is 55 min. It consists of a 30 min demo followed by 25 min opportunity for attendees to try out the code, exercises and Q&A.
 
 ### _R_ / _Bioconductor_ packages used
 
@@ -184,7 +184,7 @@ With tidybulk, it is not really necessary to explicitly filter lowly transcribed
 
 ## Scaling counts to normalise
 
-Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, with scaling factors calculated on abundant (filtered) transcript and applied to all transcripts. We can choose from different normalisation methods. Here we will use the default, TMM, [@robinson2010tmm]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. We use `factor_of_interest` to specify the column containing the groups for the filtering described above.
+Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, with scaling factors calculated on abundant (filtered) transcript and applied to all transcripts. We can choose from different normalisation methods. Here we will use the default, TMM, [robinson2010scaling]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. We use `factor_of_interest` to specify the column containing the groups for the filtering described above.
 
 ```{r}
 # Scaling counts
@@ -198,7 +198,7 @@ After we run `scale_abundance` we should see some columns have been added at the
 
 We can now see the difference of abundance densities before and after scaling.
 
-```{r }
+```{r fig.height=5, fig.width=8}
 counts_scaled %>%
 	filter(!lowly_abundant) %>%
 	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
@@ -231,6 +231,8 @@ airway %>%
 **base R using edgeR**
 
 ```{r eval=FALSE}
+# Example code, no need to run
+
 # Prepare data set
 dgList <- SE2DGEList(airway)
 group <- factor(dgList$samples$dex)
@@ -294,7 +296,7 @@ counts_scal_PCA %>% pivot_sample()
 
 We can now plot the reduced dimensions.
 
-```{r}
+```{r fig.height=5, fig.width=8}
 # PCA plot
 counts_scal_PCA %>%
 	pivot_sample() %>%
@@ -313,6 +315,9 @@ An alternative to principal component analysis for examining relationships betwe
 
 ```{r fig.height=5, fig.width=8}
 counts_scaled %>% 
+  
+  # filter lowly abundant
+  filter(!lowly_abundant) %>% 
 	
 	# extract 500 most variable genes
 	keep_variable( .abundance = counts_scaled, top = 500) %>%
@@ -333,6 +338,8 @@ Tidybulk enables a simplified way of generating a clustered heatmap of variable 
 
 **base R using edgeR**
 ```{r eval=FALSE}
+# Example code, no need to run
+
 dgList <- SE2DGEList(airway)
 group <- factor(dgList$samples$dex)
 keep.exprs <- filterByExpr(dgList, group=group)
@@ -383,6 +390,8 @@ Tidybulk enables a simplified way of performing an RNA sequencing differential e
 
 **standard edgeR**
 ```{r eval=FALSE}
+# Example code, no need to run
+
 dgList <- SE2DGEList(airway)
 group <- factor(dgList$samples$dex)
 keep.exprs <- filterByExpr(dgList, group=group)
@@ -446,7 +455,7 @@ topgenes_symbols
 
 Volcano plots are a useful genome-wide plot for checking that the analysis looks good. Volcano plots enable us to visualise the significance of change (p-value) versus the fold change (logFC). Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with false-discovery rate < 0.05) 
 
-```{r}
+```{r fig.height=5, fig.width=8}
 # volcano plot, minimal
 counts_de %>%
 	filter(!lowly_abundant) %>%
@@ -459,7 +468,7 @@ counts_de %>%
 
 A more informative plot, integrating some of the packages in tidyverse.
 
-```{r warning=FALSE}
+```{r fig.height=5, fig.width=8, warning=FALSE}
 counts_de %>%
 	pivot_transcript() %>%
 
@@ -486,7 +495,7 @@ Before following up on the differentially expressed genes with further lab work,
 
 With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. We'll also add a box plot to show the distribution.
 
-```{r}
+```{r fig.height=5, fig.width=8}
 strip_chart <- 
 	counts_scaled %>%
 	
@@ -510,7 +519,7 @@ A really nice feature of using tidyverse and ggplot2 is that we can make interac
 
 We can also specify which parameters from the `aes` we want to show up when we hover over the plot with `tooltip`.
 
-```{r, warning=FALSE}
+```{r, fig.height=5, fig.width=8, warning=FALSE}
 strip_chart %>% ggplotly(tooltip = c("label", "y"))
 ```
 
@@ -542,6 +551,9 @@ Questions:
 4. What code can you use to visualise expression of the pasilla gene (gene id: FBgn0261552)  
 5. What code can generate an interactive volcano plot that has gene ids showing on hover?  
 6. What code can generate a heatmap of the top 100 differentially expressed genes?  
+
+## Contributing
+If you want to suggest improvements for this workshop or ask questions, you can do so as described [here](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/blob/master/CONTRIBUTING.md).
 
 ## Reproducibility
 Record package and version information with `sessionInfo`
