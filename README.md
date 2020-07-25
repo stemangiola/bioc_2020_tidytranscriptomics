@@ -23,10 +23,10 @@ The workshop is designed for R `4.0` and packages from the 3.12 `devel` branch o
 
 ### Via Docker image
 
-If you're familiar with [Docker][(https://docs.docker.com/get-docker/) you could use the Docker image which has all the software pre-configured to the correct versions.
+If you're familiar with [Docker](https://docs.docker.com/get-docker/) you could use the Docker image which has all the software pre-configured to the correct versions.
 
 ```
-docker run -e PASSWORD=abc -p 8787:8787 stemangiola/bioc_2020_tidytranscriptomics
+docker run -e PASSWORD=abc -p 8787:8787 stemangiola/bioc_2020_tidytranscriptomics:bioc2020
 ```
 
 Once running, navigate to <http://localhost:8787/> and then login with

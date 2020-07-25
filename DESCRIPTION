@@ -43,4 +43,4 @@ biocViews: RNASeq, DifferentialExpression, GeneExpression, Normalization, Cluste
 URL: https://stemangiola.github.io/bioc_2020_tidytranscriptomics/
 BugReports: https://github.com/stemangiola/bioc_2020_tidytranscriptomics/issues/new/choose
 VignetteBuilder: knitr
-DockerImage: stemangiola/bioc_2020_tidytranscriptomics:latest
+DockerImage: stemangiola/bioc_2020_tidytranscriptomics:bioc2020
