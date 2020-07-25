@@ -41,15 +41,15 @@ Alternatively, you could install the workshop using the commands below in R `4.0
 ```
 devtools::install_github("stemangiola/tidybulk")
 devtools::install_github("stemangiola/bioc_2020_tidytranscriptomics", build_vignettes = TRUE)
-library(tidytranscriptomics)
-vignette("tidytranscriptomics")
+library(bioc2020tidytranscriptomics)
+vignette("bioc2020tidytranscriptomics")
 ```
 
 To run the code, you could then copy and paste the code from the workshop [R markdown file](https://raw.githubusercontent.com/stemangiola/bioc_2020_tidytranscriptomics/master/vignettes/tidytranscriptomics.Rmd) into a new R Markdown file on your computer.
 
 ## Workshop Description
 
-This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions. 
+This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions.
 
 This can be achieved for RNA sequencing data with the [tidybulk](github.com/stemangiola/tidybulk), [tidyHeatmap](github.com/stemangiola/tidyHeatmap) and tidyverse packages. The package [tidybulk](github.com/stemangiola/tidybulk) provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data.
 
@@ -57,7 +57,7 @@ The topics presented in this workshop will be
 
 - Data exploration
 - Data dimensionality reduction and clustering
-- Differential gene expression analysis 
+- Differential gene expression analysis
 - Data visualisation
 
 ### Pre-requisites
@@ -65,7 +65,7 @@ The topics presented in this workshop will be
 * Basic knowledge of RStudio
 * Familiarity with tidyverse syntax
 
-Recommended Background Reading 
+Recommended Background Reading
 [Introduction to R for Biologists](https://melbournebioinformatics.github.io/r-intro-biologists/intro_r_biologists.html)
 
 ### Workshop Participation
@@ -94,7 +94,7 @@ The workshop format is a 55 min session consisting of a 30 min demo followed by 
 
 ### Workshop goals and objectives
 
-In exploring and analysing RNA sequencing data, there are a number of key concepts, such as filtering, scaling, dimensionality reduction, hypothesis testing, clustering and visualisation, that need to be understood. These concepts can be intuitively explained to new users, however, (i) the use of a heterogeneous vocabulary and jargon by methodologies/algorithms/packages, (ii) the complexity of data wrangling, and (iii) the coding burden, impede effective learning of the statistics and biology underlying an informed RNA sequencing analysis. 
+In exploring and analysing RNA sequencing data, there are a number of key concepts, such as filtering, scaling, dimensionality reduction, hypothesis testing, clustering and visualisation, that need to be understood. These concepts can be intuitively explained to new users, however, (i) the use of a heterogeneous vocabulary and jargon by methodologies/algorithms/packages, (ii) the complexity of data wrangling, and (iii) the coding burden, impede effective learning of the statistics and biology underlying an informed RNA sequencing analysis.
 
 The tidytranscriptomics approach to RNA sequencing data analysis abstracts out the coding-related complexity and provides tools that use an intuitive and jargon-free vocabulary, enabling focus on the statistical and biological challenges.
 
