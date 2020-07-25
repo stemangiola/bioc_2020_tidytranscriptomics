@@ -20,9 +20,9 @@ This material was created for a Bioc2020 conference workshop but it can also be 
 
 More details on the workshop are below.
 
-## Workshop package installation (necessary in order to reproduce)
+## Workshop package installation 
 
-The workshop is designed for R `4.0` and packages from the 3.12 `devel` branch of Bioconductor. It can be installed using one of the two ways below.
+This is necessary in order to reproduce the code shown in the workshop. The workshop is designed for R `4.0` and packages from the 3.12 `devel` branch of Bioconductor. It can be installed using one of the two ways below.
 
 ### Via Docker image
 
