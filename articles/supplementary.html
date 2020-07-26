@@ -241,11 +241,12 @@
 <div id="how-to-perform-gene-set-analysis" class="section level2">
 <h2 class="hasAnchor">
 <a href="#how-to-perform-gene-set-analysis" class="anchor"></a>How to perform gene set analysis</h2>
+<p>To run below you’ll need the <code>clusterProfiler</code> and <code>org.Hs.eg.db</code> packages. This is just one suggestion, if you have other suggestions for how to do a ‘tidy’ pathway analysis feel free to <a href="https://github.com/stemangiola/bioc_2020_tidytranscriptomics/blob/master/CONTRIBUTING.md">let us know</a>.</p>
 <div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">clusterProfiler</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">org.Hs.eg.db</span>)
 
 <span class="co"># extract all genes tested for DE</span>
-<span class="no">res</span> <span class="kw">&lt;-</span> <span class="no">counts_de_pretty</span> <span class="kw">%&gt;%</span>
+<span class="no">res</span> <span class="kw">&lt;-</span> <span class="no">counts_de</span> <span class="kw">%&gt;%</span>
     <span class="fu"><a href="https://rdrr.io/pkg/tidybulk/man/pivot_transcript-methods.html">pivot_transcript</a></span>() <span class="kw">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(!<span class="no">lowly_abundant</span>)
 
