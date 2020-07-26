@@ -212,6 +212,7 @@ counts_scaled %>%
 	scale_x_log10() +
 	theme_bw()
 ```
+
 In this dataset the distributions of the counts are not very different to each other before scaling but scaling does make the distributions more similar. If we saw a sample with a very different distribution we may need to investigate it.
 
 As tidybulk smoothly integrates with ggplot2 and other tidyverse packages it can save on typing and make plots easier to generate. Compare the code for creating density plots with tidybulk versus standard base R below (standard code adapted from [@law2016rna]).
