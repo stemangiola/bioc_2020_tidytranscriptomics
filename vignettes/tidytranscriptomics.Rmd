@@ -55,14 +55,14 @@ The workshop length is 55 min. It consists of a 30 min demo followed by 25 min o
 
 ### Time outline
 
-| Activity                                         | Time |
-|--------------------------------------------------|------|
-| Demo                                             | 30m  |
-|     Introduction and Data preprocessing          |      |
-|     Data dimensionality reduction and clustering |      |
-|     Differential gene expression                 |      |
-|     Data visualisation                           |      |
-| Try out code, Exercises, Q&A                     | 25m  |
+| Activity                                           | Time |
+|----------------------------------------------------|------|
+| Demo                                               | 30m  |
+|     *Introduction and Data preprocessing*          |      |
+|     *Data dimensionality reduction and clustering* |      |
+|     *Differential gene expression*                 |      |
+|     *Data visualisation*                           |      |
+| Try out code, Exercises, Q&A                       | 25m  |
 
 ### Workshop goals and objectives
 
@@ -82,7 +82,7 @@ The tidytranscriptomics approach abstracts out the coding-related complexity and
 * Create plots that summarise the information content of the data and analysis results
 
 ### Acknowledgements
-This material is adapted from an R for RNA sequencing workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
+This material was adapted from an R for RNA sequencing workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
 
 ```{r, echo=FALSE, out.width = "200px"}
 knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
@@ -92,10 +92,10 @@ knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
 ## Introduction
 Measuring gene expression on a genome-wide scale has become common practice over the last two decades or so, with microarrays predominantly used pre-2008. With the advent of next generation sequencing technology in 2008, an increasing number of scientists use this technology to measure and understand changes in gene expression in often complex systems. As sequencing costs have decreased, using RNA sequencing to simultaneously measure the expression of tens of thousands of genes for multiple samples has never been easier. The cost of these experiments has now moved from generating the data to storing and analysing it.
 
-There are many steps involved in analysing an RNA sequencing dataset. The main steps for a differential expression analysis are shown in the figure below. Sequenced reads are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and showing how the statistical testing can be performed in a friendly way using tidybulk.
+There are many steps involved in analysing an RNA sequencing dataset. The main steps for a differential expression analysis are shown in the figure below. Sequenced reads are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and showing how differential expression analysis can be performed in a friendly way using tidybulk.
 
-```{r, echo=FALSE, out.width = "200px"}
-knitr::include_graphics("../inst/vignettes/rnaseq_steps.png")
+```{r, echo=FALSE, out.width = "500px"}
+knitr::include_graphics("../inst/vignettes/bioc2020tidybulkpipeline-01.png")
 ```
 
 First, let’s load all the packages we will need to analyse the data.
@@ -122,7 +122,7 @@ library(airway)
 ```
 
 ### Airway RNA sequencing dataset
-Here we will perform our analysis using the data from the *airway* package. The airway data comes from the paper by [@himes2014rna]; and it includes 8 biological replicates from human airway smooth muscle cells, from 4 cell lines. For each cell linea treated (with dexamethasone) and untreated (negative control) sample are have been probed.
+Here we will perform our analysis using the data from the *airway* package. The airway data comes from the paper by [@himes2014rna]; and it includes 8 samples from human airway smooth muscle cells, from 4 cell lines. For each cell line treated (with dexamethasone) and untreated (negative control) a sample has undergone RNA sequencing and gene counts have been generated.
 
 ### Setting up the data
 
@@ -188,7 +188,7 @@ With tidybulk, it is not really necessary to explicitly filter lowly transcribed
 
 ## Scaling counts to normalise
 
-Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, with scaling factors calculated on abundant (filtered) transcript and applied to all transcripts. We can choose from different normalisation methods. Here we will use the default, TMM, [robinson2010scaling]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. We use `factor_of_interest` to specify the column containing the groups for the filtering described above.
+Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, with scaling factors calculated on abundant (filtered) transcripts and applied to all transcripts. We can choose from different normalisation methods. Here we will use the default, TMM, [robinson2010scaling]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. We use `factor_of_interest` to specify the column containing the groups for the filtering described above.
 
 ```{r}
 # Scaling counts
@@ -212,8 +212,9 @@ counts_scaled %>%
 	scale_x_log10() +
 	theme_bw()
 ```
+In this dataset the distributions of the counts are not very different to each other before scaling but scaling does make the distributions more similar. If we saw a sample with a very different distribution we may need to investigate it.
 
-As tidybulk smoothly integrates with ggplot2 and other tidyverse packages it can save on typing and make. Compare the code for creating density plots with tidybulk versus standard base R below (standard code adapted from [@law2016rna]).
+As tidybulk smoothly integrates with ggplot2 and other tidyverse packages it can save on typing and make plots easier to generate. Compare the code for creating density plots with tidybulk versus standard base R below (standard code adapted from [@law2016rna]).
 
 **tidybulk**
 
@@ -310,7 +311,7 @@ counts_scal_PCA %>%
 	theme_bw()
 ```
 
-The samples separate by treatment on PC 1 which is what we hope to see. PC2 separates the N080611 cell line from the other samples, indicating a greater difference between that cell line and the others.
+The samples separate by treatment on PC1 which is what we hope to see. PC2 separates the N080611 cell line from the other samples, indicating a greater difference between that cell line and the others.
 
 
 ### Hierarchical clustering with heatmaps
@@ -361,7 +362,7 @@ gplots::heatmap.2(highly_variable_lcpm, col=colours, trace="none", ColSideColors
 
 ## Differential expression
 
-Now that we are happy that the data looks good, we can continue to testing for differentially expressed (DE) genes. We will use the `test_differential_abundance` from tidybulk which currently uses *edgeR* [@robinson2010edger] to perform the differential expression analysis. We give `test_differential_abundance` our tidybulk counts object and a formula, specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different cell line so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare to .contrasts (e.g. .contrasts = c("dextreat - dexuntreat")). `test_differential_abundance` will perform the filtering of lowly expressed genes as described before.
+Now that we are happy that the data looks good, we can continue to testing for differentially expressed (DE) genes. We will use the `test_differential_abundance` from tidybulk which currently uses *edgeR* [@robinson2010edger] to perform the differential expression analysis. We give `test_differential_abundance` our tidybulk counts object and a formula, specifying the column that contains our groups to be compared. If all our samples were from the same cell line we could use the formula `0 + dex`, however, each treated and untreated sample is from a different cell line so we add the cell line as an additional factor `0 + dex + cell`. We also provide the names of the groups we want to compare to `.contrasts` (e.g. `.contrasts = c("dextreat - dexuntreat")`). `test_differential_abundance` will perform the filtering of lowly expressed genes as described before.
 
 We only have one contrast here so we omit the suffix.
 
@@ -542,7 +543,7 @@ Load the data and create the tidybulk object with:
 ```{r}
 data("pasilla", package = "bioc2020tidytranscriptomics")
 counts_tt <-
-	pasilla %>%
+  pasilla %>%
   tidybulk()
 ```
 
@@ -551,7 +552,7 @@ Note that as this is fly data you can't use ensembl_to_symbol to get gene symbol
 Questions:  
 1. What is the Fraction of Variance for PC1 and PC2? What do PC1 and PC2 represent?  
 2. How many differentially expressed genes are there for treated vs untreated (false discovery rate < 0.05)? What is the top differentially expressed gene by p-value?
-3. What code can generate a heatmap of variable genes (starting from count_scaled)?  
+3. What code can generate a heatmap of variable genes (starting from `count_scaled`)?  
 4. What code can you use to visualise expression of the pasilla gene (gene id: FBgn0261552)  
 5. What code can generate an interactive volcano plot that has gene ids showing on hover?  
 6. What code can generate a heatmap of the top 100 differentially expressed genes?  
