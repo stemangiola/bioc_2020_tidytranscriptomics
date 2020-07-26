@@ -84,7 +84,7 @@ The tidytranscriptomics approach abstracts out the coding-related complexity and
 ### Acknowledgements
 This material was adapted from an R for RNA sequencing workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
 
-```{r, echo=FALSE, out.width = "200px"}
+```{r, echo=FALSE, out.width = "100px"}
 knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
 ```
 
