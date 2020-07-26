@@ -169,13 +169,14 @@ counts_de %>%
 
 ## How to perform gene set analysis
 
+To run below you'll need the `clusterProfiler` and `org.Hs.eg.db` packages. This is just one suggestion, if you have other suggestions for how to do a 'tidy' pathway analysis feel free to [let us know](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/blob/master/CONTRIBUTING.md).
 
 ```{r eval=FALSE}
 library(clusterProfiler)
 library(org.Hs.eg.db)
 
 # extract all genes tested for DE
-res <- counts_de_pretty %>% 
+res <- counts_de %>% 
     pivot_transcript() %>% 
     filter(!lowly_abundant)
 

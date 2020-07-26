@@ -5,12 +5,13 @@
 
 # A Tidy Transcriptomics introduction to RNA sequencing analyses
 
+<img width="200" alt="bioc2020" src="https://github.com/Bioconductor/BiocStickers/blob/master/events/Bioc2020/BioC2020.png?raw=true"/>
+<img width="200" alt="tidybulk" src="https://github.com/Bioconductor/BiocStickers/blob/master/tidybulk/tidybulk.png?raw=true"/>
+
 ## Instructor names and contact information
 
-Dr. Maria Doyle <Maria.Doyle at petermac.org> and Dr. Stefano Mangiola <mangiola.s at wehi.edu.au>
-
-<img width="250" alt="bioc2020" src="https://github.com/Bioconductor/BiocStickers/blob/master/events/Bioc2020/BioC2020.png?raw=true"/>
-<img width="250" alt="tidybulk" src="https://github.com/Bioconductor/BiocStickers/blob/master/tidybulk/tidybulk.png?raw=true"/>
+* Maria Doyle <Maria.Doyle at petermac.org>  
+* Stefano Mangiola <mangiola.s at wehi.edu.au>
 
 ## Syllabus
 
