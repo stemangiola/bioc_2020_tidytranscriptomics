@@ -134,7 +134,7 @@ In this workshop we will be using the tidyverse pipe `%>%`. This 'pipes' the out
 # load airway RNA sequencing data
 data(airway)
 
-# convert to tidybulk format
+# convert to tidybulk tibble
 counts_airway <-
 	airway %>%
 	tidybulk()
