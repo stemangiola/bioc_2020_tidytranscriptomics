@@ -154,17 +154,17 @@
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">counts_tt</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span><span class="kw">=</span><span class="no">sample</span>, <span class="kw">weight</span><span class="kw">=</span><span class="no">counts</span>, <span class="kw">fill</span><span class="kw">=</span><span class="no">sample</span>)) +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar</a></span>() +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</pre></body></html></div>
-<p><img src="supplementary_files/figure-html/unnamed-chunk-4-1.png" width="40%"></p>
+<p><img src="supplementary_files/figure-html/unnamed-chunk-4-1.png" width="70%"></p>
 <p>As we are using ggplot2, we can also easily view by any other variable that’s a column in our dataset, such as cell line, simply by changing <code>fill</code>.</p>
 <p>We can colour by dex treatment.</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">counts_tt</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span><span class="kw">=</span><span class="no">sample</span>, <span class="kw">weight</span><span class="kw">=</span><span class="no">counts</span>, <span class="kw">fill</span><span class="kw">=</span><span class="no">dex</span>)) +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar</a></span>() +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</pre></body></html></div>
-<p><img src="supplementary_files/figure-html/unnamed-chunk-5-1.png" width="40%"> We can colour by cell line.</p>
+<p><img src="supplementary_files/figure-html/unnamed-chunk-5-1.png" width="70%"> We can colour by cell line.</p>
 <div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">counts_tt</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span><span class="kw">=</span><span class="no">sample</span>, <span class="kw">weight</span><span class="kw">=</span><span class="no">counts</span>, <span class="kw">fill</span><span class="kw">=</span><span class="no">cell</span>)) +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar</a></span>() +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</pre></body></html></div>
-<p><img src="supplementary_files/figure-html/unnamed-chunk-6-1.png" width="40%"></p>
+<p><img src="supplementary_files/figure-html/unnamed-chunk-6-1.png" width="70%"></p>
 </div>
 <div id="how-to-examine-normalised-counts-with-boxplots" class="section level2">
 <h2 class="hasAnchor">
@@ -182,7 +182,7 @@
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(~<span class="no">source</span>) +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_log10</a></span>() +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</pre></body></html></div>
-<p><img src="supplementary_files/figure-html/unnamed-chunk-7-1.png" width="40%"></p>
+<p><img src="supplementary_files/figure-html/unnamed-chunk-7-1.png" width="70%"></p>
 </div>
 <div id="how-to-create-mds-plot" class="section level2">
 <h2 class="hasAnchor">
@@ -195,7 +195,7 @@
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">Dim1</span>, <span class="no">Dim2</span>, <span class="kw">color</span> <span class="kw">=</span> <span class="no">dex</span>)) +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>()</pre></body></html></div>
 <pre><code>## tidybulk says: to access the raw results do `attr(..., "internals")$MDS`</code></pre>
-<p><img src="supplementary_files/figure-html/unnamed-chunk-8-1.png" width="40%"></p>
+<p><img src="supplementary_files/figure-html/unnamed-chunk-8-1.png" width="70%"></p>
 </div>
 <div id="how-to-create-ma-plot" class="section level2">
 <h2 class="hasAnchor">
@@ -218,7 +218,7 @@
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span><span class="kw">=</span><span class="no">logCPM</span>, <span class="kw">y</span><span class="kw">=</span>-<span class="no">logFC</span>, <span class="kw">colour</span><span class="kw">=</span><span class="no">significant</span>)) +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>()+
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</pre></body></html></div>
-<p><img src="supplementary_files/figure-html/unnamed-chunk-9-1.png" width="40%"></p>
+<p><img src="supplementary_files/figure-html/unnamed-chunk-9-1.png" width="70%"></p>
 <p>A more informative MA plot, integrating some of the packages in tidyverse.</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">counts_de</span> <span class="kw">%&gt;%</span>
     <span class="fu"><a href="https://rdrr.io/pkg/tidybulk/man/pivot_transcript-methods.html">pivot_transcript</a></span>() <span class="kw">%&gt;%</span>
@@ -235,7 +235,7 @@
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span>(<span class="kw">values</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"black"</span>, <span class="st">"#e11f28"</span>)) +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_size.html">scale_size_discrete</a></span>(<span class="kw">range</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">2</span>)) +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>()</pre></body></html></div>
-<p><img src="supplementary_files/figure-html/unnamed-chunk-10-1.png" width="40%"></p>
+<p><img src="supplementary_files/figure-html/unnamed-chunk-10-1.png" width="70%"></p>
 </div>
 <div id="how-to-perform-gene-enrichment-analysis" class="section level2">
 <h2 class="hasAnchor">
