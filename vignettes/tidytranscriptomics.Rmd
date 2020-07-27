@@ -82,7 +82,7 @@ The tidytranscriptomics approach abstracts out the coding-related complexity and
 * Create plots that summarise the information content of the data and analysis results
 
 ### Acknowledgements
-This material was adapted from an R for RNA sequencing workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
+This material was adapted from an R for RNA sequencing workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/). Use of the airway and pasilla datasets was inspired by the [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html).
 
 ```{r, echo=FALSE, out.width = "100px"}
 knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
@@ -94,11 +94,11 @@ Measuring gene expression on a genome-wide scale has become common practice over
 
 There are many steps involved in analysing an RNA sequencing dataset. The main steps for a differential expression analysis are shown in the figure below. Sequenced reads are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and showing how differential expression analysis can be performed in a friendly way using tidybulk.
 
-```{r, echo=FALSE, out.width = "500px"}
+```{r, echo=FALSE, out.width = "40%"}
 knitr::include_graphics("../inst/vignettes/bioc2020tidybulkpipeline-01.png")
 ```
 
-First, let’s load all the packages we will need to analyse the data.
+First, let’s load all the packages we will need to analyse the data. Note that you should load the *tidybulk* library after the tidyverse core packages for best integration.
 
 ```{r message=FALSE, warning=FALSE}
 # load libraries
@@ -134,16 +134,16 @@ In this workshop we will be using the tidyverse pipe `%>%`. This 'pipes' the out
 # load airway RNA sequencing data
 data(airway)
 
-# convert to tidybulk format
+# convert to tidybulk tibble
 counts_airway <-
 	airway %>%
 	tidybulk()
 ```
 
-You can use `glimpse` to view the columns with their first few entries.
+We can type the name of the object to view.
 
 ```{r}
-glimpse(counts_airway)
+counts_airway
 ```
 
 The `counts_tt` object contains information about genes and samples, the first column has the Ensembl gene identifier, the second column has the sample identifier and the third column has the gene transcription abundance expressed in number of reads aligning to the gene in each experimental sample. The remaining columns include sample-wise information. The dex column tells us whether the samples are treated or untreated and the cell column tells us what cell line they are from.
@@ -188,21 +188,21 @@ With tidybulk, it is not really necessary to explicitly filter lowly transcribed
 
 ## Scaling counts to normalise
 
-Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, with scaling factors calculated on abundant (filtered) transcripts and applied to all transcripts. We can choose from different normalisation methods. Here we will use the default, TMM, [robinson2010scaling]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. We use `factor_of_interest` to specify the column containing the groups for the filtering described above.
+Scaling of counts, normalisation, is performed to eliminate uninteresting differences between samples due to sequencing depth or composition. In the tidybulk package the function `scale_abundance` generates scaled counts, with scaling factors calculated on abundant (filtered) transcripts and applied to all transcripts. We can choose from different normalisation methods. Here we will use the default, TMM, [@robinson2010scaling]. TMM normalisation (and most scaling normalisation methods) scale relative to one sample. We use `factor_of_interest` to specify the column containing the groups for the filtering described above.
 
 ```{r}
 # Scaling counts
 counts_scaled <- counts_tt %>% scale_abundance(factor_of_interest = dex)
 
 # take a look
-glimpse(counts_scaled)
+counts_scaled
 ```
 
 After we run `scale_abundance` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene was not filtered, TRUE means it was. The `counts_scaled` column contains the scaled counts.
 
-We can now see the difference of abundance densities before and after scaling.
+We can visualise the difference of abundance densities before and after scaling. As tidybulk output is compatible with tidyverse, we can simply pipe it into standard tidyverse functions such as `filter`, `pivot_longer` and `ggplot`. We can also take advantage of ggplot's `facet_wrap` to easily create multiple plots.
 
-```{r fig.height=5, fig.width=8}
+```{r out.width = "40%"}
 counts_scaled %>%
 	filter(!lowly_abundant) %>%
 	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
@@ -302,7 +302,7 @@ counts_scal_PCA %>% pivot_sample()
 
 We can now plot the reduced dimensions.
 
-```{r fig.height=5, fig.width=8}
+```{r out.width = "40%"}
 # PCA plot
 counts_scal_PCA %>%
 	pivot_sample() %>%
@@ -319,7 +319,7 @@ The samples separate by treatment on PC1 which is what we hope to see. PC2 separ
 
 An alternative to principal component analysis for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable`, to extract the most variable genes which we can then plot with tidyHeatmap.
 
-```{r fig.height=5, fig.width=8}
+```{r out.width = "40%"}
 counts_scaled %>%
 
   # filter lowly abundant
@@ -461,7 +461,7 @@ topgenes_symbols
 
 Volcano plots are a useful genome-wide plot for checking that the analysis looks good. Volcano plots enable us to visualise the significance of change (p-value) versus the fold change (logFC). Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with false-discovery rate < 0.05)
 
-```{r fig.height=5, fig.width=8}
+```{r out.width = "40%"}
 # volcano plot, minimal
 counts_de %>%
 	filter(!lowly_abundant) %>%
@@ -474,7 +474,7 @@ counts_de %>%
 
 A more informative plot, integrating some of the packages in tidyverse.
 
-```{r fig.height=5, fig.width=8, warning=FALSE}
+```{r out.width = "40%", warning=FALSE}
 counts_de %>%
 	pivot_transcript() %>%
 
@@ -501,7 +501,7 @@ Before following up on the differentially expressed genes with further lab work,
 
 With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. We'll also add a box plot to show the distribution.
 
-```{r fig.height=5, fig.width=8}
+```{r out.width = "40%"}
 strip_chart <-
 	counts_scaled %>%
 
@@ -525,7 +525,7 @@ A really nice feature of using tidyverse and ggplot2 is that we can make interac
 
 We can also specify which parameters from the `aes` we want to show up when we hover over the plot with `tooltip`.
 
-```{r, fig.height=5, fig.width=8, warning=FALSE}
+```{r, out.width = "40%", warning=FALSE}
 strip_chart %>% ggplotly(tooltip = c("label", "y"))
 ```
 
@@ -536,6 +536,9 @@ strip_chart %>% ggplotly(tooltip = c("label", "y"))
 - Some of the key steps in an RNA sequencing analysis are (i) filtering lowly abundant transcripts, (ii) adjusting for differences in sequencing depth and composition, (iii) testing for differential expression
 - Dimensionality reduction (PCA or MDS) plots are very important for exploring the data
 - Density plots, volcano plots, strip-charts and heatmaps are useful visualisation tools for evaluating the hypothesis testing.
+
+## Supplementary
+Some things we didn't have time to cover in this workshop can be found in the [Supplementary material](https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/supplementary.html).
 
 ## Exercises
 
