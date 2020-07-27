@@ -1,0 +1,196 @@
+---
+title: "Bioc 2020 Tidytranscriptomics Solutions"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Solutions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Questions:  
+1. What is the Fraction of Variance for PC1 and PC2? What do PC1 and PC2 represent?  
+2. How many DE genes are there for treated vs untreated? What is the top DE gene by P value?  
+3. What code can generate a heatmap of variable genes (starting from count_scaled)?  
+4. What code can you use to visualise expression of the pasilla gene (gene id: FBgn0261552)  
+5. What code can generate an interactive volcano plot that has gene symbols showing on hover?  
+6. What code can generate a heatmap of the top 100 DE genes?
+
+Suggested answers are below. You might have some different code e.g. to customise the volcano plot as you like. Feel free to comment on any of these solutions in the workshop website as described [here](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/blob/master/CONTRIBUTING.md).
+
+```{r out.width = "40%", message=FALSE, warning=FALSE}
+# load libraries
+
+# tidyverse core packages
+library(tibble)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(stringr)
+library(ggplot2)
+
+# tidyverse-friendly packages
+library(tidyHeatmap)
+library(tidybulk)
+library(ggrepel)
+library(plotly)
+
+# load data
+data("pasilla", package = "bioc2020tidytranscriptomics")
+
+# create tidybulk tibble
+counts_tt <- pasilla %>% 
+  tidybulk()
+
+# scale counts
+counts_scaled <- counts_tt %>% scale_abundance(factor_of_interest = condition)
+
+# create density plots
+counts_scaled %>%
+  filter(!lowly_abundant) %>%
+	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
+  ggplot(aes(x=abundance + 1, group=sample, color=condition)) +
+	geom_density() +
+	facet_wrap(~source) +
+	scale_x_log10() +
+	theme_bw()
+```
+
+1. What is the Fraction of Variance for PC1 and PC2? 
+
+```{r}
+counts_scal_PCA <-
+  counts_scaled %>%
+  reduce_dimensions(method="PCA")
+```
+
+Answer: PC1: 47%, PC2: 25%
+
+What do PC1 and PC2 represent?
+
+```{r out.width = "40%"}
+counts_scal_PCA %>%
+	pivot_sample() %>%
+	ggplot(aes(x=PC1, y=PC2, colour=condition, shape=type)) + 
+  geom_point() +
+  geom_text_repel(aes(label=sample), show.legend = FALSE) +
+	theme_bw()
+```
+
+Answer: PC1 represents variance due to treatment effect(treated vs untreated). PC2 represents variance due to sequencing type single vs paired.
+
+
+```{r}
+counts_de <-
+  counts_tt %>%
+  test_differential_abundance(.formula = ~ 0 + condition + type, 
+                              .contrasts = c("conditiontreated - conditionuntreated"), 
+                              omit_contrast_in_colnames = TRUE)
+```
+
+2. How many DE genes are there for treated vs untreated (FDR < 0.05)?
+
+```{r}
+counts_de %>% 
+  filter(significant == TRUE) %>% 
+  summarise(num_de = n_distinct(feature))
+```
+
+Answer: 1128
+
+What is the top DE gene by P value? 
+
+```{r}
+topgenes <- counts_de %>%
+	pivot_transcript() %>%
+  arrange(PValue) %>%
+  head(6)
+
+topgenes
+```	
+
+Answer: FBgn0025111
+
+
+3. What code can generate a heatmap of variable genes (starting from count_scaled)?  
+
+```{r out.width = "40%"}
+counts_scaled %>% 
+  
+  # filter lowly abundant
+  filter(!lowly_abundant) %>%
+	
+	# extract 500 most variable genes
+	keep_variable( .abundance = counts_scaled, top = 500) %>%
+	
+	# create heatmap
+	heatmap(
+	      .column = sample,
+	      .row = feature,
+	      .value = counts_scaled,
+	      annotation = c(condition, type),
+	      transform = log1p 
+	  )
+```
+
+4. What code can you use to visualise expression of the pasilla gene (gene id: FBgn0261552) 
+
+```{r out.width = "40%"}
+counts_scaled %>%
+	
+	# extract counts for pasilla gene
+	filter(feature == "FBgn0261552") %>%
+	
+	# make stripchart
+	ggplot(aes(x = condition, y = counts_scaled + 1, fill =condition, label = sample)) +
+	geom_boxplot() +
+	geom_jitter() +
+	scale_y_log10()+
+	theme_bw()
+```
+
+5. What code can generate an interactive volcano plot that has gene ids showing on hover?  
+
+```{r out.width = "40%"}
+p <- counts_de %>%
+	pivot_transcript() %>%
+
+  # Subset data
+	filter(!lowly_abundant) %>%
+	mutate(significant = FDR<0.05 & abs(logFC) >=2) %>%
+
+  # Plot
+	ggplot(aes(x = logFC, y = PValue, label=feature)) +
+	geom_point(aes(color = significant, size = significant, alpha=significant)) +
+	geom_text_repel() +
+	
+	# Custom scales
+	scale_y_continuous(trans = "log10_reverse") +
+	scale_color_manual(values=c("black", "#e11f28")) +
+	scale_size_discrete(range = c(0, 2)) +
+	theme_bw()
+
+ggplotly(p, tooltip = c("text"))
+```
+Tip: You can use "text" instead of "label" if you don't want the column name to show up in the hover e.g. above will give "FBgn0261552" rather than "feature:FBgn0261552".
+
+
+
+6. What code can generate a heatmap of the top 100 DE genes?
+
+```{r out.width = "40%"}
+top100 <- 
+	counts_de %>%
+	pivot_transcript() %>%
+	arrange(PValue) %>%
+	head(100)
+
+counts_scaled %>% 
+  filter(feature %in% top100$feature) %>%
+	heatmap(
+	      .column = sample,
+	      .row = feature,
+	      .value = counts_scaled,
+	      annotation = c(condition, type),
+	      transform = log1p 
+	  )
+```
