@@ -94,7 +94,7 @@ Measuring gene expression on a genome-wide scale has become common practice over
 
 There are many steps involved in analysing an RNA sequencing dataset. The main steps for a differential expression analysis are shown in the figure below. Sequenced reads are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and showing how differential expression analysis can be performed in a friendly way using tidybulk.
 
-```{r, echo=FALSE, out.width = "40%"}
+```{r, echo=FALSE, out.width = "70%"}
 knitr::include_graphics("../inst/vignettes/bioc2020tidybulkpipeline-01.png")
 ```
 
@@ -202,7 +202,7 @@ After we run `scale_abundance` we should see some columns have been added at the
 
 We can visualise the difference of abundance densities before and after scaling. As tidybulk output is compatible with tidyverse, we can simply pipe it into standard tidyverse functions such as `filter`, `pivot_longer` and `ggplot`. We can also take advantage of ggplot's `facet_wrap` to easily create multiple plots.
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 counts_scaled %>%
 	filter(!lowly_abundant) %>%
 	pivot_longer(cols = c("counts", "counts_scaled"), names_to = "source", values_to = "abundance") %>%
@@ -302,7 +302,7 @@ counts_scal_PCA %>% pivot_sample()
 
 We can now plot the reduced dimensions.
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 # PCA plot
 counts_scal_PCA %>%
 	pivot_sample() %>%
@@ -319,7 +319,7 @@ The samples separate by treatment on PC1 which is what we hope to see. PC2 separ
 
 An alternative to principal component analysis for examining relationships between samples is using hierarchical clustering. Heatmaps are a nice visualisation to examine hierarchical clustering of your samples. tidybulk has a simple function we can use, `keep_variable`, to extract the most variable genes which we can then plot with tidyHeatmap.
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 counts_scaled %>%
 
   # filter lowly abundant
@@ -461,7 +461,7 @@ topgenes_symbols
 
 Volcano plots are a useful genome-wide plot for checking that the analysis looks good. Volcano plots enable us to visualise the significance of change (p-value) versus the fold change (logFC). Highly significant genes are towards the top of the plot. We can also colour significant genes (e.g. genes with false-discovery rate < 0.05)
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 # volcano plot, minimal
 counts_de %>%
 	filter(!lowly_abundant) %>%
@@ -474,7 +474,7 @@ counts_de %>%
 
 A more informative plot, integrating some of the packages in tidyverse.
 
-```{r out.width = "40%", warning=FALSE}
+```{r out.width = "70%", warning=FALSE}
 counts_de %>%
 	pivot_transcript() %>%
 
@@ -501,7 +501,7 @@ Before following up on the differentially expressed genes with further lab work,
 
 With stripcharts we can see if replicates tend to group together and how the expression compares to the other groups. We'll also add a box plot to show the distribution.
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 strip_chart <-
 	counts_scaled %>%
 
@@ -525,7 +525,7 @@ A really nice feature of using tidyverse and ggplot2 is that we can make interac
 
 We can also specify which parameters from the `aes` we want to show up when we hover over the plot with `tooltip`.
 
-```{r, out.width = "40%", warning=FALSE}
+```{r, out.width = "70%", warning=FALSE}
 strip_chart %>% ggplotly(tooltip = c("label", "y"))
 ```
 

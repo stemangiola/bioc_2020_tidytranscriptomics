@@ -67,7 +67,7 @@ counts_tt %>%
 
 We can also check how many counts we have for each sample by making a bar plot. This helps us see whether there are any major discrepancies between the samples more easily.
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 ggplot(counts_tt, aes(x=sample, weight=counts, fill=sample)) + 
 	geom_bar() +
 	theme_bw()
@@ -77,14 +77,14 @@ As we are using ggplot2, we can also easily view by any other variable that's a 
 
 We can colour by dex treatment.
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 ggplot(counts_tt, aes(x=sample, weight=counts, fill=dex)) + 
 	geom_bar() +
 	theme_bw()
 ```
 We can colour by cell line.
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 ggplot(counts_tt, aes(x=sample, weight=counts, fill=cell)) + 
 	geom_bar() +
 	theme_bw()
@@ -93,7 +93,7 @@ ggplot(counts_tt, aes(x=sample, weight=counts, fill=cell)) +
 
 ## How to examine normalised counts with boxplots
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 # scale counts
 counts_scaled <- counts_tt %>% scale_abundance(factor_of_interest = dex)
 
@@ -111,7 +111,7 @@ counts_scaled %>%
 
 ## How to create MDS plot
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 airway %>%
 	tidybulk() %>%
 	scale_abundance(factor_of_interest=dex) %>%
@@ -126,7 +126,7 @@ airway %>%
 
 MA plots enable us to visualise amount of expression (logCPM) versus logFC. Highly expressed genes are towards the right of the plot. We can also colour significant genes (e.g. genes with FDR < 0.05) 
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 # perform differential testing
 counts_de <- 
 	counts_tt %>%
@@ -147,7 +147,7 @@ counts_de %>%
 
 A more informative MA plot, integrating some of the packages in tidyverse.
 
-```{r out.width = "40%", warning=FALSE}
+```{r out.width = "70%", warning=FALSE}
 counts_de %>%
 	pivot_transcript() %>%
 	
