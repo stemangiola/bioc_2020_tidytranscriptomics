@@ -82,7 +82,7 @@ The tidytranscriptomics approach abstracts out the coding-related complexity and
 * Create plots that summarise the information content of the data and analysis results
 
 ### Acknowledgements
-This material was adapted from an R for RNA sequencing workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/).
+This material was adapted from an R for RNA sequencing workshop first run [here](http://combine-australia.github.io/2016-05-11-RNAseq/). Use of the airway and pasilla datasets was inspired by the [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html).
 
 ```{r, echo=FALSE, out.width = "100px"}
 knitr::include_graphics("../inst/vignettes/tidybulk_logo.png")
@@ -536,6 +536,9 @@ strip_chart %>% ggplotly(tooltip = c("label", "y"))
 - Some of the key steps in an RNA sequencing analysis are (i) filtering lowly abundant transcripts, (ii) adjusting for differences in sequencing depth and composition, (iii) testing for differential expression
 - Dimensionality reduction (PCA or MDS) plots are very important for exploring the data
 - Density plots, volcano plots, strip-charts and heatmaps are useful visualisation tools for evaluating the hypothesis testing.
+
+## Supplementary
+Some things we didn't have time to cover in this workshop can be found in the [Supplementary material](https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/supplementary.html).
 
 ## Exercises
 
