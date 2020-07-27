@@ -17,7 +17,7 @@ Questions:
 
 Suggested answers are below. You might have some different code e.g. to customise the volcano plot as you like. Feel free to comment on any of these solutions in the workshop website as described [here](https://github.com/stemangiola/bioc_2020_tidytranscriptomics/blob/master/CONTRIBUTING.md).
 
-```{r out.width = "40%", message=FALSE, warning=FALSE}
+```{r out.width = "70%", message=FALSE, warning=FALSE}
 # load libraries
 
 # tidyverse core packages
@@ -67,7 +67,7 @@ Answer: PC1: 47%, PC2: 25%
 
 What do PC1 and PC2 represent?
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 counts_scal_PCA %>%
 	pivot_sample() %>%
 	ggplot(aes(x=PC1, y=PC2, colour=condition, shape=type)) + 
@@ -113,7 +113,7 @@ Answer: FBgn0025111
 
 3. What code can generate a heatmap of variable genes (starting from count_scaled)?  
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 counts_scaled %>% 
   
   # filter lowly abundant
@@ -134,7 +134,7 @@ counts_scaled %>%
 
 4. What code can you use to visualise expression of the pasilla gene (gene id: FBgn0261552) 
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 counts_scaled %>%
 	
 	# extract counts for pasilla gene
@@ -150,7 +150,7 @@ counts_scaled %>%
 
 5. What code can generate an interactive volcano plot that has gene ids showing on hover?  
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 p <- counts_de %>%
 	pivot_transcript() %>%
 
@@ -177,7 +177,7 @@ Tip: You can use "text" instead of "label" if you don't want the column name to 
 
 6. What code can generate a heatmap of the top 100 DE genes?
 
-```{r out.width = "40%"}
+```{r out.width = "70%"}
 top100 <- 
 	counts_de %>%
 	pivot_transcript() %>%
