@@ -94,7 +94,7 @@ Measuring gene expression on a genome-wide scale has become common practice over
 
 There are many steps involved in analysing an RNA sequencing dataset. The main steps for a differential expression analysis are shown in the figure below. Sequenced reads are aligned to a reference genome, then the number of reads mapped to each gene can be counted. This results in a table of counts, which is what we perform statistical analyses on in R. While mapping and counting are important and necessary tasks, today we will be starting from the count data and showing how differential expression analysis can be performed in a friendly way using tidybulk.
 
-```{r, echo=FALSE, out.width = "500px"}
+```{r, echo=FALSE, out.width = "40%"}
 knitr::include_graphics("../inst/vignettes/bioc2020tidybulkpipeline-01.png")
 ```
 
@@ -140,10 +140,10 @@ counts_airway <-
 	tidybulk()
 ```
 
-You can use `glimpse` to view the columns with their first few entries.
+We can type the name of the object to view.
 
 ```{r}
-glimpse(counts_airway)
+counts_airway
 ```
 
 The `counts_tt` object contains information about genes and samples, the first column has the Ensembl gene identifier, the second column has the sample identifier and the third column has the gene transcription abundance expressed in number of reads aligning to the gene in each experimental sample. The remaining columns include sample-wise information. The dex column tells us whether the samples are treated or untreated and the cell column tells us what cell line they are from.
@@ -195,7 +195,7 @@ Scaling of counts, normalisation, is performed to eliminate uninteresting differ
 counts_scaled <- counts_tt %>% scale_abundance(factor_of_interest = dex)
 
 # take a look
-glimpse(counts_scaled)
+counts_scaled
 ```
 
 After we run `scale_abundance` we should see some columns have been added at the end. We have a column called `lowly_abundant` that indicates whether the gene has been filtered due to being lowly expressed. FALSE means the gene was not filtered, TRUE means it was. The `counts_scaled` column contains the scaled counts.
