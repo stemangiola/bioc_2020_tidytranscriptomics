@@ -98,7 +98,7 @@ There are many steps involved in analysing an RNA sequencing dataset. The main s
 knitr::include_graphics("../inst/vignettes/bioc2020tidybulkpipeline-01.png")
 ```
 
-First, let’s load all the packages we will need to analyse the data.
+First, let’s load all the packages we will need to analyse the data. Note that you should load the *tidybulk* library after the tidyverse core packages for best integration.
 
 ```{r message=FALSE, warning=FALSE}
 # load libraries
