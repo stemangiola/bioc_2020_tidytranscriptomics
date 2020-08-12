@@ -42,10 +42,10 @@ You should see the Rmarkdown file with all the workshop code which you can run.
 Alternatively, you could install the workshop using the commands below in R `4.0`.
 
 ```
-devtools::install_github("stemangiola/tidybulk")
+devtools::install_github("stemangiola/tidybulk@v1.1.5")
 devtools::install_github("stemangiola/bioc_2020_tidytranscriptomics", build_vignettes = TRUE)
 library(bioc2020tidytranscriptomics)
-vignette("bioc2020tidytranscriptomics")
+browseVignettes("bioc2020tidytranscriptomics")
 ```
 
 To run the code, you could then copy and paste the code from the workshop [R markdown file](https://raw.githubusercontent.com/stemangiola/bioc_2020_tidytranscriptomics/master/vignettes/tidytranscriptomics.Rmd) into a new R Markdown file on your computer.
