@@ -521,7 +521,7 @@ strip_chart
 
 ## Interactive Plots
 
-A really nice feature of using tidyverse and ggplot2 is that we can make interactive plots quite easily using the plotly package. This can be very useful for exploring what genes or samples are in the plots. We can make interactive plots directly from our ggplot2 object (strip_chart). Having `label` into the `aes` is useful to visualise the identified of the data point or other variables to be visible when we hover over the plot.
+A really nice feature of using tidyverse and ggplot2 is that we can make interactive plots quite easily using the plotly package. This can be very useful for exploring what genes or samples are in the plots. We can make interactive plots directly from our ggplot2 object (strip_chart). Having `label` in the `aes` is useful to visualise the identifier of the data point (here the sample id) or other variables when we hover over the plot.
 
 We can also specify which parameters from the `aes` we want to show up when we hover over the plot with `tooltip`.
 
