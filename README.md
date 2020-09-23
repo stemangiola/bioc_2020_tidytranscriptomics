@@ -14,7 +14,9 @@
 
 ## Syllabus
 
-Material [web page](https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html).
+[Material webpage](https://stemangiola.github.io/bioc_2020_tidytranscriptomics/articles/tidytranscriptomics.html).
+
+[Video recording](https://www.youtube.com/watch?v=5Cgnpwv19Jk) of the workshop.
 
 This material was created for a Bioc2020 conference workshop but it can also be used for self-learning.
 
